@@ -1,136 +1,385 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Deployment Tracker</title>
-
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deployment Tracker</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <header>
-    <h1>Deployment Tracker</h1>
-    <p>Store Deployment Overview</p>
-  </header>
+<header class="topbar">
+    <div>
+        <h1>Deployment Tracker</h1>
+        <p>Deployment Team Overview</p>
+    </div>
+</header>
 
-
-  <main class="container">
+<main class="container">
 
     <!-- =========================
          OVERVIEW PAGE
     ========================== -->
 
-    <div id="overviewPage">
+    <section id="overviewPage">
 
-      <!-- SUMMARY -->
-
-      <section class="summary">
-
-        <div class="summary-card">
-          <h3>Total Stores</h3>
-          <strong id="totalStores">12</strong>
+        <div class="page-header">
+            <div>
+                <h2>Deployment Overview</h2>
+                <p>Monitor all store deployments and technician updates.</p>
+            </div>
         </div>
 
-        <div class="summary-card">
-          <h3>In Progress</h3>
-          <strong id="inProgress">0</strong>
-        </div>
+        <!-- SUMMARY -->
+        <div class="summary-grid">
 
-        <div class="summary-card">
-          <h3>Completed</h3>
-          <strong id="completed">0</strong>
-        </div>
+            <div class="summary-card">
+                <span>Total Stores</span>
+                <strong id="totalStores">12</strong>
+            </div>
 
-        <div class="summary-card">
-          <h3>Checked In</h3>
-          <strong id="checkedIn">0</strong>
-        </div>
+            <div class="summary-card">
+                <span>In Progress</span>
+                <strong id="inProgressStores">0</strong>
+            </div>
 
-      </section>
+            <div class="summary-card">
+                <span>Completed</span>
+                <strong id="completedStores">0</strong>
+            </div>
 
-
-      <!-- STORE OVERVIEW -->
-
-      <section class="section">
-
-        <div class="section-title">
-
-          <div>
-            <h2>Deployment Overview</h2>
-
-            <p>
-              Monitor stores, technicians,
-              deployment progress and check-in.
-            </p>
-          </div>
+            <div class="summary-card">
+                <span>Checked In</span>
+                <strong id="checkedInStores">0</strong>
+            </div>
 
         </div>
 
 
-        <div
-          id="storeGrid"
-          class="store-grid"
-        ></div>
+        <!-- CHECK IN -->
+        <section class="panel">
 
-      </section>
+            <div class="panel-header">
+                <div>
+                    <h3>Technician Check-In</h3>
+                    <p>Deployment Team can record technician arrival here.</p>
+                </div>
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="checkInStore">Store Number</label>
+                    <input
+                        id="checkInStore"
+                        type="text"
+                        placeholder="e.g. 0123"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="checkInTech">Technician Name</label>
+                    <input
+                        id="checkInTech"
+                        type="text"
+                        placeholder="Technician name"
+                    >
+                </div>
+
+                <div class="form-group button-group">
+                    <button onclick="checkInTechnician()">
+                        Check In Technician
+                    </button>
+                </div>
+
+            </div>
+
+            <div id="checkInMessage" class="success-message"></div>
+
+        </section>
 
 
-      <!-- RECENT UPDATES -->
+        <!-- STORE CARDS -->
+        <section class="panel">
 
-      <section
-        id="recentUpdatesSection"
-        class="section"
-      >
+            <div class="panel-header">
+                <div>
+                    <h3>Stores</h3>
+                    <p>Click a store to open its deployment details.</p>
+                </div>
+            </div>
 
-        <div class="section-title">
+            <div id="storeGrid" class="store-grid"></div>
 
-          <div>
-
-            <h2>Recent Updates</h2>
-
-            <p>
-              Latest deployment activities.
-            </p>
-
-          </div>
-
-        </div>
+        </section>
 
 
-        <div
-          id="recentUpdates"
-        ></div>
+        <!-- RECENT UPDATES -->
+        <section class="panel">
 
-      </section>
+            <div class="panel-header">
+                <div>
+                    <h3>Recent Updates</h3>
+                    <p>Latest deployment activity.</p>
+                </div>
+            </div>
 
-    </div>
+            <div id="recentUpdates" class="updates-list"></div>
+
+        </section>
+
+    </section>
 
 
     <!-- =========================
          STORE DETAIL PAGE
     ========================== -->
 
-    <div
-      id="storeDetailPage"
-      style="display: none;"
-    >
+    <section id="storeDetailPage" class="hidden">
 
-      <section
-        id="storeDetail"
-        class="section store-detail"
-      ></section>
+        <button class="back-button" onclick="backToOverview()">
+            ← Back to Overview
+        </button>
 
-    </div>
+        <div class="store-detail-header">
 
-  </main>
+            <div>
+                <p class="eyebrow">Store Deployment</p>
+
+                <h2>
+                    Store
+                    <span id="detailStoreNumber"></span>
+                </h2>
+
+                <p id="detailStoreStatus"></p>
+            </div>
+
+            <div class="header-actions">
+                <button
+                    class="secondary-button"
+                    onclick="editStoreInfo()"
+                >
+                    Edit Store / Technician
+                </button>
+            </div>
+
+        </div>
 
 
-  <script src="script.js"></script>
+        <!-- STORE INFO -->
+        <section class="panel">
+
+            <div class="panel-header">
+                <div>
+                    <h3>Store Information</h3>
+                </div>
+            </div>
+
+            <div class="info-grid">
+
+                <div class="info-item">
+                    <span>Store Number</span>
+                    <strong id="detailStoreNumberInfo"></strong>
+                </div>
+
+                <div class="info-item">
+                    <span>Technician</span>
+                    <strong id="detailTechnician"></strong>
+                </div>
+
+                <div class="info-item">
+                    <span>Current Night</span>
+                    <strong id="detailCurrentNight"></strong>
+                </div>
+
+                <div class="info-item">
+                    <span>Check-In</span>
+                    <strong id="detailCheckIn"></strong>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- TECHNICIAN SCOPE ASSIGNMENT -->
+        <section class="panel">
+
+            <div class="panel-header">
+
+                <div>
+                    <h3>Scope Assignment</h3>
+
+                    <p>
+                        Set which deployment night is currently assigned
+                        to the technician.
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="assignedNight">
+                        Current Assigned Night
+                    </label>
+
+                    <select id="assignedNight">
+
+                        <option value="1">Night 1</option>
+                        <option value="2">Night 2</option>
+                        <option value="3">Night 3</option>
+                        <option value="4">Night 4</option>
+                        <option value="5">Night 5</option>
+
+                    </select>
+
+                </div>
+
+                <div class="form-group button-group">
+
+                    <button onclick="saveNightAssignment()">
+                        Save Assignment
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div
+                id="assignmentMessage"
+                class="success-message"
+            ></div>
+
+        </section>
+
+
+        <!-- ADD SCOPE -->
+        <section class="panel">
+
+            <div class="panel-header">
+
+                <div>
+                    <h3>Add Deployment Scope</h3>
+
+                    <p>
+                        Deployment Team can add or update the scope
+                        for each deployment night.
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="scopeNight">
+                        Deployment Night
+                    </label>
+
+                    <select id="scopeNight">
+
+                        <option value="1">Night 1</option>
+                        <option value="2">Night 2</option>
+                        <option value="3">Night 3</option>
+                        <option value="4">Night 4</option>
+                        <option value="5">Night 5</option>
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="scopeDescription">
+                        Scope
+                    </label>
+
+                    <input
+                        id="scopeDescription"
+                        type="text"
+                        placeholder="e.g. Remove Register 1"
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="scopeStatus">
+                        Status
+                    </label>
+
+                    <select id="scopeStatus">
+
+                        <option value="Not Started">
+                            Not Started
+                        </option>
+
+                        <option value="In Progress">
+                            In Progress
+                        </option>
+
+                        <option value="Completed">
+                            Completed
+                        </option>
+
+                        <option value="Missing">
+                            Missing
+                        </option>
+
+                        <option value="Cancelled">
+                            Cancelled
+                        </option>
+
+                        <option value="Moved to Another Night">
+                            Moved to Another Night
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="form-group button-group">
+
+                    <button onclick="addScope()">
+                        + Add Scope
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- NIGHTS -->
+        <section class="panel">
+
+            <div class="panel-header">
+
+                <div>
+                    <h3>Deployment Scope</h3>
+
+                    <p>
+                        Long-press a scope item to reveal the delete option.
+                    </p>
+                </div>
+
+            </div>
+
+            <div id="nightSections"></div>
+
+        </section>
+
+    </section>
+
+</main>
+
+<script src="script.js"></script>
 
 </body>
-
 </html>
