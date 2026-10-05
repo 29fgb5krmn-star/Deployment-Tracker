@@ -1,68 +1,85 @@
 /* =========================================
    DEPLOYMENT TRACKER
-   Version 2 - Store Detail Prototype
+   Version 3
 ========================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
 
+  /* =========================================
+     STORE DATA
+  ========================================= */
+
   const stores = [
     {
       storeNumber: "0123",
-      night: "Night 3",
       technician: "Technician A",
+      currentNight: "Night 3",
       status: "In Progress",
-      progress: 50
+      progress: 50,
+      checkedIn: false,
+      checkInTime: null
     },
+
     {
       storeNumber: "0456",
-      night: "Night 1",
       technician: "Technician B",
+      currentNight: "Night 1",
       status: "Completed",
-      progress: 100
+      progress: 100,
+      checkedIn: false,
+      checkInTime: null
     },
+
     {
       storeNumber: "0789",
-      night: "Night 2",
       technician: "Technician C",
+      currentNight: "Night 2",
       status: "Not Started",
-      progress: 0
+      progress: 0,
+      checkedIn: false,
+      checkInTime: null
     },
+
     {
       storeNumber: "1011",
-      night: "Night 2",
       technician: "Technician D",
+      currentNight: "Night 2",
       status: "In Progress",
-      progress: 45
+      progress: 45,
+      checkedIn: false,
+      checkInTime: null
     },
+
     {
       storeNumber: "1213",
-      night: "Night 1",
       technician: "Technician E",
+      currentNight: "Night 2",
       status: "Cancelled",
-      progress: 0
+      progress: 0,
+      checkedIn: false,
+      checkInTime: null
     },
+
     {
       storeNumber: "1415",
-      night: "Night 2",
       technician: "Technician F",
+      currentNight: "Night 2",
       status: "In Progress",
-      progress: 60
+      progress: 60,
+      checkedIn: false,
+      checkInTime: null
     }
   ];
 
-  /*
-    Temporary prototype scope data.
 
-    Later:
-    - Admin will add scopes
-    - Technician will update task status
-    - Night 1-5 will be dynamic
-    - Database will store everything
-  */
+  /* =========================================
+     SCOPE DATA
+  ========================================= */
 
   const storeScopes = {
 
     "0123": {
+
       "Night 1": [
         {
           name: "Remove Register 1",
@@ -99,147 +116,217 @@ document.addEventListener("DOMContentLoaded", () => {
       "Night 4": [],
 
       "Night 5": []
+
     }
 
   };
 
 
   /* =========================================
-     STORE CARD CLICK
+     ELEMENTS
   ========================================= */
 
-  const storeCards = document.querySelectorAll(".store-card");
+  const storeGrid =
+    document.getElementById("storeGrid");
 
-  storeCards.forEach((card) => {
+  const overviewSection =
+    document.getElementById("overviewSection");
 
-    card.addEventListener("click", () => {
-
-      const storeNumberElement =
-        card.querySelector(".store-number");
-
-      if (!storeNumberElement) {
-        return;
-      }
-
-      const storeNumber =
-        storeNumberElement.textContent
-          .replace("Store", "")
-          .trim();
-
-      openStoreDetail(storeNumber);
-
-    });
-
-  });
+  const storeDetail =
+    document.getElementById("storeDetail");
 
 
   /* =========================================
-     OPEN STORE DETAIL
+     INITIAL LOAD
+  ========================================= */
+
+  renderOverview();
+
+
+  /* =========================================
+     RENDER OVERVIEW
+  ========================================= */
+
+  function renderOverview() {
+
+    storeGrid.innerHTML = "";
+
+    stores.forEach((store) => {
+
+      const card = document.createElement("div");
+
+      card.className = "store-card";
+
+      card.innerHTML = `
+
+        <div class="store-header">
+
+          <span class="store-number">
+            Store ${store.storeNumber}
+          </span>
+
+          <span class="status ${getStatusClass(store.status)}">
+            ${store.status}
+          </span>
+
+        </div>
+
+        <div class="store-info">
+
+          <strong>Technician:</strong>
+          ${store.technician}
+
+          <br>
+
+          <strong>Current Night:</strong>
+          ${store.currentNight}
+
+        </div>
+
+        <div class="progress-bar">
+          <div
+            class="progress"
+            style="width: ${store.progress}%"
+          ></div>
+        </div>
+
+        <div class="store-info">
+          ${store.progress}% Complete
+        </div>
+
+        <div class="check-in-box">
+
+          ${
+            store.checkedIn
+
+            ? `
+
+              <button
+                class="check-in-button checked"
+                disabled
+              >
+                ✓ Checked In
+              </button>
+
+              <div class="check-in-time">
+                ${store.checkInTime}
+              </div>
+
+            `
+
+            : `
+
+              <button
+                class="check-in-button"
+                data-store="${store.storeNumber}"
+              >
+                Check In Technician
+              </button>
+
+              <div class="check-in-time">
+                Not checked in yet
+              </div>
+
+            `
+          }
+
+        </div>
+
+      `;
+
+
+      /* OPEN STORE */
+
+      card.addEventListener("click", (event) => {
+
+        if (
+          event.target.classList.contains("check-in-button")
+        ) {
+          return;
+        }
+
+        openStoreDetail(store.storeNumber);
+
+      });
+
+
+      /* CHECK-IN */
+
+      const checkInButton =
+        card.querySelector(".check-in-button");
+
+      if (checkInButton && !store.checkedIn) {
+
+        checkInButton.addEventListener(
+          "click",
+          (event) => {
+
+            event.stopPropagation();
+
+            checkInTechnician(store.storeNumber);
+
+          }
+        );
+
+      }
+
+
+      storeGrid.appendChild(card);
+
+    });
+
+    updateSummary();
+
+  }
+
+
+  /* =========================================
+     CHECK-IN
+  ========================================= */
+
+  function checkInTechnician(storeNumber) {
+
+    const store =
+      stores.find(
+        item => item.storeNumber === storeNumber
+      );
+
+    if (!store) return;
+
+    const now = new Date();
+
+    const formattedTime =
+      now.toLocaleString("en-PH", {
+        dateStyle: "medium",
+        timeStyle: "short"
+      });
+
+    store.checkedIn = true;
+    store.checkInTime = formattedTime;
+
+    renderOverview();
+
+  }
+
+
+  /* =========================================
+     STORE DETAIL
   ========================================= */
 
   function openStoreDetail(storeNumber) {
 
-    const store = stores.find(
-      (item) => item.storeNumber === storeNumber
-    );
+    const store =
+      stores.find(
+        item => item.storeNumber === storeNumber
+      );
 
-    if (!store) {
-      alert(`Store ${storeNumber} was not found.`);
-      return;
-    }
+    if (!store) return;
 
-    const scopes =
-      storeScopes[storeNumber] || {};
+    overviewSection.style.display = "none";
 
-    const existingContent =
-      document.querySelector(".container");
+    storeDetail.style.display = "block";
 
-    if (!existingContent) {
-      return;
-    }
-
-    let nightsHTML = "";
-
-    const nights = [
-      "Night 1",
-      "Night 2",
-      "Night 3",
-      "Night 4",
-      "Night 5"
-    ];
-
-    nights.forEach((night) => {
-
-      const tasks = scopes[night] || [];
-
-      let tasksHTML = "";
-
-      if (tasks.length === 0) {
-
-        tasksHTML = `
-          <div class="scope-task">
-            <div>
-              <div class="scope-task-name">
-                No scope added yet
-              </div>
-              <div class="scope-task-note">
-                Deployment Team can add scope for this night.
-              </div>
-            </div>
-          </div>
-        `;
-
-      } else {
-
-        tasks.forEach((task) => {
-
-          tasksHTML += `
-            <div class="scope-task">
-
-              <div>
-                <div class="scope-task-name">
-                  ${task.name}
-                </div>
-              </div>
-
-              <span class="status ${getStatusClass(task.status)}">
-                ${task.status}
-              </span>
-
-            </div>
-          `;
-
-        });
-
-      }
-
-      nightsHTML += `
-        <div class="night-section">
-
-          <div class="night-header">
-
-            <div>
-              <h3>${night}</h3>
-              <div class="night-status">
-                ${night === store.night
-                  ? "Current Night"
-                  : "Scope"}
-              </div>
-            </div>
-
-          </div>
-
-          <div class="scope-list">
-            ${tasksHTML}
-          </div>
-
-        </div>
-      `;
-
-    });
-
-
-    existingContent.innerHTML = `
+    storeDetail.innerHTML = `
 
       <div class="store-detail-header">
 
@@ -252,14 +339,14 @@ document.addEventListener("DOMContentLoaded", () => {
           <p>
             Technician: ${store.technician}
             &nbsp; • &nbsp;
-            Current Deployment: ${store.night}
+            Current Deployment: ${store.currentNight}
           </p>
 
         </div>
 
         <button
           class="back-button"
-          onclick="location.reload()"
+          id="backToOverview"
         >
           ← Back to Overview
         </button>
@@ -279,7 +366,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <br>
 
           <strong>Current Night:</strong>
-          ${store.night}
+          ${store.currentNight}
 
           <br>
 
@@ -306,73 +393,350 @@ document.addEventListener("DOMContentLoaded", () => {
 
       <div class="section">
 
-        <h2>Bridge Check-In</h2>
+        <div class="section-title">
 
-        <div class="check-in-box">
+          <div>
+
+            <h2>Deployment Scope</h2>
+
+            <p>
+              Deployment Team / Admin only
+            </p>
+
+          </div>
 
           <button
             class="primary-button"
-            id="checkInButton"
+            id="addScopeButton"
           >
-            Check In Technician
+            + Add Scope
           </button>
-
-          <div
-            class="check-in-time"
-            id="checkInTime"
-          >
-            Technician has not checked in yet.
-          </div>
 
         </div>
 
-      </div>
+
+        <div id="addScopeForm"></div>
 
 
-      <div class="section">
-
-        <h2>Deployment Scope</h2>
-
-        ${nightsHTML}
+        <div id="nightContainer"></div>
 
       </div>
 
     `;
 
 
-    /* =========================================
-       CHECK-IN
-    ========================================= */
+    document
+      .getElementById("backToOverview")
+      .addEventListener("click", () => {
 
-    const checkInButton =
-      document.querySelector("#checkInButton");
+        storeDetail.style.display = "none";
+        overviewSection.style.display = "block";
 
-    const checkInTime =
-      document.querySelector("#checkInTime");
-
-    if (checkInButton) {
-
-      checkInButton.addEventListener("click", () => {
-
-        const now = new Date();
-
-        const formattedTime =
-          now.toLocaleString("en-PH", {
-            dateStyle: "medium",
-            timeStyle: "short"
-          });
-
-        checkInTime.textContent =
-          `Checked in at ${formattedTime}`;
-
-        checkInButton.textContent =
-          "✓ Technician Checked In";
-
-        checkInButton.disabled = true;
+        renderOverview();
 
       });
 
-    }
+
+    document
+      .getElementById("addScopeButton")
+      .addEventListener("click", () => {
+
+        showAddScopeForm(store);
+
+      });
+
+
+    renderNights(store);
+
+  }
+
+
+  /* =========================================
+     RENDER NIGHTS
+  ========================================= */
+
+  function renderNights(store) {
+
+    const nightContainer =
+      document.getElementById("nightContainer");
+
+    nightContainer.innerHTML = "";
+
+    const nights = [
+      "Night 1",
+      "Night 2",
+      "Night 3",
+      "Night 4",
+      "Night 5"
+    ];
+
+
+    nights.forEach((night) => {
+
+      const tasks =
+        storeScopes[store.storeNumber]?.[night] || [];
+
+
+      let tasksHTML = "";
+
+
+      if (tasks.length === 0) {
+
+        tasksHTML = `
+
+          <div class="scope-task">
+
+            <div>
+
+              <div class="scope-task-name">
+                No scope added yet
+              </div>
+
+              <div class="scope-task-note">
+                Admin can add scope for this night.
+              </div>
+
+            </div>
+
+          </div>
+
+        `;
+
+      } else {
+
+        tasks.forEach((task) => {
+
+          tasksHTML += `
+
+            <div class="scope-task">
+
+              <div>
+
+                <div class="scope-task-name">
+                  ${task.name}
+                </div>
+
+              </div>
+
+              <span
+                class="status ${getStatusClass(task.status)}"
+              >
+                ${task.status}
+              </span>
+
+            </div>
+
+          `;
+
+        });
+
+      }
+
+
+      nightContainer.innerHTML += `
+
+        <div class="night-section">
+
+          <div class="night-header">
+
+            <div>
+
+              <h3>${night}</h3>
+
+              <div class="night-status">
+
+                ${
+                  night === store.currentNight
+                    ? "★ Current Night"
+                    : "Scope"
+
+                }
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="scope-list">
+
+            ${tasksHTML}
+
+          </div>
+
+        </div>
+
+      `;
+
+    });
+
+  }
+
+
+  /* =========================================
+     ADD SCOPE FORM
+  ========================================= */
+
+  function showAddScopeForm(store) {
+
+    const formContainer =
+      document.getElementById("addScopeForm");
+
+    formContainer.innerHTML = `
+
+      <div class="add-scope-box">
+
+        <div class="form-group">
+
+          <label>
+            Deployment Night
+          </label>
+
+          <select id="scopeNight">
+
+            <option>Night 1</option>
+            <option>Night 2</option>
+            <option>Night 3</option>
+            <option>Night 4</option>
+            <option>Night 5</option>
+
+          </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Scope / Task
+          </label>
+
+          <input
+            type="text"
+            id="scopeName"
+            placeholder="Example: Remove Register 4"
+          >
+
+        </div>
+
+
+        <div>
+
+          <button
+            class="primary-button"
+            id="saveScope"
+          >
+            Save Scope
+          </button>
+
+          <button
+            class="secondary-button"
+            id="cancelScope"
+          >
+            Cancel
+          </button>
+
+        </div>
+
+      </div>
+
+    `;
+
+
+    document
+      .getElementById("cancelScope")
+      .addEventListener("click", () => {
+
+        formContainer.innerHTML = "";
+
+      });
+
+
+    document
+      .getElementById("saveScope")
+      .addEventListener("click", () => {
+
+        const night =
+          document.getElementById("scopeNight").value;
+
+        const scopeName =
+          document.getElementById("scopeName").value.trim();
+
+
+        if (!scopeName) {
+
+          alert("Please enter a scope/task.");
+
+          return;
+
+        }
+
+
+        if (!storeScopes[store.storeNumber]) {
+
+          storeScopes[store.storeNumber] = {};
+
+        }
+
+
+        if (!storeScopes[store.storeNumber][night]) {
+
+          storeScopes[store.storeNumber][night] = [];
+
+        }
+
+
+        storeScopes[store.storeNumber][night].push({
+
+          name: scopeName,
+
+          status: "Not Started"
+
+        });
+
+
+        formContainer.innerHTML = "";
+
+        renderNights(store);
+
+      });
+
+  }
+
+
+  /* =========================================
+     SUMMARY
+  ========================================= */
+
+  function updateSummary() {
+
+    const inProgress =
+      stores.filter(
+        store => store.status === "In Progress"
+      ).length;
+
+    const completed =
+      stores.filter(
+        store => store.status === "Completed"
+      ).length;
+
+    const checkedIn =
+      stores.filter(
+        store => store.checkedIn
+      ).length;
+
+
+    document.getElementById("totalStores").textContent =
+      12;
+
+    document.getElementById("inProgress").textContent =
+      inProgress;
+
+    document.getElementById("completed").textContent =
+      completed;
+
+    document.getElementById("checkedIn").textContent =
+      checkedIn;
 
   }
 
