@@ -143,6 +143,7 @@ button {
     display: flex;
     flex-direction: column;
     gap: 7px;
+    min-width: 0;
 }
 
 .form-group label {
@@ -153,6 +154,7 @@ button {
 .form-group input,
 .form-group select {
     width: 100%;
+    min-width: 0;
     border: 1px solid #d1d5db;
     border-radius: 9px;
     padding: 11px 12px;
@@ -533,37 +535,6 @@ button:hover {
 }
 
 
-/* HISTORY */
-
-.scope-history {
-    margin-top: 10px;
-    padding: 10px 12px;
-    background: #f9fafb;
-    border-radius: 8px;
-    font-size: 12px;
-    color: #6b7280;
-    line-height: 1.5;
-}
-
-.scope-history strong {
-    color: #374151;
-}
-
-.scope-history-item {
-    margin-top: 5px;
-}
-
-.scope-current-reason {
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: 1px solid #e5e7eb;
-}
-
-.scope-current-reason strong {
-    color: #374151;
-}
-
-
 /* EMPTY / MESSAGE */
 
 .empty-scope {
@@ -597,6 +568,7 @@ button:hover {
 
 }
 
+
 @media (max-width: 900px) {
 
     .summary-grid {
@@ -624,6 +596,7 @@ button:hover {
     }
 
 }
+
 
 @media (max-width: 600px) {
 
@@ -663,6 +636,23 @@ button:hover {
         grid-template-columns: 1fr;
     }
 
+    .form-group {
+        width: 100%;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+    }
+
+    .button-group {
+        width: 100%;
+    }
+
+    .button-group button {
+        width: 100%;
+    }
+
     .info-grid {
         grid-template-columns: 1fr;
     }
@@ -677,6 +667,10 @@ button:hover {
         align-items: flex-start;
         flex-direction: column;
         gap: 8px;
+    }
+
+    .scope-status {
+        align-self: flex-start;
     }
 
     .panel {
