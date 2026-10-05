@@ -13,8 +13,13 @@ let stores = [
     {
         number: "0123",
         technician: "Technician A",
+
         currentNight: 3,
-        checkedIn: "2026-10-05 18:42",
+
+        status: "In Progress",
+
+        checkedIn: "2026-10-05 16:11",
+
         tasks: [
 
             {
@@ -56,11 +61,17 @@ let stores = [
         ]
     },
 
+
     {
         number: "0456",
         technician: "Technician B",
-        currentNight: 2,
-        checkedIn: "",
+
+        currentNight: 1,
+
+        status: "Completed",
+
+        checkedIn: "2026-10-05 16:11",
+
         tasks: [
 
             {
@@ -70,44 +81,72 @@ let stores = [
             },
 
             {
-                night: 2,
+                night: 1,
                 description: "Install Register 1",
-                status: "In Progress"
+                status: "Completed"
             }
 
         ]
     },
 
+
     {
         number: "0789",
         technician: "Technician C",
+
         currentNight: 1,
+
+        status: "Not Started",
+
         checkedIn: "",
+
         tasks: []
+
     },
+
 
     {
         number: "1011",
         technician: "Technician D",
+
         currentNight: 1,
+
+        status: "Not Started",
+
         checkedIn: "",
+
         tasks: []
+
     },
+
 
     {
         number: "1213",
         technician: "Technician E",
+
         currentNight: 1,
+
+        status: "Not Started",
+
         checkedIn: "",
+
         tasks: []
+
     },
+
 
     {
         number: "1415",
         technician: "Technician F",
+
         currentNight: 1,
+
+        status: "Not Started",
+
         checkedIn: "",
+
         tasks: []
+
     }
 
 ];
@@ -136,7 +175,7 @@ let recentUpdates = [
     {
         store: "0456",
         technician: "Technician B",
-        update: "Register installation is currently In Progress.",
+        update: "Deployment completed.",
         timestamp: "2026-10-05 12:40"
     }
 
@@ -154,11 +193,14 @@ let selectedStoreNumber = null;
    INITIAL LOAD
 ========================================================= */
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
-    renderOverview();
+        renderOverview();
 
-});
+    }
+);
 
 
 /* =========================================================
@@ -168,7 +210,8 @@ document.addEventListener("DOMContentLoaded", function () {
 function getStore(storeNumber) {
 
     return stores.find(
-        store => store.number === storeNumber
+        store =>
+            store.number === storeNumber
     );
 
 }
@@ -181,7 +224,10 @@ function getStore(storeNumber) {
 function renderOverview() {
 
     const storeGrid =
-        document.getElementById("storeGrid");
+        document.getElementById(
+            "storeGrid"
+        );
+
 
     storeGrid.innerHTML = "";
 
@@ -191,40 +237,96 @@ function renderOverview() {
         const progress =
             calculateProgress(store);
 
+
         const card =
             document.createElement("div");
 
-        card.className = "store-card";
+
+        card.className =
+            "store-card";
+
+
+        /*
+            Clicking anywhere on the card
+            opens the Store Detail page.
+        */
 
         card.onclick = function () {
 
-            openStoreDetail(store.number);
+            openStoreDetail(
+                store.number
+            );
 
         };
 
 
+        const checkedInHTML =
+            store.checkedIn
+
+                ? `
+
+                    <div class="checked-in">
+                        ✓ Checked In
+                    </div>
+
+                    <div class="check-in-time">
+                        Checked in at
+                        ${formatTimestamp(
+                            store.checkedIn
+                        )}
+                    </div>
+
+                  `
+
+                : `
+
+                    <button
+                        class="store-checkin-button"
+                        onclick="checkInStore(event, '${store.number}')"
+                    >
+                        Check In
+                    </button>
+
+                  `;
+
+
         card.innerHTML = `
 
-            <h3>
-                Store ${store.number}
-            </h3>
+            <div class="store-status-row">
 
-            <p>
+                <h3>
+                    Store ${store.number}
+                </h3>
+
+                <span
+                    class="store-status
+                    ${getStatusClass(store.status)}"
+                >
+                    ${store.status}
+                </span>
+
+            </div>
+
+
+            <div class="store-info-line">
+
                 Technician:
-                <strong>${store.technician}</strong>
-            </p>
+                <strong>
+                    ${store.technician}
+                </strong>
 
-            <p>
-                Current:
-                Night ${store.currentNight}
-            </p>
+            </div>
 
-            <p>
-                ${store.checkedIn
-                    ? "✓ Technician Checked In"
-                    : "Not Checked In"
-                }
-            </p>
+
+            <div class="store-info-line">
+
+                Current Night:
+                <strong>
+                    Night ${store.currentNight}
+                </strong>
+
+            </div>
+
 
             <div class="store-progress">
 
@@ -237,17 +339,28 @@ function renderOverview() {
 
                 </div>
 
+
                 <div class="progress-text">
 
-                    ${progress}% complete
+                    ${progress}% Complete
 
                 </div>
 
             </div>
 
+
+            <div class="store-checkin">
+
+                ${checkedInHTML}
+
+            </div>
+
         `;
 
-        storeGrid.appendChild(card);
+
+        storeGrid.appendChild(
+            card
+        );
 
     });
 
@@ -260,28 +373,43 @@ function renderOverview() {
 
 
 /* =========================================================
+   STATUS CLASS
+========================================================= */
+
+function getStatusClass(status) {
+
+    return status
+        .toLowerCase()
+        .replaceAll(" ", "-");
+
+}
+
+
+/* =========================================================
    SUMMARY
 ========================================================= */
 
 function updateSummary() {
 
-    document.getElementById("totalStores").textContent = 12;
+    document
+        .getElementById(
+            "totalStores"
+        )
+        .textContent = 12;
 
 
     let inProgress = 0;
+
     let completed = 0;
+
     let checkedIn = 0;
 
 
     stores.forEach(store => {
 
-        const progress =
-            calculateProgress(store);
-
-
         if (
-            progress > 0 &&
-            progress < 100
+            store.status ===
+            "In Progress"
         ) {
 
             inProgress++;
@@ -289,7 +417,10 @@ function updateSummary() {
         }
 
 
-        if (progress === 100) {
+        if (
+            store.status ===
+            "Completed"
+        ) {
 
             completed++;
 
@@ -305,19 +436,28 @@ function updateSummary() {
     });
 
 
-    document.getElementById(
-        "inProgressStores"
-    ).textContent = inProgress;
+    document
+        .getElementById(
+            "inProgressStores"
+        )
+        .textContent =
+        inProgress;
 
 
-    document.getElementById(
-        "completedStores"
-    ).textContent = completed;
+    document
+        .getElementById(
+            "completedStores"
+        )
+        .textContent =
+        completed;
 
 
-    document.getElementById(
-        "checkedInStores"
-    ).textContent = checkedIn;
+    document
+        .getElementById(
+            "checkedInStores"
+        )
+        .textContent =
+        checkedIn;
 
 }
 
@@ -328,7 +468,10 @@ function updateSummary() {
 
 function calculateProgress(store) {
 
-    if (!store.tasks.length) {
+    if (
+        !store.tasks ||
+        !store.tasks.length
+    ) {
 
         return 0;
 
@@ -338,12 +481,16 @@ function calculateProgress(store) {
     const completed =
         store.tasks.filter(
             task =>
-                task.status === "Completed"
+                task.status ===
+                "Completed"
         ).length;
 
 
     return Math.round(
-        (completed / store.tasks.length) * 100
+        (
+            completed /
+            store.tasks.length
+        ) * 100
     );
 
 }
@@ -356,7 +503,9 @@ function calculateProgress(store) {
 function renderRecentUpdates() {
 
     const container =
-        document.getElementById("recentUpdates");
+        document.getElementById(
+            "recentUpdates"
+        );
 
 
     container.innerHTML = "";
@@ -368,23 +517,14 @@ function renderRecentUpdates() {
         .forEach(item => {
 
             const div =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
-            div.className = "update-item";
 
+            div.className =
+                "update-item";
 
-            /*
-                IMPORTANT:
-
-                Line 1:
-                Store 0123 — Technician A
-
-                Line 2:
-                actual update
-
-                Line 3:
-                timestamp
-            */
 
             div.innerHTML = `
 
@@ -412,14 +552,18 @@ function renderRecentUpdates() {
 
                 <div class="update-time">
 
-                    ${item.timestamp}
+                    ${formatTimestamp(
+                        item.timestamp
+                    )}
 
                 </div>
 
             `;
 
 
-            container.appendChild(div);
+            container.appendChild(
+                div
+            );
 
         });
 
@@ -427,34 +571,20 @@ function renderRecentUpdates() {
 
 
 /* =========================================================
-   CHECK IN
+   STORE CHECK-IN
 ========================================================= */
 
-function checkInTechnician() {
+function checkInStore(
+    event,
+    storeNumber
+) {
 
-    const storeNumber =
-        document
-            .getElementById("checkInStore")
-            .value
-            .trim();
+    /*
+        Prevent the button click from
+        opening the Store Detail page.
+    */
 
-
-    const technician =
-        document
-            .getElementById("checkInTech")
-            .value
-            .trim();
-
-
-    if (!storeNumber || !technician) {
-
-        alert(
-            "Please enter the Store Number and Technician Name."
-        );
-
-        return;
-
-    }
+    event.stopPropagation();
 
 
     const store =
@@ -463,9 +593,12 @@ function checkInTechnician() {
 
     if (!store) {
 
-        alert(
-            "Store not found in the prototype."
-        );
+        return;
+
+    }
+
+
+    if (store.checkedIn) {
 
         return;
 
@@ -476,10 +609,6 @@ function checkInTechnician() {
         getCurrentTimestamp();
 
 
-    store.technician =
-        technician;
-
-
     store.checkedIn =
         timestamp;
 
@@ -488,30 +617,16 @@ function checkInTechnician() {
 
         store: store.number,
 
-        technician: technician,
+        technician:
+            store.technician,
 
         update:
             "Technician checked in for deployment.",
 
-        timestamp: timestamp
+        timestamp:
+            timestamp
 
     });
-
-
-    document
-        .getElementById("checkInMessage")
-        .textContent =
-        `Technician checked in successfully at ${timestamp}.`;
-
-
-    document
-        .getElementById("checkInStore")
-        .value = "";
-
-
-    document
-        .getElementById("checkInTech")
-        .value = "";
 
 
     renderOverview();
@@ -523,7 +638,9 @@ function checkInTechnician() {
    OPEN STORE DETAIL
 ========================================================= */
 
-function openStoreDetail(storeNumber) {
+function openStoreDetail(
+    storeNumber
+) {
 
     const store =
         getStore(storeNumber);
@@ -541,13 +658,21 @@ function openStoreDetail(storeNumber) {
 
 
     document
-        .getElementById("overviewPage")
-        .classList.add("hidden");
+        .getElementById(
+            "overviewPage"
+        )
+        .classList.add(
+            "hidden"
+        );
 
 
     document
-        .getElementById("storeDetailPage")
-        .classList.remove("hidden");
+        .getElementById(
+            "storeDetailPage"
+        )
+        .classList.remove(
+            "hidden"
+        );
 
 
     renderStoreDetail();
@@ -562,7 +687,9 @@ function openStoreDetail(storeNumber) {
 function renderStoreDetail() {
 
     const store =
-        getStore(selectedStoreNumber);
+        getStore(
+            selectedStoreNumber
+        );
 
 
     if (!store) {
@@ -573,43 +700,61 @@ function renderStoreDetail() {
 
 
     document
-        .getElementById("detailStoreNumber")
+        .getElementById(
+            "detailStoreNumber"
+        )
         .textContent =
         store.number;
 
 
     document
-        .getElementById("detailStoreNumberInfo")
+        .getElementById(
+            "detailStoreNumberInfo"
+        )
         .textContent =
         store.number;
 
 
     document
-        .getElementById("detailTechnician")
+        .getElementById(
+            "detailTechnician"
+        )
         .textContent =
         store.technician;
 
 
     document
-        .getElementById("detailCurrentNight")
+        .getElementById(
+            "detailCurrentNight"
+        )
         .textContent =
         `Night ${store.currentNight}`;
 
 
     document
-        .getElementById("detailCheckIn")
+        .getElementById(
+            "detailCheckIn"
+        )
         .textContent =
-        store.checkedIn || "Not Checked In";
+        store.checkedIn
+            ? formatTimestamp(
+                store.checkedIn
+            )
+            : "Not Checked In";
 
 
     document
-        .getElementById("detailStoreStatus")
+        .getElementById(
+            "detailStoreStatus"
+        )
         .textContent =
-        `${calculateProgress(store)}% deployment progress`;
+        `${store.status} • ${calculateProgress(store)}% deployment progress`;
 
 
     document
-        .getElementById("assignedNight")
+        .getElementById(
+            "assignedNight"
+        )
         .value =
         store.currentNight;
 
@@ -626,11 +771,15 @@ function renderStoreDetail() {
 function renderNightSections() {
 
     const store =
-        getStore(selectedStoreNumber);
+        getStore(
+            selectedStoreNumber
+        );
 
 
     const container =
-        document.getElementById("nightSections");
+        document.getElementById(
+            "nightSections"
+        );
 
 
     container.innerHTML = "";
@@ -650,7 +799,10 @@ function renderNightSections() {
 
 
         const section =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
+
 
         section.className =
             "night-section";
@@ -665,10 +817,12 @@ function renderNightSections() {
                 </h4>
 
                 <span>
-                    ${tasks.length} scope item(s)
+                    ${tasks.length}
+                    scope item(s)
                 </span>
 
             </div>
+
 
             <div
                 class="scope-list"
@@ -678,21 +832,28 @@ function renderNightSections() {
         `;
 
 
-        container.appendChild(section);
+        container.appendChild(
+            section
+        );
 
 
         const scopeList =
             section.querySelector(
-                `.scope-list`
+                ".scope-list"
             );
 
 
         if (!tasks.length) {
 
             scopeList.innerHTML = `
+
                 <div class="empty-scope">
-                    No scope added for Night ${night}.
+
+                    No scope added for
+                    Night ${night}.
+
                 </div>
+
             `;
 
             continue;
@@ -732,16 +893,14 @@ function createScopeElement(
 ) {
 
     const div =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
 
     div.className =
         "scope-item";
 
-
-    /*
-        LONG PRESS
-    */
 
     let pressTimer = null;
 
@@ -749,7 +908,8 @@ function createScopeElement(
     function startPress(event) {
 
         if (
-            event.type === "mousedown" &&
+            event.type ===
+                "mousedown" &&
             event.button !== 0
         ) {
 
@@ -759,13 +919,16 @@ function createScopeElement(
 
 
         pressTimer =
-            setTimeout(() => {
+            setTimeout(
+                () => {
 
-                div.classList.add(
-                    "long-press-active"
-                );
+                    div.classList.add(
+                        "long-press-active"
+                    );
 
-            }, 700);
+                },
+                700
+            );
 
     }
 
@@ -800,7 +963,9 @@ function createScopeElement(
     div.addEventListener(
         "touchstart",
         startPress,
-        { passive: true }
+        {
+            passive: true
+        }
     );
 
 
@@ -826,6 +991,7 @@ function createScopeElement(
 
             </div>
 
+
             <div class="scope-status">
 
                 ${task.status}
@@ -837,7 +1003,10 @@ function createScopeElement(
 
         <button
             class="scope-delete"
-            onclick="deleteScope(${taskIndex}, ${task.night})"
+            onclick="deleteScope(
+                ${taskIndex},
+                ${task.night}
+            )"
         >
             Delete
         </button>
@@ -857,27 +1026,35 @@ function createScopeElement(
 function addScope() {
 
     const store =
-        getStore(selectedStoreNumber);
+        getStore(
+            selectedStoreNumber
+        );
 
 
     const night =
         Number(
             document
-                .getElementById("scopeNight")
+                .getElementById(
+                    "scopeNight"
+                )
                 .value
         );
 
 
     const description =
         document
-            .getElementById("scopeDescription")
+            .getElementById(
+                "scopeDescription"
+            )
             .value
             .trim();
 
 
     const status =
         document
-            .getElementById("scopeStatus")
+            .getElementById(
+                "scopeStatus"
+            )
             .value;
 
 
@@ -894,20 +1071,42 @@ function addScope() {
 
     store.tasks.push({
 
-        night: night,
+        night:
+            night,
 
-        description: description,
+        description:
+            description,
 
-        status: status
+        status:
+            status
 
     });
 
 
+    /*
+        If a scope is added to a store
+        that was Not Started, move it
+        to In Progress.
+    */
+
+    if (
+        store.status ===
+        "Not Started"
+    ) {
+
+        store.status =
+            "In Progress";
+
+    }
+
+
     recentUpdates.push({
 
-        store: store.number,
+        store:
+            store.number,
 
-        technician: store.technician,
+        technician:
+            store.technician,
 
         update:
             `Added scope "${description}" to Night ${night}.`,
@@ -919,7 +1118,9 @@ function addScope() {
 
 
     document
-        .getElementById("scopeDescription")
+        .getElementById(
+            "scopeDescription"
+        )
         .value = "";
 
 
@@ -938,7 +1139,9 @@ function deleteScope(
 ) {
 
     const store =
-        getStore(selectedStoreNumber);
+        getStore(
+            selectedStoreNumber
+        );
 
 
     const tasks =
@@ -973,7 +1176,9 @@ function deleteScope(
 
 
     const actualIndex =
-        store.tasks.indexOf(task);
+        store.tasks.indexOf(
+            task
+        );
 
 
     store.tasks.splice(
@@ -984,9 +1189,11 @@ function deleteScope(
 
     recentUpdates.push({
 
-        store: store.number,
+        store:
+            store.number,
 
-        technician: store.technician,
+        technician:
+            store.technician,
 
         update:
             `Deleted scope "${task.description}" from Night ${night}.`,
@@ -1009,7 +1216,9 @@ function deleteScope(
 function editStoreInfo() {
 
     const store =
-        getStore(selectedStoreNumber);
+        getStore(
+            selectedStoreNumber
+        );
 
 
     const newStoreNumber =
@@ -1050,15 +1259,12 @@ function editStoreInfo() {
         newStoreNumber.trim();
 
 
-    /*
-        Prevent duplicate store numbers.
-    */
-
     const duplicate =
         stores.some(
             existing =>
                 existing !== store &&
-                existing.number === cleanStoreNumber
+                existing.number ===
+                    cleanStoreNumber
         );
 
 
@@ -1091,9 +1297,11 @@ function editStoreInfo() {
 
     recentUpdates.push({
 
-        store: cleanStoreNumber,
+        store:
+            cleanStoreNumber,
 
-        technician: store.technician,
+        technician:
+            store.technician,
 
         update:
             `Store information updated from Store ${oldStoreNumber}.`,
@@ -1116,13 +1324,17 @@ function editStoreInfo() {
 function saveNightAssignment() {
 
     const store =
-        getStore(selectedStoreNumber);
+        getStore(
+            selectedStoreNumber
+        );
 
 
     const night =
         Number(
             document
-                .getElementById("assignedNight")
+                .getElementById(
+                    "assignedNight"
+                )
                 .value
         );
 
@@ -1133,9 +1345,11 @@ function saveNightAssignment() {
 
     recentUpdates.push({
 
-        store: store.number,
+        store:
+            store.number,
 
-        technician: store.technician,
+        technician:
+            store.technician,
 
         update:
             `Technician scope assignment changed to Night ${night}.`,
@@ -1147,7 +1361,9 @@ function saveNightAssignment() {
 
 
     document
-        .getElementById("assignmentMessage")
+        .getElementById(
+            "assignmentMessage"
+        )
         .textContent =
         `Assignment saved. Technician is currently assigned to Night ${night}.`;
 
@@ -1164,13 +1380,21 @@ function saveNightAssignment() {
 function backToOverview() {
 
     document
-        .getElementById("storeDetailPage")
-        .classList.add("hidden");
+        .getElementById(
+            "storeDetailPage"
+        )
+        .classList.add(
+            "hidden"
+        );
 
 
     document
-        .getElementById("overviewPage")
-        .classList.remove("hidden");
+        .getElementById(
+            "overviewPage"
+        )
+        .classList.remove(
+            "hidden"
+        );
 
 
     renderOverview();
@@ -1195,27 +1419,92 @@ function getCurrentTimestamp() {
     const month =
         String(
             now.getMonth() + 1
-        ).padStart(2, "0");
+        )
+        .padStart(
+            2,
+            "0"
+        );
 
 
     const day =
         String(
             now.getDate()
-        ).padStart(2, "0");
+        )
+        .padStart(
+            2,
+            "0"
+        );
 
 
     const hours =
         String(
             now.getHours()
-        ).padStart(2, "0");
+        )
+        .padStart(
+            2,
+            "0"
+        );
 
 
     const minutes =
         String(
             now.getMinutes()
-        ).padStart(2, "0");
+        )
+        .padStart(
+            2,
+            "0"
+        );
 
 
     return `${year}-${month}-${day} ${hours}:${minutes}`;
+
+}
+
+
+/* =========================================================
+   DISPLAY TIMESTAMP
+========================================================= */
+
+function formatTimestamp(
+    timestamp
+) {
+
+    if (!timestamp) {
+
+        return "";
+
+    }
+
+
+    const date =
+        new Date(
+            timestamp.replace(
+                " ",
+                "T"
+            )
+        );
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return timestamp;
+
+    }
+
+
+    return date.toLocaleString(
+        "en-US",
+        {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+            hour: "numeric",
+            minute: "2-digit"
+        }
+    );
 
 }
