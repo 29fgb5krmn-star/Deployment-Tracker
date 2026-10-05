@@ -19,11 +19,6 @@ button {
     cursor: pointer;
 }
 
-
-/* =========================
-   TOP BAR
-========================= */
-
 .topbar {
     background: #111827;
     color: white;
@@ -40,11 +35,6 @@ button {
     opacity: 0.75;
     font-size: 13px;
 }
-
-
-/* =========================
-   CONTAINER
-========================= */
 
 .container {
     max-width: 1400px;
@@ -78,7 +68,7 @@ button {
 
 
 /* =========================
-   SUMMARY
+   SUMMARY CARDS
 ========================= */
 
 .summary-grid {
@@ -139,7 +129,7 @@ button {
 
 
 /* =========================
-   FORM
+   FORMS
 ========================= */
 
 .form-grid {
@@ -147,6 +137,14 @@ button {
     grid-template-columns: repeat(4, 1fr);
     gap: 14px;
     align-items: end;
+}
+
+.scope-add-grid {
+    grid-template-columns: 1fr 2fr auto;
+}
+
+.scope-management-grid {
+    grid-template-columns: 1.5fr 1fr 2fr 1fr auto;
 }
 
 .form-group {
@@ -206,7 +204,7 @@ button:hover {
 
 
 /* =========================
-   STORE GRID
+   STORE CARDS
 ========================= */
 
 .store-grid {
@@ -234,11 +232,6 @@ button:hover {
     margin: 0 0 10px;
     font-size: 19px;
 }
-
-
-/* =========================
-   STORE STATUS
-========================= */
 
 .store-status-row {
     display: flex;
@@ -288,6 +281,11 @@ button:hover {
     color: #374151;
 }
 
+
+/* =========================
+   CHECK-IN
+========================= */
+
 .store-checkin {
     margin-top: 14px;
     padding-top: 12px;
@@ -317,6 +315,11 @@ button:hover {
     color: #4b5563;
     cursor: default;
 }
+
+
+/* =========================
+   PROGRESS
+========================= */
 
 .store-progress {
     margin-top: 14px;
@@ -416,11 +419,6 @@ button:hover {
     color: #6b7280;
 }
 
-
-/* =========================
-   INFO GRID
-========================= */
-
 .info-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -513,6 +511,36 @@ button:hover {
     white-space: nowrap;
 }
 
+.scope-status.not-started {
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+.scope-status.in-progress {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.scope-status.completed {
+    background: #ecfdf5;
+    color: #047857;
+}
+
+.scope-status.pending {
+    background: #fff7ed;
+    color: #c2410c;
+}
+
+.scope-status.cancelled {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.scope-status.moved {
+    background: #f5f3ff;
+    color: #6d28d9;
+}
+
 .scope-delete {
     display: none;
     margin-top: 10px;
@@ -525,6 +553,34 @@ button:hover {
     display: inline-block;
 }
 
+
+/* =========================
+   SCOPE HISTORY
+========================= */
+
+.scope-history {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: #f9fafb;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #6b7280;
+    line-height: 1.5;
+}
+
+.scope-history strong {
+    color: #374151;
+}
+
+.scope-history-item {
+    margin-top: 4px;
+}
+
+
+/* =========================
+   EMPTY / MESSAGES
+========================= */
+
 .empty-scope {
     padding: 16px;
     color: #9ca3af;
@@ -532,10 +588,11 @@ button:hover {
     text-align: center;
 }
 
-
-/* =========================
-   SUCCESS MESSAGE
-========================= */
+.empty-updates {
+    padding: 10px 0;
+    color: #9ca3af;
+    font-size: 13px;
+}
 
 .success-message {
     margin-top: 12px;
@@ -546,8 +603,16 @@ button:hover {
 
 
 /* =========================
-   MOBILE
+   RESPONSIVE
 ========================= */
+
+@media (max-width: 1100px) {
+
+    .scope-management-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
 
 @media (max-width: 900px) {
 
@@ -563,11 +628,19 @@ button:hover {
         grid-template-columns: repeat(2, 1fr);
     }
 
+    .scope-add-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .scope-management-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
     .info-grid {
         grid-template-columns: repeat(2, 1fr);
     }
-}
 
+}
 
 @media (max-width: 600px) {
 
@@ -601,7 +674,9 @@ button:hover {
         grid-template-columns: 1fr;
     }
 
-    .form-grid {
+    .form-grid,
+    .scope-add-grid,
+    .scope-management-grid {
         grid-template-columns: 1fr;
     }
 
@@ -629,4 +704,5 @@ button:hover {
     .update-time {
         margin-left: 12px;
     }
+
 }
