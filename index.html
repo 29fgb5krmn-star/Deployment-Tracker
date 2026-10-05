@@ -31,7 +31,9 @@
             </div>
         </div>
 
+
         <!-- SUMMARY -->
+
         <div class="summary-grid">
 
             <div class="summary-card">
@@ -57,57 +59,20 @@
         </div>
 
 
-        <!-- CHECK IN -->
-        <section class="panel">
-
-            <div class="panel-header">
-                <div>
-                    <h3>Technician Check-In</h3>
-                    <p>Deployment Team can record technician arrival here.</p>
-                </div>
-            </div>
-
-            <div class="form-grid">
-
-                <div class="form-group">
-                    <label for="checkInStore">Store Number</label>
-                    <input
-                        id="checkInStore"
-                        type="text"
-                        placeholder="e.g. 0123"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="checkInTech">Technician Name</label>
-                    <input
-                        id="checkInTech"
-                        type="text"
-                        placeholder="Technician name"
-                    >
-                </div>
-
-                <div class="form-group button-group">
-                    <button onclick="checkInTechnician()">
-                        Check In Technician
-                    </button>
-                </div>
-
-            </div>
-
-            <div id="checkInMessage" class="success-message"></div>
-
-        </section>
-
-
         <!-- STORE CARDS -->
+
         <section class="panel">
 
             <div class="panel-header">
+
                 <div>
                     <h3>Stores</h3>
-                    <p>Click a store to open its deployment details.</p>
+
+                    <p>
+                        Click a store to open its deployment details.
+                    </p>
                 </div>
+
             </div>
 
             <div id="storeGrid" class="store-grid"></div>
@@ -116,16 +81,25 @@
 
 
         <!-- RECENT UPDATES -->
+
         <section class="panel">
 
             <div class="panel-header">
+
                 <div>
                     <h3>Recent Updates</h3>
-                    <p>Latest deployment activity.</p>
+
+                    <p>
+                        Latest deployment activity.
+                    </p>
                 </div>
+
             </div>
 
-            <div id="recentUpdates" class="updates-list"></div>
+            <div
+                id="recentUpdates"
+                class="updates-list"
+            ></div>
 
         </section>
 
@@ -136,16 +110,26 @@
          STORE DETAIL PAGE
     ========================== -->
 
-    <section id="storeDetailPage" class="hidden">
+    <section
+        id="storeDetailPage"
+        class="hidden"
+    >
 
-        <button class="back-button" onclick="backToOverview()">
+        <button
+            class="back-button"
+            onclick="backToOverview()"
+        >
             ← Back to Overview
         </button>
+
 
         <div class="store-detail-header">
 
             <div>
-                <p class="eyebrow">Store Deployment</p>
+
+                <p class="eyebrow">
+                    Store Deployment
+                </p>
 
                 <h2>
                     Store
@@ -153,28 +137,36 @@
                 </h2>
 
                 <p id="detailStoreStatus"></p>
+
             </div>
 
+
             <div class="header-actions">
+
                 <button
                     class="secondary-button"
                     onclick="editStoreInfo()"
                 >
                     Edit Store / Technician
                 </button>
+
             </div>
 
         </div>
 
 
         <!-- STORE INFO -->
+
         <section class="panel">
 
             <div class="panel-header">
+
                 <div>
                     <h3>Store Information</h3>
                 </div>
+
             </div>
+
 
             <div class="info-grid">
 
@@ -183,15 +175,18 @@
                     <strong id="detailStoreNumberInfo"></strong>
                 </div>
 
+
                 <div class="info-item">
                     <span>Technician</span>
                     <strong id="detailTechnician"></strong>
                 </div>
 
+
                 <div class="info-item">
                     <span>Current Night</span>
                     <strong id="detailCurrentNight"></strong>
                 </div>
+
 
                 <div class="info-item">
                     <span>Check-In</span>
@@ -203,21 +198,25 @@
         </section>
 
 
-        <!-- TECHNICIAN SCOPE ASSIGNMENT -->
+        <!-- SCOPE ASSIGNMENT -->
+
         <section class="panel">
 
             <div class="panel-header">
 
                 <div>
+
                     <h3>Scope Assignment</h3>
 
                     <p>
                         Set which deployment night is currently assigned
                         to the technician.
                     </p>
+
                 </div>
 
             </div>
+
 
             <div class="form-grid">
 
@@ -229,25 +228,43 @@
 
                     <select id="assignedNight">
 
-                        <option value="1">Night 1</option>
-                        <option value="2">Night 2</option>
-                        <option value="3">Night 3</option>
-                        <option value="4">Night 4</option>
-                        <option value="5">Night 5</option>
+                        <option value="1">
+                            Night 1
+                        </option>
+
+                        <option value="2">
+                            Night 2
+                        </option>
+
+                        <option value="3">
+                            Night 3
+                        </option>
+
+                        <option value="4">
+                            Night 4
+                        </option>
+
+                        <option value="5">
+                            Night 5
+                        </option>
 
                     </select>
 
                 </div>
 
+
                 <div class="form-group button-group">
 
-                    <button onclick="saveNightAssignment()">
+                    <button
+                        onclick="saveNightAssignment()"
+                    >
                         Save Assignment
                     </button>
 
                 </div>
 
             </div>
+
 
             <div
                 id="assignmentMessage"
@@ -258,20 +275,26 @@
 
 
         <!-- ADD SCOPE -->
+
         <section class="panel">
 
             <div class="panel-header">
 
                 <div>
-                    <h3>Add Deployment Scope</h3>
+
+                    <h3>
+                        Add Deployment Scope
+                    </h3>
 
                     <p>
                         Deployment Team can add or update the scope
                         for each deployment night.
                     </p>
+
                 </div>
 
             </div>
+
 
             <div class="form-grid">
 
@@ -283,15 +306,30 @@
 
                     <select id="scopeNight">
 
-                        <option value="1">Night 1</option>
-                        <option value="2">Night 2</option>
-                        <option value="3">Night 3</option>
-                        <option value="4">Night 4</option>
-                        <option value="5">Night 5</option>
+                        <option value="1">
+                            Night 1
+                        </option>
+
+                        <option value="2">
+                            Night 2
+                        </option>
+
+                        <option value="3">
+                            Night 3
+                        </option>
+
+                        <option value="4">
+                            Night 4
+                        </option>
+
+                        <option value="5">
+                            Night 5
+                        </option>
 
                     </select>
 
                 </div>
+
 
                 <div class="form-group">
 
@@ -306,6 +344,7 @@
                     >
 
                 </div>
+
 
                 <div class="form-group">
 
@@ -343,6 +382,7 @@
 
                 </div>
 
+
                 <div class="form-group button-group">
 
                     <button onclick="addScope()">
@@ -356,20 +396,26 @@
         </section>
 
 
-        <!-- NIGHTS -->
+        <!-- DEPLOYMENT SCOPE -->
+
         <section class="panel">
 
             <div class="panel-header">
 
                 <div>
-                    <h3>Deployment Scope</h3>
+
+                    <h3>
+                        Deployment Scope
+                    </h3>
 
                     <p>
                         Long-press a scope item to reveal the delete option.
                     </p>
+
                 </div>
 
             </div>
+
 
             <div id="nightSections"></div>
 
@@ -378,6 +424,7 @@
     </section>
 
 </main>
+
 
 <script src="script.js"></script>
 
