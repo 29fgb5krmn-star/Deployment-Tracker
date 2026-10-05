@@ -1,6 +1,6 @@
 /* =========================================
    DEPLOYMENT TRACKER
-   Version 3
+   Version 4
 ========================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   ========================================= */
 
   const stores = [
+
     {
       storeNumber: "0123",
       technician: "Technician A",
@@ -69,6 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
       checkedIn: false,
       checkInTime: null
     }
+
   ];
 
 
@@ -81,36 +83,45 @@ document.addEventListener("DOMContentLoaded", () => {
     "0123": {
 
       "Night 1": [
+
         {
           name: "Remove Register 1",
           status: "Completed"
         },
+
         {
           name: "Remove Register 2",
           status: "Completed"
         }
+
       ],
 
       "Night 2": [
+
         {
           name: "Install Register 1",
           status: "Completed"
         }
+
       ],
 
       "Night 3": [
+
         {
           name: "Remove Register 3",
           status: "Not Started"
         },
+
         {
           name: "Install new fixture",
           status: "In Progress"
         },
+
         {
           name: "Equipment Check",
           status: "Not Started"
         }
+
       ],
 
       "Night 4": [],
@@ -123,6 +134,39 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   /* =========================================
+     RECENT UPDATES
+  ========================================= */
+
+  let recentUpdates = [
+
+    {
+      message:
+        "Technician A updated Store 0123 — Install new fixture is In Progress.",
+      time: "Today, 2:15 PM"
+    },
+
+    {
+      message:
+        "Deployment Team added scope for Store 0123 — Night 3.",
+      time: "Today, 1:42 PM"
+    },
+
+    {
+      message:
+        "Store 0456 deployment completed.",
+      time: "Today, 12:30 PM"
+    },
+
+    {
+      message:
+        "Store 1213 Night 1 scope cancelled — fixture not delivered.",
+      time: "Yesterday, 11:20 PM"
+    }
+
+  ];
+
+
+  /* =========================================
      ELEMENTS
   ========================================= */
 
@@ -131,6 +175,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const overviewSection =
     document.getElementById("overviewSection");
+
+  const recentUpdatesSection =
+    document.getElementById("recentUpdatesSection");
+
+  const recentUpdatesContainer =
+    document.getElementById("recentUpdates");
 
   const storeDetail =
     document.getElementById("storeDetail");
@@ -142,6 +192,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   renderOverview();
 
+  renderRecentUpdates();
+
 
   /* =========================================
      RENDER OVERVIEW
@@ -151,11 +203,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     storeGrid.innerHTML = "";
 
+
     stores.forEach((store) => {
 
-      const card = document.createElement("div");
+      const card =
+        document.createElement("div");
 
       card.className = "store-card";
+
 
       card.innerHTML = `
 
@@ -165,11 +220,14 @@ document.addEventListener("DOMContentLoaded", () => {
             Store ${store.storeNumber}
           </span>
 
-          <span class="status ${getStatusClass(store.status)}">
+          <span
+            class="status ${getStatusClass(store.status)}"
+          >
             ${store.status}
           </span>
 
         </div>
+
 
         <div class="store-info">
 
@@ -183,16 +241,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
         </div>
 
+
         <div class="progress-bar">
+
           <div
             class="progress"
             style="width: ${store.progress}%"
           ></div>
+
         </div>
 
+
         <div class="store-info">
+
           ${store.progress}% Complete
+
         </div>
+
 
         <div class="check-in-box">
 
@@ -209,7 +274,10 @@ document.addEventListener("DOMContentLoaded", () => {
               </button>
 
               <div class="check-in-time">
+
+                Checked in at
                 ${store.checkInTime}
+
               </div>
 
             `
@@ -224,7 +292,9 @@ document.addEventListener("DOMContentLoaded", () => {
               </button>
 
               <div class="check-in-time">
+
                 Not checked in yet
+
               </div>
 
             `
@@ -235,27 +305,44 @@ document.addEventListener("DOMContentLoaded", () => {
       `;
 
 
-      /* OPEN STORE */
+      /* =====================================
+         CLICK STORE CARD
+      ===================================== */
 
-      card.addEventListener("click", (event) => {
+      card.addEventListener(
+        "click",
+        (event) => {
 
-        if (
-          event.target.classList.contains("check-in-button")
-        ) {
-          return;
+          if (
+            event.target.closest(
+              ".check-in-button"
+            )
+          ) {
+            return;
+          }
+
+          openStoreDetail(
+            store.storeNumber
+          );
+
         }
-
-        openStoreDetail(store.storeNumber);
-
-      });
+      );
 
 
-      /* CHECK-IN */
+      /* =====================================
+         CHECK-IN BUTTON
+      ===================================== */
 
       const checkInButton =
-        card.querySelector(".check-in-button");
+        card.querySelector(
+          ".check-in-button"
+        );
 
-      if (checkInButton && !store.checkedIn) {
+
+      if (
+        checkInButton &&
+        !store.checkedIn
+      ) {
 
         checkInButton.addEventListener(
           "click",
@@ -263,7 +350,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             event.stopPropagation();
 
-            checkInTechnician(store.storeNumber);
+            checkInTechnician(
+              store.storeNumber
+            );
 
           }
         );
@@ -275,56 +364,97 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 
+
     updateSummary();
 
   }
 
 
   /* =========================================
-     CHECK-IN
+     CHECK-IN TECHNICIAN
   ========================================= */
 
-  function checkInTechnician(storeNumber) {
+  function checkInTechnician(
+    storeNumber
+  ) {
 
     const store =
       stores.find(
-        item => item.storeNumber === storeNumber
+        item =>
+          item.storeNumber === storeNumber
       );
+
 
     if (!store) return;
 
-    const now = new Date();
+
+    const now =
+      new Date();
+
 
     const formattedTime =
-      now.toLocaleString("en-PH", {
-        dateStyle: "medium",
-        timeStyle: "short"
-      });
+      now.toLocaleString(
+        "en-PH",
+        {
+          dateStyle: "medium",
+          timeStyle: "short"
+        }
+      );
+
 
     store.checkedIn = true;
-    store.checkInTime = formattedTime;
+
+    store.checkInTime =
+      formattedTime;
+
+
+    /* ADD RECENT UPDATE */
+
+    recentUpdates.unshift({
+
+      message:
+        `${store.technician} checked in for Store ${store.storeNumber}.`,
+
+      time:
+        formattedTime
+
+    });
+
 
     renderOverview();
+
+    renderRecentUpdates();
 
   }
 
 
   /* =========================================
-     STORE DETAIL
+     OPEN STORE DETAIL
   ========================================= */
 
-  function openStoreDetail(storeNumber) {
+  function openStoreDetail(
+    storeNumber
+  ) {
 
     const store =
       stores.find(
-        item => item.storeNumber === storeNumber
+        item =>
+          item.storeNumber === storeNumber
       );
+
 
     if (!store) return;
 
-    overviewSection.style.display = "none";
 
-    storeDetail.style.display = "block";
+    overviewSection.style.display =
+      "none";
+
+    recentUpdatesSection.style.display =
+      "none";
+
+    storeDetail.style.display =
+      "block";
+
 
     storeDetail.innerHTML = `
 
@@ -337,12 +467,19 @@ document.addEventListener("DOMContentLoaded", () => {
           </h2>
 
           <p>
-            Technician: ${store.technician}
+
+            Technician:
+            ${store.technician}
+
             &nbsp; • &nbsp;
-            Current Deployment: ${store.currentNight}
+
+            Current Deployment:
+            ${store.currentNight}
+
           </p>
 
         </div>
+
 
         <button
           class="back-button"
@@ -356,24 +493,39 @@ document.addEventListener("DOMContentLoaded", () => {
 
       <div class="section">
 
-        <h2>Deployment Status</h2>
+        <h2>
+          Deployment Status
+        </h2>
+
 
         <div class="store-info">
 
-          <strong>Technician:</strong>
+          <strong>
+            Technician:
+          </strong>
+
           ${store.technician}
 
           <br>
 
-          <strong>Current Night:</strong>
+
+          <strong>
+            Current Night:
+          </strong>
+
           ${store.currentNight}
 
           <br>
 
-          <strong>Status:</strong>
+
+          <strong>
+            Status:
+          </strong>
+
           ${store.status}
 
         </div>
+
 
         <div class="progress-bar">
 
@@ -383,6 +535,7 @@ document.addEventListener("DOMContentLoaded", () => {
           ></div>
 
         </div>
+
 
         <strong>
           ${store.progress}% Complete
@@ -397,13 +550,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
           <div>
 
-            <h2>Deployment Scope</h2>
+            <h2>
+              Deployment Scope
+            </h2>
 
             <p>
-              Deployment Team / Admin only
+              Deployment Team / Admin
             </p>
 
           </div>
+
 
           <button
             class="primary-button"
@@ -417,7 +573,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         <div id="addScopeForm"></div>
 
-
         <div id="nightContainer"></div>
 
       </div>
@@ -425,25 +580,53 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
 
 
-    document
-      .getElementById("backToOverview")
-      .addEventListener("click", () => {
-
-        storeDetail.style.display = "none";
-        overviewSection.style.display = "block";
-
-        renderOverview();
-
-      });
-
+    /* =====================================
+       BACK BUTTON
+    ===================================== */
 
     document
-      .getElementById("addScopeButton")
-      .addEventListener("click", () => {
+      .getElementById(
+        "backToOverview"
+      )
+      .addEventListener(
+        "click",
+        () => {
 
-        showAddScopeForm(store);
+          storeDetail.style.display =
+            "none";
 
-      });
+          overviewSection.style.display =
+            "block";
+
+          recentUpdatesSection.style.display =
+            "block";
+
+          renderOverview();
+
+          renderRecentUpdates();
+
+        }
+      );
+
+
+    /* =====================================
+       ADD SCOPE
+    ===================================== */
+
+    document
+      .getElementById(
+        "addScopeButton"
+      )
+      .addEventListener(
+        "click",
+        () => {
+
+          showAddScopeForm(
+            store
+          );
+
+        }
+      );
 
 
     renderNights(store);
@@ -455,46 +638,157 @@ document.addEventListener("DOMContentLoaded", () => {
      RENDER NIGHTS
   ========================================= */
 
-  function renderNights(store) {
+  function renderNights(
+    store
+  ) {
 
     const nightContainer =
-      document.getElementById("nightContainer");
+      document.getElementById(
+        "nightContainer"
+      );
+
 
     nightContainer.innerHTML = "";
 
+
     const nights = [
+
       "Night 1",
       "Night 2",
       "Night 3",
       "Night 4",
       "Night 5"
+
     ];
 
 
-    nights.forEach((night) => {
+    nights.forEach(
+      (night) => {
 
-      const tasks =
-        storeScopes[store.storeNumber]?.[night] || [];
+        const tasks =
+          storeScopes[
+            store.storeNumber
+          ]?.[night] || [];
 
 
-      let tasksHTML = "";
+        let tasksHTML = "";
 
 
-      if (tasks.length === 0) {
+        if (
+          tasks.length === 0
+        ) {
 
-        tasksHTML = `
+          tasksHTML = `
 
-          <div class="scope-task">
+            <div class="scope-task">
 
-            <div>
+              <div>
 
-              <div class="scope-task-name">
-                No scope added yet
+                <div
+                  class="scope-task-name"
+                >
+                  No scope added yet
+                </div>
+
+                <div
+                  class="scope-task-note"
+                >
+                  Admin can add scope
+                  for this night.
+                </div>
+
               </div>
 
-              <div class="scope-task-note">
-                Admin can add scope for this night.
+            </div>
+
+          `;
+
+        }
+
+        else {
+
+          tasks.forEach(
+            (task) => {
+
+              tasksHTML += `
+
+                <div
+                  class="scope-task"
+                >
+
+                  <div>
+
+                    <div
+                      class="scope-task-name"
+                    >
+                      ${task.name}
+                    </div>
+
+                  </div>
+
+
+                  <span
+                    class="status
+                    ${getStatusClass(
+                      task.status
+                    )}"
+                  >
+
+                    ${task.status}
+
+                  </span>
+
+                </div>
+
+              `;
+
+            }
+          );
+
+        }
+
+
+        nightContainer.innerHTML += `
+
+          <div
+            class="night-section"
+          >
+
+            <div
+              class="night-header"
+            >
+
+              <div>
+
+                <h3>
+                  ${night}
+                </h3>
+
+                <div
+                  class="night-status"
+                >
+
+                  ${
+                    night ===
+                    store.currentNight
+
+                    ? "★ Current Night"
+
+                    : "Scope"
+                  }
+
+                </div>
+
               </div>
+
+            </div>
+
+
+            <div
+              class="scope-list"
+            >
+
+              ${tasksHTML}
 
             </div>
 
@@ -502,73 +796,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         `;
 
-      } else {
-
-        tasks.forEach((task) => {
-
-          tasksHTML += `
-
-            <div class="scope-task">
-
-              <div>
-
-                <div class="scope-task-name">
-                  ${task.name}
-                </div>
-
-              </div>
-
-              <span
-                class="status ${getStatusClass(task.status)}"
-              >
-                ${task.status}
-              </span>
-
-            </div>
-
-          `;
-
-        });
-
       }
-
-
-      nightContainer.innerHTML += `
-
-        <div class="night-section">
-
-          <div class="night-header">
-
-            <div>
-
-              <h3>${night}</h3>
-
-              <div class="night-status">
-
-                ${
-                  night === store.currentNight
-                    ? "★ Current Night"
-                    : "Scope"
-
-                }
-
-              </div>
-
-            </div>
-
-          </div>
-
-          <div class="scope-list">
-
-            ${tasksHTML}
-
-          </div>
-
-        </div>
-
-      `;
-
-    });
+    );
 
   }
 
@@ -577,39 +806,68 @@ document.addEventListener("DOMContentLoaded", () => {
      ADD SCOPE FORM
   ========================================= */
 
-  function showAddScopeForm(store) {
+  function showAddScopeForm(
+    store
+  ) {
 
     const formContainer =
-      document.getElementById("addScopeForm");
+      document.getElementById(
+        "addScopeForm"
+      );
+
 
     formContainer.innerHTML = `
 
-      <div class="add-scope-box">
+      <div
+        class="add-scope-box"
+      >
 
-        <div class="form-group">
+        <div
+          class="form-group"
+        >
 
           <label>
             Deployment Night
           </label>
 
-          <select id="scopeNight">
 
-            <option>Night 1</option>
-            <option>Night 2</option>
-            <option>Night 3</option>
-            <option>Night 4</option>
-            <option>Night 5</option>
+          <select
+            id="scopeNight"
+          >
+
+            <option>
+              Night 1
+            </option>
+
+            <option>
+              Night 2
+            </option>
+
+            <option>
+              Night 3
+            </option>
+
+            <option>
+              Night 4
+            </option>
+
+            <option>
+              Night 5
+            </option>
 
           </select>
 
         </div>
 
 
-        <div class="form-group">
+        <div
+          class="form-group"
+        >
 
           <label>
             Scope / Task
           </label>
+
 
           <input
             type="text"
@@ -620,86 +878,224 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
 
 
-        <div>
+        <button
+          class="primary-button"
+          id="saveScope"
+        >
+          Save Scope
+        </button>
 
-          <button
-            class="primary-button"
-            id="saveScope"
-          >
-            Save Scope
-          </button>
 
-          <button
-            class="secondary-button"
-            id="cancelScope"
-          >
-            Cancel
-          </button>
-
-        </div>
+        <button
+          class="secondary-button"
+          id="cancelScope"
+        >
+          Cancel
+        </button>
 
       </div>
 
     `;
 
 
-    document
-      .getElementById("cancelScope")
-      .addEventListener("click", () => {
-
-        formContainer.innerHTML = "";
-
-      });
-
+    /* CANCEL */
 
     document
-      .getElementById("saveScope")
-      .addEventListener("click", () => {
+      .getElementById(
+        "cancelScope"
+      )
+      .addEventListener(
+        "click",
+        () => {
 
-        const night =
-          document.getElementById("scopeNight").value;
-
-        const scopeName =
-          document.getElementById("scopeName").value.trim();
-
-
-        if (!scopeName) {
-
-          alert("Please enter a scope/task.");
-
-          return;
+          formContainer.innerHTML =
+            "";
 
         }
+      );
 
 
-        if (!storeScopes[store.storeNumber]) {
+    /* SAVE */
 
-          storeScopes[store.storeNumber] = {};
+    document
+      .getElementById(
+        "saveScope"
+      )
+      .addEventListener(
+        "click",
+        () => {
+
+          const night =
+            document.getElementById(
+              "scopeNight"
+            ).value;
+
+
+          const scopeName =
+            document.getElementById(
+              "scopeName"
+            ).value.trim();
+
+
+          if (!scopeName) {
+
+            alert(
+              "Please enter a scope/task."
+            );
+
+            return;
+
+          }
+
+
+          if (
+            !storeScopes[
+              store.storeNumber
+            ]
+          ) {
+
+            storeScopes[
+              store.storeNumber
+            ] = {};
+
+          }
+
+
+          if (
+            !storeScopes[
+              store.storeNumber
+            ][night]
+          ) {
+
+            storeScopes[
+              store.storeNumber
+            ][night] = [];
+
+          }
+
+
+          storeScopes[
+            store.storeNumber
+          ][night].push({
+
+            name:
+              scopeName,
+
+            status:
+              "Not Started"
+
+          });
+
+
+          /* RECENT UPDATE */
+
+          const now =
+            new Date();
+
+
+          const formattedTime =
+            now.toLocaleString(
+              "en-PH",
+              {
+                dateStyle: "medium",
+                timeStyle: "short"
+              }
+            );
+
+
+          recentUpdates.unshift({
+
+            message:
+              `Deployment Team added "${scopeName}" to Store ${store.storeNumber} — ${night}.`,
+
+            time:
+              formattedTime
+
+          });
+
+
+          formContainer.innerHTML =
+            "";
+
+
+          renderNights(store);
 
         }
+      );
+
+  }
 
 
-        if (!storeScopes[store.storeNumber][night]) {
+  /* =========================================
+     RECENT UPDATES
+  ========================================= */
 
-          storeScopes[store.storeNumber][night] = [];
+  function renderRecentUpdates() {
+
+    recentUpdatesContainer.innerHTML =
+      "";
+
+
+    if (
+      recentUpdates.length === 0
+    ) {
+
+      recentUpdatesContainer.innerHTML = `
+
+        <div class="update">
+
+          <div class="update-main">
+            No recent updates.
+          </div>
+
+        </div>
+
+      `;
+
+      return;
+
+    }
+
+
+    recentUpdates
+      .slice(0, 8)
+      .forEach(
+        (update) => {
+
+          const updateElement =
+            document.createElement(
+              "div"
+            );
+
+
+          updateElement.className =
+            "update";
+
+
+          updateElement.innerHTML = `
+
+            <div
+              class="update-main"
+            >
+              ${update.message}
+            </div>
+
+            <div
+              class="update-time"
+            >
+              ${update.time}
+            </div>
+
+          `;
+
+
+          recentUpdatesContainer
+            .appendChild(
+              updateElement
+            );
 
         }
-
-
-        storeScopes[store.storeNumber][night].push({
-
-          name: scopeName,
-
-          status: "Not Started"
-
-        });
-
-
-        formContainer.innerHTML = "";
-
-        renderNights(store);
-
-      });
+      );
 
   }
 
@@ -712,30 +1108,56 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const inProgress =
       stores.filter(
-        store => store.status === "In Progress"
+        store =>
+          store.status ===
+          "In Progress"
       ).length;
+
 
     const completed =
       stores.filter(
-        store => store.status === "Completed"
+        store =>
+          store.status ===
+          "Completed"
       ).length;
+
 
     const checkedIn =
       stores.filter(
-        store => store.checkedIn
+        store =>
+          store.checkedIn
       ).length;
 
 
-    document.getElementById("totalStores").textContent =
-      12;
+    document
+      .getElementById(
+        "totalStores"
+      )
+      .textContent =
+      "12";
 
-    document.getElementById("inProgress").textContent =
+
+    document
+      .getElementById(
+        "inProgress"
+      )
+      .textContent =
       inProgress;
 
-    document.getElementById("completed").textContent =
+
+    document
+      .getElementById(
+        "completed"
+      )
+      .textContent =
       completed;
 
-    document.getElementById("checkedIn").textContent =
+
+    document
+      .getElementById(
+        "checkedIn"
+      )
+      .textContent =
       checkedIn;
 
   }
@@ -745,7 +1167,9 @@ document.addEventListener("DOMContentLoaded", () => {
      STATUS CLASS
   ========================================= */
 
-  function getStatusClass(status) {
+  function getStatusClass(
+    status
+  ) {
 
     switch (status) {
 
@@ -769,6 +1193,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
-  console.log("Deployment Tracker loaded.");
+  console.log(
+    "Deployment Tracker loaded successfully."
+  );
 
 });
