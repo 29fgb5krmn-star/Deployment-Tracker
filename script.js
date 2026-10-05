@@ -395,10 +395,6 @@ function renderOverview() {
         let checkInHTML;
 
 
-        // ----------------------------------------------------
-        // CHECK-IN DISPLAY
-        // ----------------------------------------------------
-
         if (store.checkedIn) {
 
             checkInHTML = `
@@ -440,10 +436,6 @@ function renderOverview() {
 
         }
 
-
-        // ----------------------------------------------------
-        // STORE CARD
-        // ----------------------------------------------------
 
         card.innerHTML = `
 
@@ -761,15 +753,6 @@ function renderRecentUpdates() {
 
 function openStoreDetail(storeNumber) {
 
-    /*
-     * IMPORTANT:
-     * selectedStoreNumber always contains the exact store
-     * currently being viewed.
-     *
-     * All scope and night changes are applied only to the
-     * store returned by getSelectedStore().
-     */
-
     selectedStoreNumber =
         storeNumber;
 
@@ -803,15 +786,6 @@ function openStoreDetail(storeNumber) {
 // ============================================================
 
 function renderStoreDetail() {
-
-    /*
-     * IMPORTANT:
-     * Every time the detail page is rendered, all values are
-     * loaded from the currently selected store.
-     *
-     * This prevents Night 2 assigned to Store A from appearing
-     * as the assigned Night for Store B.
-     */
 
     const store =
         getSelectedStore();
@@ -888,9 +862,7 @@ function renderStoreDetail() {
     if (detailCheckIn) {
 
         detailCheckIn.textContent =
-            store.checkedIn
-                ? formatCheckInTime(store.checkedIn)
-                : "Not checked in";
+            store.checkedIn || "Not checked in";
 
     }
 
@@ -903,10 +875,6 @@ function renderStoreDetail() {
     }
 
 
-    // --------------------------------------------------------
-    // STORE-SPECIFIC NIGHT ASSIGNMENT
-    // --------------------------------------------------------
-
     const assignedNight =
         document.getElementById(
             "assignedNight"
@@ -916,29 +884,7 @@ function renderStoreDetail() {
     if (assignedNight) {
 
         assignedNight.value =
-            String(
-                Number(store.currentNight) || 1
-            );
-
-    }
-
-
-    // --------------------------------------------------------
-    // DEFAULT NEW SCOPE NIGHT
-    // --------------------------------------------------------
-
-    const scopeNight =
-        document.getElementById(
-            "scopeNight"
-        );
-
-
-    if (scopeNight) {
-
-        scopeNight.value =
-            String(
-                Number(store.currentNight) || 1
-            );
+            String(store.currentNight || 1);
 
     }
 
@@ -1118,55 +1064,6 @@ function createScopeElement(task) {
 
 
     // --------------------------------------------------------
-    // CURRENT REASON
-    // --------------------------------------------------------
-
-    if (task.reason) {
-
-        const currentReason =
-            document.createElement("div");
-
-        currentReason.className =
-            "scope-current-reason";
-
-        currentReason.innerHTML = `
-            <strong>Reason:</strong>
-            ${escapeHtml(task.reason)}
-        `;
-
-        element.appendChild(
-            currentReason
-        );
-
-    }
-
-
-    // --------------------------------------------------------
-    // HISTORY
-    // --------------------------------------------------------
-
-    if (
-        task.history &&
-        task.history.length > 0
-    ) {
-
-        const historyContainer =
-            document.createElement("div");
-
-        historyContainer.className =
-            "scope-history";
-
-        historyContainer.innerHTML =
-            buildScopeHistoryHtml(task);
-
-        element.appendChild(
-            historyContainer
-        );
-
-    }
-
-
-    // --------------------------------------------------------
     // DELETE BUTTON
     // --------------------------------------------------------
 
@@ -1286,96 +1183,6 @@ function createScopeElement(task) {
 
 
 // ============================================================
-// HTML ESCAPE
-// ============================================================
-
-function escapeHtml(value) {
-
-    if (value === null || value === undefined) {
-        return "";
-    }
-
-    return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-
-}
-
-
-// ============================================================
-// SCOPE HISTORY HTML
-// ============================================================
-
-function buildScopeHistoryHtml(task) {
-
-    if (
-        !task.history ||
-        task.history.length === 0
-    ) {
-
-        return "";
-
-    }
-
-
-    let html = "";
-
-
-    task.history.forEach(history => {
-
-        html += `
-
-            <div class="scope-history-item">
-
-                <strong>
-                    ${escapeHtml(history.action)}
-                </strong>
-
-                <div>
-                    ${escapeHtml(history.timestamp || "")}
-                </div>
-
-                ${
-                    history.reason
-                    ?
-                    `
-                        <div>
-                            Reason: ${escapeHtml(history.reason)}
-                        </div>
-                    `
-                    :
-                    ""
-                }
-
-                ${
-                    history.fromNight
-                    ?
-                    `
-                        <div>
-                            Night ${history.fromNight}
-                            → Night ${history.toNight}
-                        </div>
-                    `
-                    :
-                    ""
-                }
-
-            </div>
-
-        `;
-
-    });
-
-
-    return html;
-
-}
-
-
-// ============================================================
 // ADD SCOPE
 // ============================================================
 
@@ -1434,11 +1241,6 @@ function addScope() {
     }
 
 
-    /*
-     * The scope is pushed ONLY into the currently selected
-     * store's tasks array.
-     */
-
     store.tasks.push({
 
         id:
@@ -1463,7 +1265,6 @@ function addScope() {
 
 
     scopeInput.value = "";
-
 
     renderStoreDetail();
 
@@ -1532,6 +1333,58 @@ function renderScopeManagementOptions() {
 
 
 // ============================================================
+// RESET MANAGEMENT FORM
+// ============================================================
+
+function resetScopeManagementForm() {
+
+    const scopeSelect =
+        document.getElementById("manageScope");
+
+    const actionSelect =
+        document.getElementById("scopeAction");
+
+    const reasonInput =
+        document.getElementById("scopeReason");
+
+    const reasonGroup =
+        document.getElementById("scopeReasonGroup");
+
+    const moveGroup =
+        document.getElementById("moveNightGroup");
+
+    const message =
+        document.getElementById("scopeManagementMessage");
+
+
+    if (scopeSelect) {
+        scopeSelect.value = "";
+    }
+
+    if (actionSelect) {
+        actionSelect.value = "";
+    }
+
+    if (reasonInput) {
+        reasonInput.value = "";
+    }
+
+    if (reasonGroup) {
+        reasonGroup.classList.add("hidden");
+    }
+
+    if (moveGroup) {
+        moveGroup.classList.add("hidden");
+    }
+
+    if (message) {
+        message.textContent = "";
+    }
+
+}
+
+
+// ============================================================
 // ACTION CHANGE
 // ============================================================
 
@@ -1552,14 +1405,14 @@ function handleScopeActionChange() {
             "scopeReasonGroup"
         );
 
-    const reasonInput =
-        document.getElementById(
-            "scopeReason"
-        );
-
     const moveGroup =
         document.getElementById(
             "moveNightGroup"
+        );
+
+    const reasonInput =
+        document.getElementById(
+            "scopeReason"
         );
 
 
@@ -1572,22 +1425,31 @@ function handleScopeActionChange() {
         actionSelect.value;
 
 
-    const store =
-        getSelectedStore();
-
-
-    const taskId =
+    const selectedTaskId =
         scopeSelect
             ? Number(scopeSelect.value)
             : 0;
 
 
-    const task =
-        store && taskId
-            ? (store.tasks || []).find(
-                item => item.id === taskId
-            )
-            : null;
+    let selectedTask = null;
+
+
+    const store =
+        getSelectedStore();
+
+
+    if (
+        store &&
+        selectedTaskId
+    ) {
+
+        selectedTask =
+            store.tasks.find(
+                task =>
+                    task.id === selectedTaskId
+            );
+
+    }
 
 
     // --------------------------------------------------------
@@ -1619,24 +1481,36 @@ function handleScopeActionChange() {
 
 
     // --------------------------------------------------------
-    // PRELOAD EXISTING REASON WHEN EDITING
+    // LOAD EXISTING REASON FOR EDIT
     // --------------------------------------------------------
 
     if (
         action === "editReason" &&
-        reasonInput &&
-        task
+        selectedTask &&
+        reasonInput
     ) {
 
         reasonInput.value =
-            task.reason ||
-            getLatestReason(task);
+            selectedTask.reason || "";
+
+        reasonInput.placeholder =
+            "Update reason or notes";
+
+    } else if (
+        action !== "editReason" &&
+        reasonInput
+    ) {
+
+        reasonInput.value = "";
+
+        reasonInput.placeholder =
+            "Enter reason or notes";
 
     }
 
 
     // --------------------------------------------------------
-    // MOVE NIGHT
+    // MOVE FIELD
     // --------------------------------------------------------
 
     if (moveGroup) {
@@ -1656,39 +1530,6 @@ function handleScopeActionChange() {
         }
 
     }
-
-}
-
-
-// ============================================================
-// GET LATEST REASON
-// ============================================================
-
-function getLatestReason(task) {
-
-    if (
-        !task ||
-        !task.history ||
-        task.history.length === 0
-    ) {
-        return "";
-    }
-
-
-    for (
-        let i = task.history.length - 1;
-        i >= 0;
-        i--
-    ) {
-
-        if (task.history[i].reason) {
-            return task.history[i].reason;
-        }
-
-    }
-
-
-    return "";
 
 }
 
@@ -1798,6 +1639,31 @@ function applyScopeManagement() {
 
 
     // ========================================================
+    // EDIT REASON / NOTES
+    // ========================================================
+
+    if (action === "editReason") {
+
+        task.reason =
+            reason;
+
+
+        showScopeManagementMessage(
+            "Reason / notes updated.",
+            false
+        );
+
+
+        resetScopeManagementFieldsAfterSave();
+
+        renderStoreDetail();
+
+        return;
+
+    }
+
+
+    // ========================================================
     // PENDING
     // ========================================================
 
@@ -1818,42 +1684,12 @@ function applyScopeManagement() {
         }
 
 
-        if (!reason) {
-
-            showScopeManagementMessage(
-                "Please enter a reason or note.",
-                true
-            );
-
-            return;
-
-        }
-
-
         task.status =
             "Pending";
 
+
         task.reason =
             reason;
-
-
-        if (!task.history) {
-            task.history = [];
-        }
-
-
-        task.history.push({
-
-            action:
-                "Marked as Pending",
-
-            timestamp:
-                timestamp,
-
-            reason:
-                reason
-
-        });
 
 
         showScopeManagementMessage(
@@ -1861,6 +1697,8 @@ function applyScopeManagement() {
             false
         );
 
+
+        resetScopeManagementFieldsAfterSave();
 
         renderStoreDetail();
 
@@ -1903,42 +1741,12 @@ function applyScopeManagement() {
         }
 
 
-        if (!reason) {
-
-            showScopeManagementMessage(
-                "Please enter a reason or note.",
-                true
-            );
-
-            return;
-
-        }
-
-
         task.status =
             "Cancelled";
 
+
         task.reason =
             reason;
-
-
-        if (!task.history) {
-            task.history = [];
-        }
-
-
-        task.history.push({
-
-            action:
-                "Cancelled",
-
-            timestamp:
-                timestamp,
-
-            reason:
-                reason
-
-        });
 
 
         showScopeManagementMessage(
@@ -1946,6 +1754,8 @@ function applyScopeManagement() {
             false
         );
 
+
+        resetScopeManagementFieldsAfterSave();
 
         renderStoreDetail();
 
@@ -1966,18 +1776,6 @@ function applyScopeManagement() {
 
             showScopeManagementMessage(
                 "Only Pending scopes can be moved to another night.",
-                true
-            );
-
-            return;
-
-        }
-
-
-        if (!reason) {
-
-            showScopeManagementMessage(
-                "Please enter a reason or note.",
                 true
             );
 
@@ -2015,38 +1813,6 @@ function applyScopeManagement() {
             task.night;
 
 
-        if (!task.history) {
-            task.history = [];
-        }
-
-
-        task.history.push({
-
-            action:
-                "Moved to Another Night",
-
-            timestamp:
-                timestamp,
-
-            fromNight:
-                originalNight,
-
-            toNight:
-                targetNight,
-
-            reason:
-                reason
-
-        });
-
-
-        /*
-         * The original Pending scope stays in the original night.
-         * A new active scope is created for the target night.
-         *
-         * Both are stored inside THIS STORE'S tasks array only.
-         */
-
         store.tasks.push({
 
             id:
@@ -2064,28 +1830,7 @@ function applyScopeManagement() {
             reason:
                 reason,
 
-            history: [
-
-                {
-
-                    action:
-                        "Moved from Another Night",
-
-                    timestamp:
-                        timestamp,
-
-                    fromNight:
-                        originalNight,
-
-                    toNight:
-                        targetNight,
-
-                    reason:
-                        reason
-
-                }
-
-            ],
+            history: [],
 
             originalScopeId:
                 task.id
@@ -2094,109 +1839,12 @@ function applyScopeManagement() {
 
 
         showScopeManagementMessage(
-            `Scope copied to Night ${targetNight}. Original Pending scope remains on Night ${originalNight}.`,
+            `Scope copied to Night ${targetNight}.`,
             false
         );
 
 
-        renderStoreDetail();
-
-        return;
-
-    }
-
-
-    // ========================================================
-    // EDIT REASON
-    // ========================================================
-
-    if (action === "editReason") {
-
-        if (!reason) {
-
-            showScopeManagementMessage(
-                "Please enter a new reason.",
-                true
-            );
-
-            return;
-
-        }
-
-
-        if (!task.history) {
-            task.history = [];
-        }
-
-
-        /*
-         * Store the current/latest reason directly on the task.
-         */
-
-        task.reason =
-            reason;
-
-
-        /*
-         * Update the latest history entry that has a reason.
-         *
-         * This means we are editing the existing reason instead
-         * of creating another duplicate history event.
-         */
-
-        let updatedHistory = false;
-
-
-        for (
-            let i = task.history.length - 1;
-            i >= 0;
-            i--
-        ) {
-
-            if (
-                task.history[i].reason !== undefined
-            ) {
-
-                task.history[i].reason =
-                    reason;
-
-                updatedHistory = true;
-
-                break;
-
-            }
-
-        }
-
-
-        /*
-         * If there is no previous history reason,
-         * create a small reason history entry.
-         */
-
-        if (!updatedHistory) {
-
-            task.history.push({
-
-                action:
-                    "Reason Updated",
-
-                timestamp:
-                    timestamp,
-
-                reason:
-                    reason
-
-            });
-
-        }
-
-
-        showScopeManagementMessage(
-            "Reason updated successfully.",
-            false
-        );
-
+        resetScopeManagementFieldsAfterSave();
 
         renderStoreDetail();
 
@@ -2208,45 +1856,25 @@ function applyScopeManagement() {
 
 
 // ============================================================
-// RESET MANAGEMENT FORM
+// RESET AFTER SAVE
 // ============================================================
 
-function resetScopeManagementForm() {
+function resetScopeManagementFieldsAfterSave() {
 
     const scopeSelect =
-        document.getElementById(
-            "manageScope"
-        );
+        document.getElementById("manageScope");
 
     const actionSelect =
-        document.getElementById(
-            "scopeAction"
-        );
+        document.getElementById("scopeAction");
 
     const reasonInput =
-        document.getElementById(
-            "scopeReason"
-        );
-
-    const moveNightSelect =
-        document.getElementById(
-            "moveToNight"
-        );
+        document.getElementById("scopeReason");
 
     const reasonGroup =
-        document.getElementById(
-            "scopeReasonGroup"
-        );
+        document.getElementById("scopeReasonGroup");
 
     const moveGroup =
-        document.getElementById(
-            "moveNightGroup"
-        );
-
-    const message =
-        document.getElementById(
-            "scopeManagementMessage"
-        );
+        document.getElementById("moveNightGroup");
 
 
     if (scopeSelect) {
@@ -2259,10 +1887,8 @@ function resetScopeManagementForm() {
 
     if (reasonInput) {
         reasonInput.value = "";
-    }
-
-    if (moveNightSelect) {
-        moveNightSelect.value = "1";
+        reasonInput.placeholder =
+            "Enter reason or notes";
     }
 
     if (reasonGroup) {
@@ -2271,10 +1897,6 @@ function resetScopeManagementForm() {
 
     if (moveGroup) {
         moveGroup.classList.add("hidden");
-    }
-
-    if (message) {
-        message.textContent = "";
     }
 
 }
@@ -2503,13 +2125,6 @@ function saveNightAssignment() {
         );
 
 
-    /*
-     * IMPORTANT:
-     * Save the Night ONLY to the currently selected store.
-     *
-     * No other store object is modified here.
-     */
-
     store.currentNight =
         selectedNight;
 
@@ -2517,7 +2132,7 @@ function saveNightAssignment() {
     if (assignmentMessage) {
 
         assignmentMessage.textContent =
-            `Store ${store.storeNumber}'s current assigned night updated to Night ${selectedNight}.`;
+            `Current assigned night updated to Night ${selectedNight}.`;
 
     }
 
