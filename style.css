@@ -1,19 +1,30 @@
+/* =========================================
+   DEPLOYMENT TRACKER
+   Global Styles
+========================================= */
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: Arial, sans-serif;
 }
 
 body {
+  font-family: Arial, Helvetica, sans-serif;
   background: #f5f7fb;
   color: #1f2937;
 }
 
+
+/* =========================================
+   HEADER
+========================================= */
+
 header {
   background: #ffffff;
-  padding: 20px 30px;
   border-bottom: 1px solid #e5e7eb;
+  padding: 20px 30px;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -21,6 +32,7 @@ header {
 
 header h1 {
   font-size: 22px;
+  margin-bottom: 5px;
 }
 
 header span {
@@ -28,11 +40,21 @@ header span {
   color: #6b7280;
 }
 
+
+/* =========================================
+   MAIN CONTAINER
+========================================= */
+
 .container {
   max-width: 1400px;
   margin: 30px auto;
   padding: 0 25px;
 }
+
+
+/* =========================================
+   SUMMARY CARDS
+========================================= */
 
 .summary {
   display: grid;
@@ -42,10 +64,10 @@ header span {
 }
 
 .summary-card {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
+  background: #ffffff;
   border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
 }
 
 .summary-card p {
@@ -58,10 +80,15 @@ header span {
   font-size: 28px;
 }
 
+
+/* =========================================
+   SECTIONS
+========================================= */
+
 .section {
-  background: white;
-  border-radius: 12px;
+  background: #ffffff;
   border: 1px solid #e5e7eb;
+  border-radius: 12px;
   padding: 20px;
   margin-bottom: 25px;
 }
@@ -71,31 +98,64 @@ header span {
   margin-bottom: 18px;
 }
 
+
+/* =========================================
+   STORE GRID
+========================================= */
+
 .store-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 15px;
 }
 
+
+/* =========================================
+   STORE CARDS
+========================================= */
+
 .store-card {
+  background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
   padding: 18px;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.store-card:hover {
+  transform: translateY(-2px);
+  border-color: #2563eb;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
 }
 
 .store-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+
   margin-bottom: 12px;
 }
 
 .store-number {
   font-weight: bold;
+  font-size: 16px;
 }
+
+
+/* =========================================
+   STATUS BADGES
+========================================= */
 
 .status {
   padding: 5px 9px;
   border-radius: 20px;
+
   font-size: 12px;
   font-weight: bold;
 }
@@ -120,10 +180,23 @@ header span {
   color: #991b1b;
 }
 
+.missing {
+  background: #ffedd5;
+  color: #9a3412;
+}
+
+
+/* =========================================
+   PROGRESS BAR
+========================================= */
+
 .progress-bar {
+  width: 100%;
   height: 8px;
+
   background: #e5e7eb;
   border-radius: 10px;
+
   overflow: hidden;
   margin: 10px 0;
 }
@@ -131,13 +204,46 @@ header span {
 .progress {
   height: 100%;
   background: #2563eb;
+
+  transition: width 0.3s ease;
 }
+
+
+/* =========================================
+   STORE INFORMATION
+========================================= */
 
 .store-info {
   font-size: 13px;
   color: #6b7280;
   line-height: 1.7;
 }
+
+
+/* =========================================
+   CLICKABLE STORE LINK
+========================================= */
+
+.store-link {
+  display: inline-block;
+
+  margin-top: 12px;
+
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: bold;
+
+  text-decoration: none;
+}
+
+.store-link:hover {
+  text-decoration: underline;
+}
+
+
+/* =========================================
+   RECENT UPDATES
+========================================= */
 
 .updates {
   display: flex;
@@ -147,8 +253,10 @@ header span {
 
 .update {
   padding: 14px;
+
   background: #f9fafb;
   border-radius: 8px;
+
   border-left: 4px solid #2563eb;
 }
 
@@ -168,12 +276,253 @@ header span {
   margin-top: 5px;
 }
 
-@media (max-width: 900px) {
+
+/* =========================================
+   STORE DETAIL PAGE
+========================================= */
+
+.store-detail {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+
+  padding: 25px;
+}
+
+.store-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 25px;
+}
+
+.store-detail-title h2 {
+  font-size: 24px;
+  margin-bottom: 5px;
+}
+
+.store-detail-title p {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+
+/* =========================================
+   NIGHT SECTION
+========================================= */
+
+.night-section {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.night-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 15px;
+}
+
+.night-header h3 {
+  font-size: 17px;
+}
+
+
+/* =========================================
+   SCOPE TASKS
+========================================= */
+
+.scope-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.scope-task {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 13px;
+
+  background: #f9fafb;
+  border-radius: 8px;
+
+  border: 1px solid #e5e7eb;
+}
+
+.scope-task-name {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+button {
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.primary-button {
+  background: #2563eb;
+  color: #ffffff;
+
+  padding: 10px 16px;
+
+  border-radius: 8px;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.primary-button:hover {
+  background: #1d4ed8;
+}
+
+.secondary-button {
+  background: #f3f4f6;
+  color: #374151;
+
+  padding: 10px 16px;
+
+  border-radius: 8px;
+
+  font-size: 14px;
+}
+
+.secondary-button:hover {
+  background: #e5e7eb;
+}
+
+
+/* =========================================
+   FORMS
+========================================= */
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  margin-bottom: 6px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+
+  padding: 10px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 7px;
+
+  font-size: 14px;
+}
+
+.form-group textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+
+/* =========================================
+   CHECK-IN
+========================================= */
+
+.check-in-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 15px;
+
+  background: #f9fafb;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+
+  margin-bottom: 20px;
+}
+
+.check-in-info strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.check-in-info span {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 1000px) {
+
   .summary {
     grid-template-columns: repeat(2, 1fr);
   }
 
   .store-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+}
+
+
+@media (max-width: 700px) {
+
+  header {
+    padding: 16px 20px;
+  }
+
+  .container {
+    margin: 20px auto;
+    padding: 0 15px;
+  }
+
+  .summary {
     grid-template-columns: 1fr;
   }
+
+  .store-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .store-detail-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .check-in-box {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
 }
