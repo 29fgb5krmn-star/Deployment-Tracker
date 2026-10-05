@@ -1,3 +1,8 @@
+/* =========================================
+   DEPLOYMENT TRACKER
+   MAIN STYLES
+========================================= */
+
 * {
   box-sizing: border-box;
 }
@@ -9,7 +14,10 @@ body {
   color: #1f2937;
 }
 
-/* HEADER */
+
+/* =========================================
+   HEADER
+========================================= */
 
 header {
   background: #111827;
@@ -27,7 +35,10 @@ header p {
   color: #d1d5db;
 }
 
-/* CONTAINER */
+
+/* =========================================
+   CONTAINER
+========================================= */
 
 .container {
   max-width: 1200px;
@@ -35,7 +46,10 @@ header p {
   padding: 30px;
 }
 
-/* SUMMARY */
+
+/* =========================================
+   SUMMARY
+========================================= */
 
 .summary {
   display: grid;
@@ -48,12 +62,16 @@ header p {
   background: white;
   padding: 20px;
   border-radius: 14px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .summary-card h3 {
   margin: 0 0 8px;
+
   font-size: 14px;
+
   color: #6b7280;
 }
 
@@ -61,20 +79,31 @@ header p {
   font-size: 28px;
 }
 
-/* SECTION */
+
+/* =========================================
+   SECTIONS
+========================================= */
 
 .section {
   background: white;
+
   padding: 24px;
+
   border-radius: 14px;
+
   margin-bottom: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .section-title {
   display: flex;
+
   justify-content: space-between;
+
   align-items: center;
+
   margin-bottom: 20px;
 }
 
@@ -84,119 +113,177 @@ header p {
 
 .section-title p {
   margin: 0;
+
   color: #6b7280;
 }
 
-/* STORE GRID */
+
+/* =========================================
+   STORE GRID
+========================================= */
 
 .store-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
   gap: 18px;
 }
 
-/* STORE CARD */
+
+/* =========================================
+   STORE CARD
+========================================= */
 
 .store-card {
   background: white;
+
   border: 1px solid #e5e7eb;
+
   border-radius: 14px;
+
   padding: 20px;
+
   cursor: pointer;
+
   transition: 0.2s;
 }
 
 .store-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.10);
 }
 
 .store-header {
   display: flex;
+
   justify-content: space-between;
+
   align-items: center;
+
   margin-bottom: 16px;
 }
 
 .store-number {
   font-size: 20px;
+
   font-weight: bold;
 }
 
 .store-info {
   color: #6b7280;
+
   font-size: 14px;
+
   line-height: 1.7;
 }
 
-/* STATUS */
+
+/* =========================================
+   STATUS
+========================================= */
 
 .status {
   display: inline-block;
+
   padding: 6px 10px;
+
   border-radius: 20px;
+
   font-size: 12px;
+
   font-weight: bold;
 }
 
 .in-progress {
   background: #fff7ed;
+
   color: #c2410c;
 }
 
 .completed {
   background: #ecfdf5;
+
   color: #047857;
 }
 
 .not-started {
   background: #f3f4f6;
+
   color: #4b5563;
 }
 
 .cancelled {
   background: #fef2f2;
+
   color: #b91c1c;
 }
 
 .missing {
   background: #fff7ed;
+
   color: #c2410c;
 }
 
-/* PROGRESS */
+
+/* =========================================
+   PROGRESS
+========================================= */
 
 .progress-bar {
   width: 100%;
+
   height: 8px;
+
   background: #e5e7eb;
+
   border-radius: 10px;
+
   overflow: hidden;
+
   margin: 12px 0;
 }
 
 .progress {
   height: 100%;
+
   background: #2563eb;
+
   border-radius: 10px;
 }
 
-/* CHECK-IN */
+
+/* =========================================
+   CHECK-IN
+========================================= */
 
 .check-in-box {
   margin-top: 16px;
+
   padding-top: 14px;
-  border-top: 1px solid #e5e7eb;
+
+  border-top:
+    1px solid #e5e7eb;
 }
 
 .check-in-button {
   width: 100%;
+
   border: none;
+
   background: #2563eb;
+
   color: white;
+
   padding: 10px;
+
   border-radius: 8px;
+
   cursor: pointer;
+
   font-weight: bold;
 }
 
@@ -206,61 +293,125 @@ header p {
 
 .check-in-button.checked {
   background: #059669;
+
   cursor: default;
 }
 
 .check-in-time {
   margin-top: 8px;
+
   font-size: 12px;
+
   color: #6b7280;
 }
 
-/* STORE DETAIL */
+
+/* =========================================
+   RECENT UPDATES
+========================================= */
+
+.update {
+  padding: 15px 0;
+
+  border-bottom:
+    1px solid #e5e7eb;
+}
+
+.update:last-child {
+  border-bottom: none;
+}
+
+.update-main {
+  font-size: 14px;
+
+  line-height: 1.5;
+}
+
+.update-time {
+  margin-top: 5px;
+
+  font-size: 12px;
+
+  color: #9ca3af;
+}
+
+
+/* =========================================
+   STORE DETAIL
+========================================= */
 
 .store-detail-header {
   display: flex;
+
   justify-content: space-between;
+
   align-items: center;
+
   margin-bottom: 24px;
 }
 
 .store-detail-title h2 {
   margin: 0 0 6px;
+
   font-size: 28px;
 }
 
 .store-detail-title p {
   margin: 0;
+
   color: #6b7280;
 }
 
 .back-button {
   border: none;
+
   background: #e5e7eb;
+
   color: #111827;
+
   padding: 10px 16px;
+
   border-radius: 8px;
+
   cursor: pointer;
+
   font-weight: bold;
 }
 
-/* NIGHTS */
+.back-button:hover {
+  background: #d1d5db;
+}
+
+
+/* =========================================
+   NIGHT SECTIONS
+========================================= */
 
 .night-section {
   background: white;
+
   border: 1px solid #e5e7eb;
+
   border-radius: 14px;
+
   margin-bottom: 20px;
+
   overflow: hidden;
 }
 
 .night-header {
   display: flex;
+
   justify-content: space-between;
+
   align-items: center;
+
   padding: 18px 20px;
+
   background: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
+
+  border-bottom:
+    1px solid #e5e7eb;
 }
 
 .night-header h3 {
@@ -269,6 +420,7 @@ header p {
 
 .night-status {
   font-size: 13px;
+
   color: #6b7280;
 }
 
@@ -276,15 +428,24 @@ header p {
   padding: 10px 20px 20px;
 }
 
-/* TASK */
+
+/* =========================================
+   SCOPE TASK
+========================================= */
 
 .scope-task {
   display: flex;
+
   justify-content: space-between;
+
   align-items: center;
+
   gap: 15px;
+
   padding: 16px 0;
-  border-bottom: 1px solid #e5e7eb;
+
+  border-bottom:
+    1px solid #e5e7eb;
 }
 
 .scope-task:last-child {
@@ -297,19 +458,30 @@ header p {
 
 .scope-task-note {
   margin-top: 5px;
+
   font-size: 13px;
+
   color: #6b7280;
 }
 
-/* BUTTONS */
+
+/* =========================================
+   BUTTONS
+========================================= */
 
 .primary-button {
   border: none;
+
   background: #2563eb;
+
   color: white;
+
   padding: 10px 16px;
+
   border-radius: 8px;
+
   cursor: pointer;
+
   font-weight: bold;
 }
 
@@ -319,20 +491,32 @@ header p {
 
 .secondary-button {
   border: none;
+
   background: #e5e7eb;
+
   color: #111827;
+
   padding: 10px 16px;
+
   border-radius: 8px;
+
   cursor: pointer;
+
   font-weight: bold;
 }
 
-/* ADD SCOPE */
+
+/* =========================================
+   ADD SCOPE
+========================================= */
 
 .add-scope-box {
   padding: 18px;
+
   background: #f9fafb;
+
   border-radius: 10px;
+
   margin-bottom: 20px;
 }
 
@@ -342,8 +526,11 @@ header p {
 
 .form-group label {
   display: block;
+
   font-weight: bold;
+
   font-size: 14px;
+
   margin-bottom: 6px;
 }
 
@@ -351,27 +538,37 @@ header p {
 .form-group select,
 .form-group textarea {
   width: 100%;
+
   padding: 10px;
+
   border: 1px solid #d1d5db;
+
   border-radius: 8px;
+
   font-family: inherit;
 }
 
 .form-group textarea {
   min-height: 80px;
+
   resize: vertical;
 }
 
-/* RESPONSIVE */
+
+/* =========================================
+   RESPONSIVE
+========================================= */
 
 @media (max-width: 900px) {
 
   .summary {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns:
+      repeat(2, 1fr);
   }
 
   .store-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns:
+      repeat(2, 1fr);
   }
 
 }
@@ -392,7 +589,9 @@ header p {
 
   .store-detail-header {
     flex-direction: column;
+
     align-items: flex-start;
+
     gap: 15px;
   }
 
