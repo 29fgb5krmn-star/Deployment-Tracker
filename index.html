@@ -1,86 +1,125 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Deployment Tracker</title>
+
     <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
 
 <header class="topbar">
+
     <div>
+
         <h1>Deployment Tracker</h1>
+
         <p>Deployment Team Overview</p>
+
     </div>
+
 </header>
 
 <main class="container">
 
     <!-- =========================
+
          OVERVIEW
+
     ========================== -->
 
     <section id="overviewPage">
 
         <div class="page-header">
+
             <div>
+
                 <h2>Deployment Overview</h2>
+
                 <p>Monitor all store deployments and technician updates.</p>
+
             </div>
+
         </div>
 
         <div class="summary-grid">
 
             <div class="summary-card">
+
                 <span>Total Stores</span>
+
                 <strong id="totalStores">12</strong>
+
             </div>
 
             <div class="summary-card">
+
                 <span>In Progress</span>
+
                 <strong id="inProgressStores">0</strong>
+
             </div>
 
             <div class="summary-card">
+
                 <span>Completed</span>
+
                 <strong id="completedStores">0</strong>
+
             </div>
 
             <div class="summary-card">
+
                 <span>Checked In</span>
+
                 <strong id="checkedInStores">0</strong>
+
             </div>
 
         </div>
-
 
         <!-- STORES -->
 
         <section class="panel">
 
             <div class="panel-header">
+
                 <div>
+
                     <h3>Stores</h3>
+
                     <p>Click a store to open its deployment details.</p>
+
                 </div>
+
             </div>
 
             <div id="storeGrid" class="store-grid"></div>
 
         </section>
 
-
         <!-- RECENT UPDATES -->
 
         <section class="panel">
 
             <div class="panel-header">
+
                 <div>
+
                     <h3>Recent Updates</h3>
+
                     <p>Latest technician activity and check-ins.</p>
+
                 </div>
+
             </div>
 
             <div id="recentUpdates" class="updates-list"></div>
@@ -89,20 +128,25 @@
 
     </section>
 
-
     <!-- =========================
+
          STORE DETAIL
+
     ========================== -->
 
     <section id="storeDetailPage" class="hidden">
 
         <button
-            class="back-button"
-            onclick="backToOverview()"
-        >
-            ← Back to Overview
-        </button>
 
+            class="back-button"
+
+            onclick="backToOverview()"
+
+        >
+
+            ← Back to Overview
+
+        </button>
 
         <!-- STORE HEADER -->
 
@@ -111,12 +155,17 @@
             <div>
 
                 <p class="eyebrow">
+
                     Store Deployment
+
                 </p>
 
                 <h2>
+
                     Store
+
                     <span id="detailStoreNumber"></span>
+
                 </h2>
 
                 <p id="detailStoreStatus"></p>
@@ -126,53 +175,72 @@
             <div class="header-actions">
 
                 <button
+
                     class="secondary-button"
+
                     onclick="editStoreInfo()"
+
                 >
+
                     Edit Store / Technician
+
                 </button>
 
             </div>
 
         </div>
 
-
         <!-- STORE INFORMATION -->
 
         <section class="panel">
 
             <div class="panel-header">
+
                 <div>
+
                     <h3>Store Information</h3>
+
                 </div>
+
             </div>
 
             <div class="info-grid">
 
                 <div class="info-item">
+
                     <span>Store Number</span>
+
                     <strong id="detailStoreNumberInfo"></strong>
+
                 </div>
 
                 <div class="info-item">
+
                     <span>Technician</span>
+
                     <strong id="detailTechnician"></strong>
+
                 </div>
 
                 <div class="info-item">
+
                     <span>Current Night</span>
+
                     <strong id="detailCurrentNight"></strong>
+
                 </div>
 
                 <div class="info-item">
+
                     <span>Check-In</span>
+
                     <strong id="detailCheckIn"></strong>
+
                 </div>
 
             </div>
 
         </section>
-
 
         <!-- NIGHT ASSIGNMENT -->
 
@@ -181,12 +249,17 @@
             <div class="panel-header">
 
                 <div>
+
                     <h3>Scope Assignment</h3>
 
                     <p>
+
                         Set which deployment night is currently assigned
-                        to the technician.
+
+                        to this store.
+
                     </p>
+
                 </div>
 
             </div>
@@ -196,15 +269,21 @@
                 <div class="form-group">
 
                     <label for="assignedNight">
+
                         Current Assigned Night
+
                     </label>
 
                     <select id="assignedNight">
 
                         <option value="1">Night 1</option>
+
                         <option value="2">Night 2</option>
+
                         <option value="3">Night 3</option>
+
                         <option value="4">Night 4</option>
+
                         <option value="5">Night 5</option>
 
                     </select>
@@ -214,7 +293,9 @@
                 <div class="form-group button-group">
 
                     <button onclick="saveNightAssignment()">
+
                         Save Assignment
+
                     </button>
 
                 </div>
@@ -222,12 +303,14 @@
             </div>
 
             <div
+
                 id="assignmentMessage"
+
                 class="success-message"
+
             ></div>
 
         </section>
-
 
         <!-- ADD DEPLOYMENT SCOPE -->
 
@@ -240,9 +323,13 @@
                     <h3>Add Deployment Scope</h3>
 
                     <p>
+
                         New scopes are automatically set to
+
                         <strong>Not Started</strong>.
+
                         The technician will update the progress.
+
                     </p>
 
                 </div>
@@ -254,15 +341,21 @@
                 <div class="form-group">
 
                     <label for="scopeNight">
+
                         Deployment Night
+
                     </label>
 
                     <select id="scopeNight">
 
                         <option value="1">Night 1</option>
+
                         <option value="2">Night 2</option>
+
                         <option value="3">Night 3</option>
+
                         <option value="4">Night 4</option>
+
                         <option value="5">Night 5</option>
 
                     </select>
@@ -272,13 +365,19 @@
                 <div class="form-group">
 
                     <label for="scopeDescription">
+
                         Scope
+
                     </label>
 
                     <input
+
                         id="scopeDescription"
+
                         type="text"
+
                         placeholder="e.g. Remove Register 1"
+
                     >
 
                 </div>
@@ -286,7 +385,9 @@
                 <div class="form-group button-group">
 
                     <button onclick="addScope()">
+
                         + Add Scope
+
                     </button>
 
                 </div>
@@ -294,7 +395,6 @@
             </div>
 
         </section>
-
 
         <!-- MANAGE SCOPE -->
 
@@ -307,8 +407,13 @@
                     <h3>Manage Scope</h3>
 
                     <p>
+
                         Deployment Team can mark a scope as Pending,
-                        Cancelled, or move a Pending scope to another night.
+
+                        Cancelled, move a Pending scope to another night,
+
+                        or edit the existing reason.
+
                     </p>
 
                 </div>
@@ -320,94 +425,135 @@
                 <div class="form-group">
 
                     <label for="manageScope">
+
                         Scope
+
                     </label>
 
                     <select
+
                         id="manageScope"
+
                         onchange="handleScopeActionChange()"
+
                     >
+
                     </select>
 
                 </div>
-
 
                 <div class="form-group">
 
                     <label for="scopeAction">
+
                         Action
+
                     </label>
 
                     <select
+
                         id="scopeAction"
+
                         onchange="handleScopeActionChange()"
+
                     >
 
                         <option value="">
+
                             Select action
+
                         </option>
 
                         <option value="pending">
+
                             Mark as Pending
+
                         </option>
 
                         <option value="cancel">
+
                             Cancel Scope
+
                         </option>
 
                         <option value="move">
+
                             Move to Another Night
+
+                        </option>
+
+                        <option value="editReason">
+
+                            Edit Reason
+
                         </option>
 
                     </select>
 
                 </div>
 
-
                 <div
+
                     id="scopeReasonGroup"
+
                     class="form-group hidden"
+
                 >
 
                     <label for="scopeReason">
+
                         Reason / Notes
+
                     </label>
 
                     <input
+
                         id="scopeReason"
+
                         type="text"
+
                         placeholder="Enter reason or notes"
+
                     >
 
                 </div>
 
-
                 <div
+
                     id="moveNightGroup"
+
                     class="form-group hidden"
+
                 >
 
                     <label for="moveToNight">
+
                         Move To
+
                     </label>
 
                     <select id="moveToNight">
 
                         <option value="1">Night 1</option>
+
                         <option value="2">Night 2</option>
+
                         <option value="3">Night 3</option>
+
                         <option value="4">Night 4</option>
+
                         <option value="5">Night 5</option>
 
                     </select>
 
                 </div>
 
-
                 <div class="form-group button-group">
 
                     <button onclick="applyScopeManagement()">
+
                         Apply Change
+
                     </button>
 
                 </div>
@@ -415,12 +561,14 @@
             </div>
 
             <div
+
                 id="scopeManagementMessage"
+
                 class="success-message"
+
             ></div>
 
         </section>
-
 
         <!-- DEPLOYMENT SCOPE -->
 
@@ -433,7 +581,9 @@
                     <h3>Deployment Scope</h3>
 
                     <p>
+
                         Long-press a scope item to reveal the delete option.
+
                     </p>
 
                 </div>
@@ -451,4 +601,5 @@
 <script src="script.js"></script>
 
 </body>
+
 </html>
