@@ -206,18 +206,6 @@ button:hover {
 
 
 /* =========================
-   SUCCESS MESSAGE
-========================= */
-
-.success-message {
-    margin-top: 12px;
-    color: #047857;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-
-/* =========================
    STORE GRID
 ========================= */
 
@@ -239,18 +227,95 @@ button:hover {
 .store-card:hover {
     transform: translateY(-2px);
     border-color: #93c5fd;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
 }
 
 .store-card h3 {
-    margin: 0 0 5px;
+    margin: 0 0 10px;
     font-size: 19px;
 }
 
-.store-card p {
-    margin: 5px 0;
+
+/* =========================
+   STORE STATUS
+========================= */
+
+.store-status-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.store-status {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+.store-status.not-started {
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+.store-status.in-progress {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.store-status.completed {
+    background: #ecfdf5;
+    color: #047857;
+}
+
+.store-status.cancelled {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.store-info-line {
+    margin: 6px 0;
     font-size: 13px;
     color: #6b7280;
+}
+
+.store-info-line strong {
+    color: #374151;
+}
+
+.store-checkin {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #edf0f4;
+}
+
+.checked-in {
+    font-size: 13px;
+    font-weight: 600;
+    color: #047857;
+}
+
+.check-in-time {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.store-checkin-button {
+    width: 100%;
+    margin-top: 10px;
+    background: #2563eb;
+}
+
+.store-checkin-button.checked {
+    background: #e5e7eb;
+    color: #4b5563;
+    cursor: default;
 }
 
 .store-progress {
@@ -295,13 +360,6 @@ button:hover {
     border-bottom: 0;
     padding-bottom: 0;
 }
-
-/*
-    IMPORTANT:
-    Store + technician stay on first line.
-    Update is BELOW them.
-    Timestamp is BELOW the update.
-*/
 
 .update-header {
     display: flex;
@@ -472,6 +530,18 @@ button:hover {
     color: #9ca3af;
     font-size: 13px;
     text-align: center;
+}
+
+
+/* =========================
+   SUCCESS MESSAGE
+========================= */
+
+.success-message {
+    margin-top: 12px;
+    color: #047857;
+    font-size: 13px;
+    font-weight: 600;
 }
 
 
