@@ -21,6 +21,7 @@ let stores = [
                 night: 1,
                 description: "Install Network Equipment",
                 status: "Completed",
+                reason: "",
                 history: []
             },
 
@@ -29,6 +30,7 @@ let stores = [
                 night: 1,
                 description: "Configure POS Terminals",
                 status: "Completed",
+                reason: "",
                 history: []
             },
 
@@ -37,6 +39,7 @@ let stores = [
                 night: 2,
                 description: "Install CCTV Cameras",
                 status: "Completed",
+                reason: "",
                 history: []
             },
 
@@ -45,6 +48,7 @@ let stores = [
                 night: 3,
                 description: "Test Network Connectivity",
                 status: "In Progress",
+                reason: "",
                 history: []
             },
 
@@ -53,6 +57,7 @@ let stores = [
                 night: 3,
                 description: "Validate Registers",
                 status: "Not Started",
+                reason: "",
                 history: []
             },
 
@@ -61,6 +66,7 @@ let stores = [
                 night: 4,
                 description: "Final System Validation",
                 status: "Not Started",
+                reason: "",
                 history: []
             }
         ]
@@ -79,6 +85,7 @@ let stores = [
                 night: 1,
                 description: "Install Network Equipment",
                 status: "Completed",
+                reason: "",
                 history: []
             },
 
@@ -87,6 +94,7 @@ let stores = [
                 night: 1,
                 description: "Configure POS Terminals",
                 status: "Completed",
+                reason: "",
                 history: []
             }
         ]
@@ -753,6 +761,15 @@ function renderRecentUpdates() {
 
 function openStoreDetail(storeNumber) {
 
+    /*
+     * IMPORTANT:
+     * selectedStoreNumber always contains the exact store
+     * currently being viewed.
+     *
+     * All scope and night changes are applied only to the
+     * store returned by getSelectedStore().
+     */
+
     selectedStoreNumber =
         storeNumber;
 
@@ -774,6 +791,8 @@ function openStoreDetail(storeNumber) {
     }
 
 
+    resetScopeManagementForm();
+
     renderStoreDetail();
 
 }
@@ -784,6 +803,15 @@ function openStoreDetail(storeNumber) {
 // ============================================================
 
 function renderStoreDetail() {
+
+    /*
+     * IMPORTANT:
+     * Every time the detail page is rendered, all values are
+     * loaded from the currently selected store.
+     *
+     * This prevents Night 2 assigned to Store A from appearing
+     * as the assigned Night for Store B.
+     */
 
     const store =
         getSelectedStore();
@@ -860,7 +888,9 @@ function renderStoreDetail() {
     if (detailCheckIn) {
 
         detailCheckIn.textContent =
-            store.checkedIn || "Not checked in";
+            store.checkedIn
+                ? formatCheckInTime(store.checkedIn)
+                : "Not checked in";
 
     }
 
@@ -873,6 +903,10 @@ function renderStoreDetail() {
     }
 
 
+    // --------------------------------------------------------
+    // STORE-SPECIFIC NIGHT ASSIGNMENT
+    // --------------------------------------------------------
+
     const assignedNight =
         document.getElementById(
             "assignedNight"
@@ -882,7 +916,29 @@ function renderStoreDetail() {
     if (assignedNight) {
 
         assignedNight.value =
-            String(store.currentNight || 1);
+            String(
+                Number(store.currentNight) || 1
+            );
+
+    }
+
+
+    // --------------------------------------------------------
+    // DEFAULT NEW SCOPE NIGHT
+    // --------------------------------------------------------
+
+    const scopeNight =
+        document.getElementById(
+            "scopeNight"
+        );
+
+
+    if (scopeNight) {
+
+        scopeNight.value =
+            String(
+                Number(store.currentNight) || 1
+            );
 
     }
 
@@ -1062,6 +1118,30 @@ function createScopeElement(task) {
 
 
     // --------------------------------------------------------
+    // CURRENT REASON
+    // --------------------------------------------------------
+
+    if (task.reason) {
+
+        const currentReason =
+            document.createElement("div");
+
+        currentReason.className =
+            "scope-current-reason";
+
+        currentReason.innerHTML = `
+            <strong>Reason:</strong>
+            ${escapeHtml(task.reason)}
+        `;
+
+        element.appendChild(
+            currentReason
+        );
+
+    }
+
+
+    // --------------------------------------------------------
     // HISTORY
     // --------------------------------------------------------
 
@@ -1206,6 +1286,26 @@ function createScopeElement(task) {
 
 
 // ============================================================
+// HTML ESCAPE
+// ============================================================
+
+function escapeHtml(value) {
+
+    if (value === null || value === undefined) {
+        return "";
+    }
+
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+}
+
+
+// ============================================================
 // SCOPE HISTORY HTML
 // ============================================================
 
@@ -1231,11 +1331,11 @@ function buildScopeHistoryHtml(task) {
             <div class="scope-history-item">
 
                 <strong>
-                    ${history.action}
+                    ${escapeHtml(history.action)}
                 </strong>
 
                 <div>
-                    ${history.timestamp || ""}
+                    ${escapeHtml(history.timestamp || "")}
                 </div>
 
                 ${
@@ -1243,7 +1343,7 @@ function buildScopeHistoryHtml(task) {
                     ?
                     `
                         <div>
-                            Reason: ${history.reason}
+                            Reason: ${escapeHtml(history.reason)}
                         </div>
                     `
                     :
@@ -1334,6 +1434,11 @@ function addScope() {
     }
 
 
+    /*
+     * The scope is pushed ONLY into the currently selected
+     * store's tasks array.
+     */
+
     store.tasks.push({
 
         id:
@@ -1347,6 +1452,9 @@ function addScope() {
 
         status:
             "Not Started",
+
+        reason:
+            "",
 
         history:
             []
@@ -1434,9 +1542,19 @@ function handleScopeActionChange() {
             "scopeAction"
         );
 
+    const scopeSelect =
+        document.getElementById(
+            "manageScope"
+        );
+
     const reasonGroup =
         document.getElementById(
             "scopeReasonGroup"
+        );
+
+    const reasonInput =
+        document.getElementById(
+            "scopeReason"
         );
 
     const moveGroup =
@@ -1454,12 +1572,35 @@ function handleScopeActionChange() {
         actionSelect.value;
 
 
+    const store =
+        getSelectedStore();
+
+
+    const taskId =
+        scopeSelect
+            ? Number(scopeSelect.value)
+            : 0;
+
+
+    const task =
+        store && taskId
+            ? (store.tasks || []).find(
+                item => item.id === taskId
+            )
+            : null;
+
+
+    // --------------------------------------------------------
+    // REASON FIELD
+    // --------------------------------------------------------
+
     if (reasonGroup) {
 
         if (
             action === "pending" ||
             action === "cancel" ||
-            action === "move"
+            action === "move" ||
+            action === "editReason"
         ) {
 
             reasonGroup.classList.remove(
@@ -1476,6 +1617,27 @@ function handleScopeActionChange() {
 
     }
 
+
+    // --------------------------------------------------------
+    // PRELOAD EXISTING REASON WHEN EDITING
+    // --------------------------------------------------------
+
+    if (
+        action === "editReason" &&
+        reasonInput &&
+        task
+    ) {
+
+        reasonInput.value =
+            task.reason ||
+            getLatestReason(task);
+
+    }
+
+
+    // --------------------------------------------------------
+    // MOVE NIGHT
+    // --------------------------------------------------------
 
     if (moveGroup) {
 
@@ -1494,6 +1656,39 @@ function handleScopeActionChange() {
         }
 
     }
+
+}
+
+
+// ============================================================
+// GET LATEST REASON
+// ============================================================
+
+function getLatestReason(task) {
+
+    if (
+        !task ||
+        !task.history ||
+        task.history.length === 0
+    ) {
+        return "";
+    }
+
+
+    for (
+        let i = task.history.length - 1;
+        i >= 0;
+        i--
+    ) {
+
+        if (task.history[i].reason) {
+            return task.history[i].reason;
+        }
+
+    }
+
+
+    return "";
 
 }
 
@@ -1623,8 +1818,23 @@ function applyScopeManagement() {
         }
 
 
+        if (!reason) {
+
+            showScopeManagementMessage(
+                "Please enter a reason or note.",
+                true
+            );
+
+            return;
+
+        }
+
+
         task.status =
             "Pending";
+
+        task.reason =
+            reason;
 
 
         if (!task.history) {
@@ -1693,8 +1903,23 @@ function applyScopeManagement() {
         }
 
 
+        if (!reason) {
+
+            showScopeManagementMessage(
+                "Please enter a reason or note.",
+                true
+            );
+
+            return;
+
+        }
+
+
         task.status =
             "Cancelled";
+
+        task.reason =
+            reason;
 
 
         if (!task.history) {
@@ -1749,6 +1974,18 @@ function applyScopeManagement() {
         }
 
 
+        if (!reason) {
+
+            showScopeManagementMessage(
+                "Please enter a reason or note.",
+                true
+            );
+
+            return;
+
+        }
+
+
         if (!targetNightSelect) {
             return;
         }
@@ -1783,10 +2020,6 @@ function applyScopeManagement() {
         }
 
 
-        // ----------------------------------------------------
-        // KEEP ORIGINAL SCOPE IN ORIGINAL NIGHT
-        // ----------------------------------------------------
-
         task.history.push({
 
             action:
@@ -1807,9 +2040,12 @@ function applyScopeManagement() {
         });
 
 
-        // ----------------------------------------------------
-        // CREATE NEW ACTIVE COPY
-        // ----------------------------------------------------
+        /*
+         * The original Pending scope stays in the original night.
+         * A new active scope is created for the target night.
+         *
+         * Both are stored inside THIS STORE'S tasks array only.
+         */
 
         store.tasks.push({
 
@@ -1824,6 +2060,9 @@ function applyScopeManagement() {
 
             status:
                 "Not Started",
+
+            reason:
+                reason,
 
             history: [
 
@@ -1864,6 +2103,178 @@ function applyScopeManagement() {
 
         return;
 
+    }
+
+
+    // ========================================================
+    // EDIT REASON
+    // ========================================================
+
+    if (action === "editReason") {
+
+        if (!reason) {
+
+            showScopeManagementMessage(
+                "Please enter a new reason.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        if (!task.history) {
+            task.history = [];
+        }
+
+
+        /*
+         * Store the current/latest reason directly on the task.
+         */
+
+        task.reason =
+            reason;
+
+
+        /*
+         * Update the latest history entry that has a reason.
+         *
+         * This means we are editing the existing reason instead
+         * of creating another duplicate history event.
+         */
+
+        let updatedHistory = false;
+
+
+        for (
+            let i = task.history.length - 1;
+            i >= 0;
+            i--
+        ) {
+
+            if (
+                task.history[i].reason !== undefined
+            ) {
+
+                task.history[i].reason =
+                    reason;
+
+                updatedHistory = true;
+
+                break;
+
+            }
+
+        }
+
+
+        /*
+         * If there is no previous history reason,
+         * create a small reason history entry.
+         */
+
+        if (!updatedHistory) {
+
+            task.history.push({
+
+                action:
+                    "Reason Updated",
+
+                timestamp:
+                    timestamp,
+
+                reason:
+                    reason
+
+            });
+
+        }
+
+
+        showScopeManagementMessage(
+            "Reason updated successfully.",
+            false
+        );
+
+
+        renderStoreDetail();
+
+        return;
+
+    }
+
+}
+
+
+// ============================================================
+// RESET MANAGEMENT FORM
+// ============================================================
+
+function resetScopeManagementForm() {
+
+    const scopeSelect =
+        document.getElementById(
+            "manageScope"
+        );
+
+    const actionSelect =
+        document.getElementById(
+            "scopeAction"
+        );
+
+    const reasonInput =
+        document.getElementById(
+            "scopeReason"
+        );
+
+    const moveNightSelect =
+        document.getElementById(
+            "moveToNight"
+        );
+
+    const reasonGroup =
+        document.getElementById(
+            "scopeReasonGroup"
+        );
+
+    const moveGroup =
+        document.getElementById(
+            "moveNightGroup"
+        );
+
+    const message =
+        document.getElementById(
+            "scopeManagementMessage"
+        );
+
+
+    if (scopeSelect) {
+        scopeSelect.value = "";
+    }
+
+    if (actionSelect) {
+        actionSelect.value = "";
+    }
+
+    if (reasonInput) {
+        reasonInput.value = "";
+    }
+
+    if (moveNightSelect) {
+        moveNightSelect.value = "1";
+    }
+
+    if (reasonGroup) {
+        reasonGroup.classList.add("hidden");
+    }
+
+    if (moveGroup) {
+        moveGroup.classList.add("hidden");
+    }
+
+    if (message) {
+        message.textContent = "";
     }
 
 }
@@ -2092,6 +2503,13 @@ function saveNightAssignment() {
         );
 
 
+    /*
+     * IMPORTANT:
+     * Save the Night ONLY to the currently selected store.
+     *
+     * No other store object is modified here.
+     */
+
     store.currentNight =
         selectedNight;
 
@@ -2099,7 +2517,7 @@ function saveNightAssignment() {
     if (assignmentMessage) {
 
         assignmentMessage.textContent =
-            `Current assigned night updated to Night ${selectedNight}.`;
+            `Store ${store.storeNumber}'s current assigned night updated to Night ${selectedNight}.`;
 
     }
 
