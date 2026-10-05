@@ -1,8 +1,3 @@
-/* =========================================
-   DEPLOYMENT TRACKER
-   STORE DETAIL PAGE
-========================================= */
-
 * {
   box-sizing: border-box;
 }
@@ -13,6 +8,8 @@ body {
   background: #f5f7fa;
   color: #1f2937;
 }
+
+/* HEADER */
 
 header {
   background: #111827;
@@ -30,15 +27,15 @@ header p {
   color: #d1d5db;
 }
 
+/* CONTAINER */
+
 .container {
   max-width: 1200px;
   margin: auto;
   padding: 30px;
 }
 
-/* =========================
-   SUMMARY
-========================= */
+/* SUMMARY */
 
 .summary {
   display: grid;
@@ -50,7 +47,7 @@ header p {
 .summary-card {
   background: white;
   padding: 20px;
-  border-radius: 12px;
+  border-radius: 14px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
@@ -64,9 +61,7 @@ header p {
   font-size: 28px;
 }
 
-/* =========================
-   SECTIONS
-========================= */
+/* SECTION */
 
 .section {
   background: white;
@@ -76,19 +71,31 @@ header p {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-.section h2 {
-  margin-top: 0;
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
-/* =========================
-   STORE CARDS
-========================= */
+.section-title h2 {
+  margin: 0 0 5px;
+}
+
+.section-title p {
+  margin: 0;
+  color: #6b7280;
+}
+
+/* STORE GRID */
 
 .store-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
 }
+
+/* STORE CARD */
 
 .store-card {
   background: white;
@@ -108,7 +115,7 @@ header p {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 16px;
 }
 
 .store-number {
@@ -116,9 +123,13 @@ header p {
   font-weight: bold;
 }
 
-/* =========================
-   STATUS
-========================= */
+.store-info {
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* STATUS */
 
 .status {
   display: inline-block;
@@ -153,9 +164,7 @@ header p {
   color: #c2410c;
 }
 
-/* =========================
-   PROGRESS
-========================= */
+/* PROGRESS */
 
 .progress-bar {
   width: 100%;
@@ -172,48 +181,46 @@ header p {
   border-radius: 10px;
 }
 
-/* =========================
-   STORE INFO
-========================= */
+/* CHECK-IN */
 
-.store-info {
-  font-size: 14px;
-  color: #6b7280;
-  line-height: 1.7;
+.check-in-box {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #e5e7eb;
 }
 
-.store-link {
-  color: #2563eb;
+.check-in-button {
+  width: 100%;
+  border: none;
+  background: #2563eb;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
   font-weight: bold;
 }
 
-/* =========================
-   RECENT UPDATES
-========================= */
-
-.update {
-  padding: 14px 0;
-  border-bottom: 1px solid #e5e7eb;
+.check-in-button:hover {
+  background: #1d4ed8;
 }
 
-.update:last-child {
-  border-bottom: none;
+.check-in-button.checked {
+  background: #059669;
+  cursor: default;
 }
 
-.update-time {
+.check-in-time {
+  margin-top: 8px;
   font-size: 12px;
-  color: #9ca3af;
+  color: #6b7280;
 }
 
-/* =========================
-   STORE DETAIL
-========================= */
+/* STORE DETAIL */
 
 .store-detail-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
   margin-bottom: 24px;
 }
 
@@ -237,13 +244,7 @@ header p {
   font-weight: bold;
 }
 
-.back-button:hover {
-  background: #d1d5db;
-}
-
-/* =========================
-   NIGHT SECTIONS
-========================= */
+/* NIGHTS */
 
 .night-section {
   background: white;
@@ -263,7 +264,7 @@ header p {
 }
 
 .night-header h3 {
-  margin: 0;
+  margin: 0 0 4px;
 }
 
 .night-status {
@@ -271,13 +272,11 @@ header p {
   color: #6b7280;
 }
 
-/* =========================
-   SCOPE TASKS
-========================= */
-
 .scope-list {
   padding: 10px 20px 20px;
 }
+
+/* TASK */
 
 .scope-task {
   display: flex;
@@ -297,27 +296,21 @@ header p {
 }
 
 .scope-task-note {
-  margin-top: 4px;
+  margin-top: 5px;
   font-size: 13px;
   color: #6b7280;
 }
 
-/* =========================
-   BUTTONS
-========================= */
-
-.primary-button,
-.secondary-button {
-  border: none;
-  border-radius: 8px;
-  padding: 10px 16px;
-  cursor: pointer;
-  font-weight: bold;
-}
+/* BUTTONS */
 
 .primary-button {
+  border: none;
   background: #2563eb;
   color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
 }
 
 .primary-button:hover {
@@ -325,66 +318,54 @@ header p {
 }
 
 .secondary-button {
+  border: none;
   background: #e5e7eb;
   color: #111827;
-}
-
-.secondary-button:hover {
-  background: #d1d5db;
-}
-
-/* =========================
-   FORM
-========================= */
-
-.form-group {
-  margin-bottom: 16px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: bold;
-  font-size: 14px;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
+  padding: 10px 16px;
   border-radius: 8px;
-  font-family: inherit;
+  cursor: pointer;
+  font-weight: bold;
 }
 
-.form-group textarea {
-  min-height: 90px;
-  resize: vertical;
-}
+/* ADD SCOPE */
 
-/* =========================
-   CHECK-IN
-========================= */
-
-.check-in-box {
+.add-scope-box {
   padding: 18px;
   background: #f9fafb;
   border-radius: 10px;
   margin-bottom: 20px;
 }
 
-.check-in-time {
-  margin-top: 10px;
-  font-size: 13px;
-  color: #6b7280;
+.form-group {
+  margin-bottom: 15px;
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
+.form-group label {
+  display: block;
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-family: inherit;
+}
+
+.form-group textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* RESPONSIVE */
 
 @media (max-width: 900px) {
+
   .summary {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -392,9 +373,11 @@ header p {
   .store-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+
 }
 
 @media (max-width: 600px) {
+
   .container {
     padding: 16px;
   }
@@ -410,5 +393,7 @@ header p {
   .store-detail-header {
     flex-direction: column;
     align-items: flex-start;
+    gap: 15px;
   }
+
 }
