@@ -1,9 +1,10 @@
 /* =========================================
    DEPLOYMENT TRACKER
-   Version 4
+   Version 5
 ========================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
+
 
   /* =========================================
      STORE DATA
@@ -85,11 +86,13 @@ document.addEventListener("DOMContentLoaded", () => {
       "Night 1": [
 
         {
+          id: 1,
           name: "Remove Register 1",
           status: "Completed"
         },
 
         {
+          id: 2,
           name: "Remove Register 2",
           status: "Completed"
         }
@@ -99,6 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
       "Night 2": [
 
         {
+          id: 3,
           name: "Install Register 1",
           status: "Completed"
         }
@@ -108,16 +112,19 @@ document.addEventListener("DOMContentLoaded", () => {
       "Night 3": [
 
         {
+          id: 4,
           name: "Remove Register 3",
           status: "Not Started"
         },
 
         {
+          id: 5,
           name: "Install new fixture",
           status: "In Progress"
         },
 
         {
+          id: 6,
           name: "Equipment Check",
           status: "Not Started"
         }
@@ -140,26 +147,34 @@ document.addEventListener("DOMContentLoaded", () => {
   let recentUpdates = [
 
     {
-      message:
-        "Technician A updated Store 0123 — Install new fixture is In Progress.",
+      storeNumber: "0123",
+      technician: "Technician A",
+      action:
+        "updated task — Install new fixture is In Progress.",
       time: "Today, 2:15 PM"
     },
 
     {
-      message:
-        "Deployment Team added scope for Store 0123 — Night 3.",
+      storeNumber: "0123",
+      technician: "Deployment Team",
+      action:
+        "added scope for Night 3.",
       time: "Today, 1:42 PM"
     },
 
     {
-      message:
-        "Store 0456 deployment completed.",
+      storeNumber: "0456",
+      technician: "Technician B",
+      action:
+        "completed deployment.",
       time: "Today, 12:30 PM"
     },
 
     {
-      message:
-        "Store 1213 Night 1 scope cancelled — fixture not delivered.",
+      storeNumber: "1213",
+      technician: "Deployment Team",
+      action:
+        "cancelled Night 1 scope — fixture not delivered.",
       time: "Yesterday, 11:20 PM"
     }
 
@@ -170,20 +185,30 @@ document.addEventListener("DOMContentLoaded", () => {
      ELEMENTS
   ========================================= */
 
+  const overviewPage =
+    document.getElementById(
+      "overviewPage"
+    );
+
+  const storeDetailPage =
+    document.getElementById(
+      "storeDetailPage"
+    );
+
   const storeGrid =
-    document.getElementById("storeGrid");
-
-  const overviewSection =
-    document.getElementById("overviewSection");
-
-  const recentUpdatesSection =
-    document.getElementById("recentUpdatesSection");
+    document.getElementById(
+      "storeGrid"
+    );
 
   const recentUpdatesContainer =
-    document.getElementById("recentUpdates");
+    document.getElementById(
+      "recentUpdates"
+    );
 
   const storeDetail =
-    document.getElementById("storeDetail");
+    document.getElementById(
+      "storeDetail"
+    );
 
 
   /* =========================================
@@ -204,165 +229,178 @@ document.addEventListener("DOMContentLoaded", () => {
     storeGrid.innerHTML = "";
 
 
-    stores.forEach((store) => {
+    stores.forEach(
+      (store) => {
 
-      const card =
-        document.createElement("div");
-
-      card.className = "store-card";
-
-
-      card.innerHTML = `
-
-        <div class="store-header">
-
-          <span class="store-number">
-            Store ${store.storeNumber}
-          </span>
-
-          <span
-            class="status ${getStatusClass(store.status)}"
-          >
-            ${store.status}
-          </span>
-
-        </div>
-
-
-        <div class="store-info">
-
-          <strong>Technician:</strong>
-          ${store.technician}
-
-          <br>
-
-          <strong>Current Night:</strong>
-          ${store.currentNight}
-
-        </div>
-
-
-        <div class="progress-bar">
-
-          <div
-            class="progress"
-            style="width: ${store.progress}%"
-          ></div>
-
-        </div>
-
-
-        <div class="store-info">
-
-          ${store.progress}% Complete
-
-        </div>
-
-
-        <div class="check-in-box">
-
-          ${
-            store.checkedIn
-
-            ? `
-
-              <button
-                class="check-in-button checked"
-                disabled
-              >
-                ✓ Checked In
-              </button>
-
-              <div class="check-in-time">
-
-                Checked in at
-                ${store.checkInTime}
-
-              </div>
-
-            `
-
-            : `
-
-              <button
-                class="check-in-button"
-                data-store="${store.storeNumber}"
-              >
-                Check In Technician
-              </button>
-
-              <div class="check-in-time">
-
-                Not checked in yet
-
-              </div>
-
-            `
-          }
-
-        </div>
-
-      `;
-
-
-      /* =====================================
-         CLICK STORE CARD
-      ===================================== */
-
-      card.addEventListener(
-        "click",
-        (event) => {
-
-          if (
-            event.target.closest(
-              ".check-in-button"
-            )
-          ) {
-            return;
-          }
-
-          openStoreDetail(
-            store.storeNumber
+        const card =
+          document.createElement(
+            "div"
           );
 
-        }
-      );
+
+        card.className =
+          "store-card";
 
 
-      /* =====================================
-         CHECK-IN BUTTON
-      ===================================== */
+        card.innerHTML = `
 
-      const checkInButton =
-        card.querySelector(
-          ".check-in-button"
-        );
+          <div class="store-header">
+
+            <span class="store-number">
+              Store ${store.storeNumber}
+            </span>
+
+            <span
+              class="status
+              ${getStatusClass(
+                store.status
+              )}"
+            >
+              ${store.status}
+            </span>
+
+          </div>
 
 
-      if (
-        checkInButton &&
-        !store.checkedIn
-      ) {
+          <div class="store-info">
 
-        checkInButton.addEventListener(
+            <strong>
+              Technician:
+            </strong>
+
+            ${store.technician}
+
+            <br>
+
+            <strong>
+              Current Night:
+            </strong>
+
+            ${store.currentNight}
+
+          </div>
+
+
+          <div class="progress-bar">
+
+            <div
+              class="progress"
+              style="width:
+              ${store.progress}%"
+            ></div>
+
+          </div>
+
+
+          <div class="store-info">
+
+            ${store.progress}%
+            Complete
+
+          </div>
+
+
+          <div class="check-in-box">
+
+            ${
+              store.checkedIn
+
+              ? `
+
+                <button
+                  class="check-in-button checked"
+                  disabled
+                >
+                  ✓ Checked In
+                </button>
+
+                <div class="check-in-time">
+
+                  Checked in at
+                  ${store.checkInTime}
+
+                </div>
+
+              `
+
+              : `
+
+                <button
+                  class="check-in-button"
+                >
+                  Check In Technician
+                </button>
+
+                <div class="check-in-time">
+                  Not checked in yet
+                </div>
+
+              `
+            }
+
+          </div>
+
+        `;
+
+
+        /* STORE CLICK */
+
+        card.addEventListener(
           "click",
           (event) => {
 
-            event.stopPropagation();
+            if (
+              event.target.closest(
+                ".check-in-button"
+              )
+            ) {
+              return;
+            }
 
-            checkInTechnician(
+
+            openStoreDetail(
               store.storeNumber
             );
 
           }
         );
 
+
+        /* CHECK-IN */
+
+        const checkInButton =
+          card.querySelector(
+            ".check-in-button"
+          );
+
+
+        if (
+          checkInButton &&
+          !store.checkedIn
+        ) {
+
+          checkInButton.addEventListener(
+            "click",
+            (event) => {
+
+              event.stopPropagation();
+
+              checkInTechnician(
+                store.storeNumber
+              );
+
+            }
+          );
+
+        }
+
+
+        storeGrid.appendChild(
+          card
+        );
+
       }
-
-
-      storeGrid.appendChild(card);
-
-    });
+    );
 
 
     updateSummary();
@@ -371,7 +409,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   /* =========================================
-     CHECK-IN TECHNICIAN
+     CHECK-IN
   ========================================= */
 
   function checkInTechnician(
@@ -381,11 +419,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const store =
       stores.find(
         item =>
-          item.storeNumber === storeNumber
+          item.storeNumber ===
+          storeNumber
       );
 
 
-    if (!store) return;
+    if (!store) {
+      return;
+    }
 
 
     const now =
@@ -402,18 +443,24 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
 
-    store.checkedIn = true;
+    store.checkedIn =
+      true;
+
 
     store.checkInTime =
       formattedTime;
 
 
-    /* ADD RECENT UPDATE */
-
     recentUpdates.unshift({
 
-      message:
-        `${store.technician} checked in for Store ${store.storeNumber}.`,
+      storeNumber:
+        store.storeNumber,
+
+      technician:
+        store.technician,
+
+      action:
+        "checked in for deployment.",
 
       time:
         formattedTime
@@ -439,28 +486,33 @@ document.addEventListener("DOMContentLoaded", () => {
     const store =
       stores.find(
         item =>
-          item.storeNumber === storeNumber
+          item.storeNumber ===
+          storeNumber
       );
 
 
-    if (!store) return;
+    if (!store) {
+      return;
+    }
 
 
-    overviewSection.style.display =
+    overviewPage.style.display =
       "none";
 
-    recentUpdatesSection.style.display =
-      "none";
 
-    storeDetail.style.display =
+    storeDetailPage.style.display =
       "block";
 
 
     storeDetail.innerHTML = `
 
-      <div class="store-detail-header">
+      <div
+        class="store-detail-header"
+      >
 
-        <div class="store-detail-title">
+        <div
+          class="store-detail-title"
+        >
 
           <h2>
             Store ${store.storeNumber}
@@ -491,62 +543,66 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
 
 
-      <div class="section">
+      <!-- STORE-SPECIFIC INFO ONLY -->
 
-        <h2>
-          Deployment Status
-        </h2>
+      <div
+        class="store-detail-info"
+      >
 
+        <div
+          class="detail-info-card"
+        >
 
-        <div class="store-info">
-
-          <strong>
-            Technician:
-          </strong>
-
-          ${store.technician}
-
-          <br>
-
+          <span>
+            Store
+          </span>
 
           <strong>
-            Current Night:
+            ${store.storeNumber}
           </strong>
-
-          ${store.currentNight}
-
-          <br>
-
-
-          <strong>
-            Status:
-          </strong>
-
-          ${store.status}
 
         </div>
 
 
-        <div class="progress-bar">
+        <div
+          class="detail-info-card"
+        >
 
-          <div
-            class="progress"
-            style="width: ${store.progress}%"
-          ></div>
+          <span>
+            Technician
+          </span>
+
+          <strong>
+            ${store.technician}
+          </strong>
 
         </div>
 
 
-        <strong>
-          ${store.progress}% Complete
-        </strong>
+        <div
+          class="detail-info-card"
+        >
+
+          <span>
+            Current Night
+          </span>
+
+          <strong>
+            ${store.currentNight}
+          </strong>
+
+        </div>
 
       </div>
 
 
+      <!-- DEPLOYMENT SCOPE -->
+
       <div class="section">
 
-        <div class="section-title">
+        <div
+          class="section-title"
+        >
 
           <div>
 
@@ -555,7 +611,8 @@ document.addEventListener("DOMContentLoaded", () => {
             </h2>
 
             <p>
-              Deployment Team / Admin
+              Manage scope for
+              Store ${store.storeNumber}.
             </p>
 
           </div>
@@ -571,18 +628,21 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
 
 
-        <div id="addScopeForm"></div>
+        <div
+          id="addScopeForm"
+        ></div>
 
-        <div id="nightContainer"></div>
+
+        <div
+          id="nightContainer"
+        ></div>
 
       </div>
 
     `;
 
 
-    /* =====================================
-       BACK BUTTON
-    ===================================== */
+    /* BACK */
 
     document
       .getElementById(
@@ -592,13 +652,10 @@ document.addEventListener("DOMContentLoaded", () => {
         "click",
         () => {
 
-          storeDetail.style.display =
+          storeDetailPage.style.display =
             "none";
 
-          overviewSection.style.display =
-            "block";
-
-          recentUpdatesSection.style.display =
+          overviewPage.style.display =
             "block";
 
           renderOverview();
@@ -609,9 +666,7 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
 
-    /* =====================================
-       ADD SCOPE
-    ===================================== */
+    /* ADD SCOPE */
 
     document
       .getElementById(
@@ -648,7 +703,8 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
 
-    nightContainer.innerHTML = "";
+    nightContainer.innerHTML =
+      "";
 
 
     const nights = [
@@ -671,7 +727,8 @@ document.addEventListener("DOMContentLoaded", () => {
           ]?.[night] || [];
 
 
-        let tasksHTML = "";
+        let tasksHTML =
+          "";
 
 
         if (
@@ -680,9 +737,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
           tasksHTML = `
 
-            <div class="scope-task">
+            <div
+              class="scope-task"
+            >
 
-              <div>
+              <div
+                class="scope-task-left"
+              >
 
                 <div
                   class="scope-task-name"
@@ -693,8 +754,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div
                   class="scope-task-note"
                 >
-                  Admin can add scope
-                  for this night.
+                  Add scope using
+                  the button above.
                 </div>
 
               </div>
@@ -716,7 +777,9 @@ document.addEventListener("DOMContentLoaded", () => {
                   class="scope-task"
                 >
 
-                  <div>
+                  <div
+                    class="scope-task-left"
+                  >
 
                     <div
                       class="scope-task-name"
@@ -727,16 +790,30 @@ document.addEventListener("DOMContentLoaded", () => {
                   </div>
 
 
-                  <span
-                    class="status
-                    ${getStatusClass(
-                      task.status
-                    )}"
+                  <div
+                    class="scope-actions"
                   >
 
-                    ${task.status}
+                    <span
+                      class="status
+                      ${getStatusClass(
+                        task.status
+                      )}"
+                    >
+                      ${task.status}
+                    </span>
 
-                  </span>
+
+                    <button
+                      class="delete-button"
+                      data-store="${store.storeNumber}"
+                      data-night="${night}"
+                      data-task-id="${task.id}"
+                    >
+                      Delete
+                    </button>
+
+                  </div>
 
                 </div>
 
@@ -774,7 +851,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     ? "★ Current Night"
 
-                    : "Scope"
+                    : "Deployment Scope"
                   }
 
                 </div>
@@ -798,6 +875,149 @@ document.addEventListener("DOMContentLoaded", () => {
 
       }
     );
+
+
+    /* =====================================
+       DELETE BUTTONS
+    ===================================== */
+
+    document
+      .querySelectorAll(
+        ".delete-button"
+      )
+      .forEach(
+        (button) => {
+
+          button.addEventListener(
+            "click",
+            (event) => {
+
+              event.stopPropagation();
+
+
+              const storeNumber =
+                button.dataset.store;
+
+              const night =
+                button.dataset.night;
+
+              const taskId =
+                Number(
+                  button.dataset.taskId
+                );
+
+
+              deleteScope(
+                storeNumber,
+                night,
+                taskId
+              );
+
+            }
+          );
+
+        }
+      );
+
+  }
+
+
+  /* =========================================
+     DELETE SCOPE
+  ========================================= */
+
+  function deleteScope(
+    storeNumber,
+    night,
+    taskId
+  ) {
+
+    const store =
+      stores.find(
+        item =>
+          item.storeNumber ===
+          storeNumber
+      );
+
+
+    const tasks =
+      storeScopes[
+        storeNumber
+      ]?.[night];
+
+
+    if (!tasks) {
+      return;
+    }
+
+
+    const taskIndex =
+      tasks.findIndex(
+        task =>
+          task.id === taskId
+      );
+
+
+    if (
+      taskIndex === -1
+    ) {
+      return;
+    }
+
+
+    const task =
+      tasks[taskIndex];
+
+
+    const confirmed =
+      confirm(
+        `Delete "${task.name}" from ${night}?`
+      );
+
+
+    if (!confirmed) {
+      return;
+    }
+
+
+    tasks.splice(
+      taskIndex,
+      1
+    );
+
+
+    const now =
+      new Date();
+
+
+    const formattedTime =
+      now.toLocaleString(
+        "en-PH",
+        {
+          dateStyle: "medium",
+          timeStyle: "short"
+        }
+      );
+
+
+    recentUpdates.unshift({
+
+      storeNumber:
+        storeNumber,
+
+      technician:
+        "Deployment Team",
+
+      action:
+        `deleted "${task.name}" from ${night}.`,
+
+      time:
+        formattedTime
+
+    });
+
+
+    renderNights(store);
 
   }
 
@@ -974,9 +1194,10 @@ document.addEventListener("DOMContentLoaded", () => {
           }
 
 
-          storeScopes[
-            store.storeNumber
-          ][night].push({
+          const newTask = {
+
+            id:
+              Date.now(),
 
             name:
               scopeName,
@@ -984,7 +1205,14 @@ document.addEventListener("DOMContentLoaded", () => {
             status:
               "Not Started"
 
-          });
+          };
+
+
+          storeScopes[
+            store.storeNumber
+          ][night].push(
+            newTask
+          );
 
 
           /* RECENT UPDATE */
@@ -1005,8 +1233,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
           recentUpdates.unshift({
 
-            message:
-              `Deployment Team added "${scopeName}" to Store ${store.storeNumber} — ${night}.`,
+            storeNumber:
+              store.storeNumber,
+
+            technician:
+              "Deployment Team",
+
+            action:
+              `added "${scopeName}" to ${night}.`,
 
             time:
               formattedTime
@@ -1042,9 +1276,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
       recentUpdatesContainer.innerHTML = `
 
-        <div class="update">
+        <div
+          class="update"
+        >
 
-          <div class="update-main">
+          <div
+            class="update-main"
+          >
             No recent updates.
           </div>
 
@@ -1062,23 +1300,40 @@ document.addEventListener("DOMContentLoaded", () => {
       .forEach(
         (update) => {
 
-          const updateElement =
+          const element =
             document.createElement(
               "div"
             );
 
 
-          updateElement.className =
+          element.className =
             "update";
 
 
-          updateElement.innerHTML = `
+          element.innerHTML = `
 
             <div
               class="update-main"
             >
-              ${update.message}
+
+              <span
+                class="update-store"
+              >
+                Store ${update.storeNumber}
+              </span>
+
+              —
+
+              <span
+                class="update-technician"
+              >
+                ${update.technician}
+              </span>
+
+              ${update.action}
+
             </div>
+
 
             <div
               class="update-time"
@@ -1091,7 +1346,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           recentUpdatesContainer
             .appendChild(
-              updateElement
+              element
             );
 
         }
