@@ -47,9 +47,7 @@ button {
 }
 
 
-/* =========================
-   PAGE HEADER
-========================= */
+/* PAGE HEADER */
 
 .page-header {
     margin-bottom: 24px;
@@ -67,9 +65,7 @@ button {
 }
 
 
-/* =========================
-   SUMMARY CARDS
-========================= */
+/* SUMMARY */
 
 .summary-grid {
     display: grid;
@@ -97,9 +93,7 @@ button {
 }
 
 
-/* =========================
-   PANEL
-========================= */
+/* PANEL */
 
 .panel {
     background: white;
@@ -128,9 +122,7 @@ button {
 }
 
 
-/* =========================
-   FORMS
-========================= */
+/* FORMS */
 
 .form-grid {
     display: grid;
@@ -203,9 +195,7 @@ button:hover {
 }
 
 
-/* =========================
-   STORE CARDS
-========================= */
+/* STORE CARDS */
 
 .store-grid {
     display: grid;
@@ -229,7 +219,7 @@ button:hover {
 }
 
 .store-card h3 {
-    margin: 0 0 10px;
+    margin: 0;
     font-size: 19px;
 }
 
@@ -282,9 +272,7 @@ button:hover {
 }
 
 
-/* =========================
-   CHECK-IN
-========================= */
+/* CHECK-IN */
 
 .store-checkin {
     margin-top: 14px;
@@ -317,9 +305,7 @@ button:hover {
 }
 
 
-/* =========================
-   PROGRESS
-========================= */
+/* PROGRESS */
 
 .store-progress {
     margin-top: 14px;
@@ -344,9 +330,7 @@ button:hover {
 }
 
 
-/* =========================
-   RECENT UPDATES
-========================= */
+/* RECENT UPDATES */
 
 .updates-list {
     display: flex;
@@ -395,9 +379,7 @@ button:hover {
 }
 
 
-/* =========================
-   STORE DETAIL
-========================= */
+/* STORE DETAIL */
 
 .store-detail-header {
     display: flex;
@@ -443,9 +425,7 @@ button:hover {
 }
 
 
-/* =========================
-   NIGHT SECTIONS
-========================= */
+/* NIGHTS */
 
 .night-section {
     border: 1px solid #e5e7eb;
@@ -479,7 +459,6 @@ button:hover {
     position: relative;
     padding: 14px;
     border-bottom: 1px solid #f0f0f0;
-    transition: background 0.15s;
     user-select: none;
     -webkit-user-select: none;
 }
@@ -554,9 +533,7 @@ button:hover {
 }
 
 
-/* =========================
-   SCOPE HISTORY
-========================= */
+/* HISTORY */
 
 .scope-history {
     margin-top: 10px;
@@ -573,13 +550,11 @@ button:hover {
 }
 
 .scope-history-item {
-    margin-top: 4px;
+    margin-top: 5px;
 }
 
 
-/* =========================
-   EMPTY / MESSAGES
-========================= */
+/* EMPTY / MESSAGE */
 
 .empty-scope {
     padding: 16px;
@@ -602,9 +577,7 @@ button:hover {
 }
 
 
-/* =========================
-   RESPONSIVE
-========================= */
+/* RESPONSIVE */
 
 @media (max-width: 1100px) {
 
