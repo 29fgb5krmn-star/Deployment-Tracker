@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Deployment Tracker</title>
+
+  <!-- External CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
+
+    <div>
+      <h1>Deployment Tracker</h1>
+      <span>Deployment Overview</span>
+    </div>
+
+    <span>October 2026</span>
+
+  </header>
+
+
+  <main class="container">
+
+    <!-- SUMMARY -->
+    <div class="summary">
+
+      <div class="summary-card">
+        <p>Total Stores</p>
+        <h2>12</h2>
+      </div>
+
+      <div class="summary-card">
+        <p>In Progress</p>
+        <h2>7</h2>
+      </div>
+
+      <div class="summary-card">
+        <p>Completed</p>
+        <h2>3</h2>
+      </div>
+
+      <div class="summary-card">
+        <p>Pending</p>
+        <h2>2</h2>
+      </div>
+
+    </div>
+
+
+    <!-- DEPLOYMENT STORES -->
+    <section class="section">
+
+      <h2>Deployment Stores</h2>
+
+      <div class="store-grid">
+
+
+        <!-- STORE 0123 -->
+        <div class="store-card">
+
+          <div class="store-header">
+
+            <span class="store-number">
+              Store 0123
+            </span>
+
+            <span class="status in-progress">
+              In Progress
+            </span>
+
+          </div>
+
+          <p class="store-info">
+            Night: 1<br>
+            Technician: Technician A
+          </p>
+
+          <div class="progress-bar">
+
+            <div
+              class="progress"
+              style="width: 80%;">
+            </div>
+
+          </div>
+
+          <p class="store-info">
+            Progress: 80%
+          </p>
+
+        </div>
+
+
+
+        <!-- STORE 0456 -->
+        <div class="store-card">
+
+          <div class="store-header">
+
+            <span class="store-number">
+              Store 0456
+            </span>
+
+            <span class="status completed">
+              Completed
+            </span>
+
+          </div>
+
+          <p class="store-info">
+            Night: 1<br>
+            Technician: Technician B
+          </p>
+
+          <div class="progress-bar">
+
+            <div
+              class="progress"
+              style="width: 100%;">
+            </div>
+
+          </div>
+
+          <p class="store-info">
+            Progress: 100%
+          </p>
+
+        </div>
+
+
+
+        <!-- STORE 0789 -->
+        <div class="store-card">
+
+          <div class="store-header">
+
+            <span class="store-number">
+              Store 0789
+            </span>
+
+            <span class="status not-started">
+              Not Started
+            </span>
+
+          </div>
+
+          <p class="store-info">
+            Night: 2<br>
+            Technician: Technician C
+          </p>
+
+          <div class="progress-bar">
+
+            <div
+              class="progress"
+              style="width: 0%;">
+            </div>
+
+          </div>
+
+          <p class="store-info">
+            Progress: 0%
+          </p>
+
+        </div>
+
+
+
+        <!-- STORE 1011 -->
+        <div class="store-card">
+
+          <div class="store-header">
+
+            <span class="store-number">
+              Store 1011
+            </span>
+
+            <span class="status in-progress">
+              In Progress
+            </span>
+
+          </div>
+
+          <p class="store-info">
+            Night: 2<br>
+            Technician: Technician D
+          </p>
+
+          <div class="progress-bar">
+
+            <div
+              class="progress"
+              style="width: 45%;">
+            </div>
+
+          </div>
+
+          <p class="store-info">
+            Progress: 45%
+          </p>
+
+        </div>
+
+
+
+        <!-- STORE 1213 -->
+        <div class="store-card">
+
+          <div class="store-header">
+
+            <span class="store-number">
+              Store 1213
+            </span>
+
+            <span class="status cancelled">
+              Cancelled
+            </span>
+
+          </div>
+
+          <p class="store-info">
+            Night: 1<br>
+            Technician: Technician E
+          </p>
+
+          <p class="store-info">
+            Reason: Fixture not delivered
+          </p>
+
+          <p class="store-info">
+            Scope moved to: Night 2
+          </p>
+
+        </div>
+
+
+
+        <!-- STORE 1415 -->
+        <div class="store-card">
+
+          <div class="store-header">
+
+            <span class="store-number">
+              Store 1415
+            </span>
+
+            <span class="status in-progress">
+              In Progress
+            </span>
+
+          </div>
+
+          <p class="store-info">
+            Night: 2<br>
+            Technician: Technician F
+          </p>
+
+          <div class="progress-bar">
+
+            <div
+              class="progress"
+              style="width: 60%;">
+            </div>
+
+          </div>
+
+          <p class="store-info">
+            Progress: 60%
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- RECENT UPDATES -->
+    <section class="section">
+
+      <h2>Recent Updates</h2>
+
+      <div class="updates">
+
+
+        <!-- UPDATE 1 -->
+        <div class="update">
+
+          <strong>
+            Technician A — Store 0123
+          </strong>
+
+          <p>
+            Register 2 removal completed.
+          </p>
+
+          <div class="update-time">
+            10:43 PM
+          </div>
+
+        </div>
+
+
+
+        <!-- UPDATE 2 -->
+        <div class="update">
+
+          <strong>
+            Technician A — Store 0123
+          </strong>
+
+          <p>
+            SCO removal is now in progress.
+          </p>
+
+          <div class="update-time">
+            10:51 PM
+          </div>
+
+        </div>
+
+
+
+        <!-- UPDATE 3 -->
+        <div class="update">
+
+          <strong>
+            Technician B — Store 0456
+          </strong>
+
+          <p>
+            Backend validation completed.
+          </p>
+
+          <div class="update-time">
+            11:02 PM
+          </div>
+
+        </div>
+
+
+
+        <!-- UPDATE 4 -->
+        <div class="update">
+
+          <strong>
+            Deployment Team — Store 1213
+          </strong>
+
+          <p>
+            Night 1 cancelled. Scope moved to Night 2
+            due to missing fixture.
+          </p>
+
+          <div class="update-time">
+            11:15 PM
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- JavaScript -->
+  <script src="script.js"></script>
+
+</body>
+
+</html>
