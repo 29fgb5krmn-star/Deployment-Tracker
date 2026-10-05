@@ -1,61 +1,69 @@
 /* =========================================================
    DEPLOYMENT TRACKER
-   Prototype Version
 ========================================================= */
 
 
 /* =========================================================
-   STORE DATA
+   SAMPLE DATA
 ========================================================= */
 
 let stores = [
 
     {
-        number: "0123",
+        storeNumber: "0123",
         technician: "Technician A",
-
         currentNight: 3,
-
-        status: "In Progress",
-
         checkedIn: "2026-10-05 16:11",
+        statusOverride: null,
 
         tasks: [
 
             {
-                night: 1,
+                id: 1,
+                night: 3,
                 description: "Remove Register 1",
-                status: "Completed"
+                status: "Completed",
+                history: []
             },
 
             {
-                night: 1,
+                id: 2,
+                night: 3,
                 description: "Remove Register 2",
-                status: "Completed"
+                status: "Completed",
+                history: []
             },
 
             {
-                night: 2,
-                description: "Install Register 1",
-                status: "Completed"
-            },
-
-            {
+                id: 3,
                 night: 3,
                 description: "Remove Register 3",
-                status: "Not Started"
+                status: "Completed",
+                history: []
             },
 
             {
+                id: 4,
                 night: 3,
                 description: "Install new fixture",
-                status: "In Progress"
+                status: "In Progress",
+                history: []
             },
 
             {
+                id: 5,
                 night: 3,
-                description: "Equipment Check",
-                status: "Not Started"
+                description: "Validate equipment",
+                status: "Not Started",
+                history: []
+            },
+
+            {
+                id: 6,
+                night: 3,
+                description: "Final deployment check",
+                status: "Not Started",
+                history: []
             }
 
         ]
@@ -63,27 +71,28 @@ let stores = [
 
 
     {
-        number: "0456",
+        storeNumber: "0456",
         technician: "Technician B",
-
         currentNight: 1,
-
-        status: "Completed",
-
         checkedIn: "2026-10-05 16:11",
+        statusOverride: null,
 
         tasks: [
 
             {
+                id: 7,
                 night: 1,
                 description: "Remove Register 1",
-                status: "Completed"
+                status: "Completed",
+                history: []
             },
 
             {
+                id: 8,
                 night: 1,
-                description: "Install Register 1",
-                status: "Completed"
+                description: "Remove Register 2",
+                status: "Completed",
+                history: []
             }
 
         ]
@@ -91,62 +100,42 @@ let stores = [
 
 
     {
-        number: "0789",
+        storeNumber: "0789",
         technician: "Technician C",
-
         currentNight: 1,
-
-        status: "Not Started",
-
-        checkedIn: "",
-
+        checkedIn: null,
+        statusOverride: null,
         tasks: []
-
     },
 
 
     {
-        number: "1011",
+        storeNumber: "1011",
         technician: "Technician D",
-
         currentNight: 1,
-
-        status: "Not Started",
-
-        checkedIn: "",
-
+        checkedIn: null,
+        statusOverride: null,
         tasks: []
-
     },
 
 
     {
-        number: "1213",
+        storeNumber: "1213",
         technician: "Technician E",
-
         currentNight: 1,
-
-        status: "Not Started",
-
-        checkedIn: "",
-
+        checkedIn: null,
+        statusOverride: null,
         tasks: []
-
     },
 
 
     {
-        number: "1415",
+        storeNumber: "1415",
         technician: "Technician F",
-
         currentNight: 1,
-
-        status: "Not Started",
-
-        checkedIn: "",
-
+        checkedIn: null,
+        statusOverride: null,
         tasks: []
-
     }
 
 ];
@@ -154,37 +143,37 @@ let stores = [
 
 /* =========================================================
    RECENT UPDATES
+   ONLY TECHNICIAN + CHECK-IN EVENTS
 ========================================================= */
 
 let recentUpdates = [
 
     {
-        store: "0123",
+        storeNumber: "0123",
         technician: "Technician A",
-        update: "Install new fixture marked as In Progress.",
-        timestamp: "2026-10-05 14:30"
+        message: "Install new fixture marked In Progress.",
+        timestamp: "2026-10-05 14:30",
+        source: "technician"
     },
 
     {
-        store: "0123",
+        storeNumber: "0123",
         technician: "Technician A",
-        update: "Night 3 scope started.",
-        timestamp: "2026-10-05 13:55"
+        message: "Night 3 scope started.",
+        timestamp: "2026-10-05 13:55",
+        source: "technician"
     },
 
     {
-        store: "0456",
+        storeNumber: "0456",
         technician: "Technician B",
-        update: "Deployment completed.",
-        timestamp: "2026-10-05 12:40"
+        message: "Deployment completed.",
+        timestamp: "2026-10-05 12:40",
+        source: "technician"
     }
 
 ];
 
-
-/* =========================================================
-   CURRENT STORE
-========================================================= */
 
 let selectedStoreNumber = null;
 
@@ -193,25 +182,166 @@ let selectedStoreNumber = null;
    INITIAL LOAD
 ========================================================= */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+document.addEventListener("DOMContentLoaded", function () {
 
-        renderOverview();
+    renderOverview();
 
-    }
-);
+});
 
 
 /* =========================================================
-   FIND STORE
+   HELPERS
 ========================================================= */
 
 function getStore(storeNumber) {
 
     return stores.find(
-        store =>
-            store.number === storeNumber
+        store => store.storeNumber === storeNumber
+    );
+
+}
+
+
+function getStatusClass(status) {
+
+    return status
+        .toLowerCase()
+        .replaceAll(" ", "-")
+        .replaceAll("'", "");
+
+}
+
+
+function getScopeStatusClass(status) {
+
+    if (status === "Moved to Another Night") {
+        return "moved";
+    }
+
+    return getStatusClass(status);
+
+}
+
+
+function formatTimestamp(timestamp) {
+
+    if (!timestamp) {
+        return "—";
+    }
+
+    const date = new Date(timestamp.replace(" ", "T"));
+
+    if (Number.isNaN(date.getTime())) {
+        return timestamp;
+    }
+
+    return date.toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+    });
+
+}
+
+
+function getCurrentTimestamp() {
+
+    const now = new Date();
+
+    const year = now.getFullYear();
+
+    const month = String(
+        now.getMonth() + 1
+    ).padStart(2, "0");
+
+    const day = String(
+        now.getDate()
+    ).padStart(2, "0");
+
+    const hours = String(
+        now.getHours()
+    ).padStart(2, "0");
+
+    const minutes = String(
+        now.getMinutes()
+    ).padStart(2, "0");
+
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
+
+}
+
+
+/* =========================================================
+   STORE STATUS
+========================================================= */
+
+function getStoreStatus(store) {
+
+    if (store.statusOverride) {
+        return store.statusOverride;
+    }
+
+    const tasks = store.tasks || [];
+
+    if (tasks.length === 0) {
+        return "Not Started";
+    }
+
+    const activeTasks = tasks.filter(
+        task => task.status !== "Cancelled"
+    );
+
+    if (activeTasks.length === 0) {
+        return "Cancelled";
+    }
+
+    const allCompleted = activeTasks.every(
+        task => task.status === "Completed"
+    );
+
+    if (allCompleted) {
+        return "Completed";
+    }
+
+    const hasStarted = activeTasks.some(
+        task =>
+            task.status === "In Progress" ||
+            task.status === "Completed"
+    );
+
+    if (hasStarted) {
+        return "In Progress";
+    }
+
+    return "Not Started";
+
+}
+
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+function calculateProgress(store) {
+
+    const tasks = store.tasks || [];
+
+    const activeTasks = tasks.filter(
+        task => task.status !== "Cancelled"
+    );
+
+    if (activeTasks.length === 0) {
+        return 0;
+    }
+
+    const completedTasks = activeTasks.filter(
+        task => task.status === "Completed"
+    ).length;
+
+    return Math.round(
+        (completedTasks / activeTasks.length) * 100
     );
 
 }
@@ -223,71 +353,101 @@ function getStore(storeNumber) {
 
 function renderOverview() {
 
-    const storeGrid =
-        document.getElementById(
-            "storeGrid"
-        );
+    renderSummary();
+
+    renderStoreCards();
+
+    renderRecentUpdates();
+
+}
 
 
-    storeGrid.innerHTML = "";
+function renderSummary() {
+
+    const totalStores = stores.length;
+
+    const inProgressStores = stores.filter(
+        store => getStoreStatus(store) === "In Progress"
+    ).length;
+
+    const completedStores = stores.filter(
+        store => getStoreStatus(store) === "Completed"
+    ).length;
+
+    const checkedInStores = stores.filter(
+        store => store.checkedIn
+    ).length;
+
+
+    document.getElementById("totalStores").textContent =
+        totalStores;
+
+    document.getElementById("inProgressStores").textContent =
+        inProgressStores;
+
+    document.getElementById("completedStores").textContent =
+        completedStores;
+
+    document.getElementById("checkedInStores").textContent =
+        checkedInStores;
+
+}
+
+
+/* =========================================================
+   STORE CARDS
+========================================================= */
+
+function renderStoreCards() {
+
+    const grid = document.getElementById("storeGrid");
+
+    grid.innerHTML = "";
 
 
     stores.forEach(store => {
 
-        const progress =
-            calculateProgress(store);
+        const status = getStoreStatus(store);
+
+        const progress = calculateProgress(store);
+
+        const card = document.createElement("div");
+
+        card.className = "store-card";
 
 
-        const card =
-            document.createElement("div");
+        card.addEventListener(
+            "click",
+            function () {
+
+                openStoreDetail(
+                    store.storeNumber
+                );
+
+            }
+        );
 
 
-        card.className =
-            "store-card";
+        const checkInHtml = store.checkedIn
 
+            ? `
+                <div class="checked-in">
+                    ✓ Checked In
+                </div>
 
-        /*
-            Clicking anywhere on the card
-            opens the Store Detail page.
-        */
+                <div class="check-in-time">
+                    Checked in at ${formatTimestamp(store.checkedIn)}
+                </div>
+              `
 
-        card.onclick = function () {
-
-            openStoreDetail(
-                store.number
-            );
-
-        };
-
-
-        const checkedInHTML =
-            store.checkedIn
-
-                ? `
-
-                    <div class="checked-in">
-                        ✓ Checked In
-                    </div>
-
-                    <div class="check-in-time">
-                        Checked in at
-                        ${formatTimestamp(
-                            store.checkedIn
-                        )}
-                    </div>
-
-                  `
-
-                : `
-
-                    <button
-                        class="store-checkin-button"
-                        onclick="checkInStore(event, '${store.number}')"
-                    >
-                        Check In
-                    </button>
-
-                  `;
+            : `
+                <button
+                    class="store-checkin-button"
+                    onclick="checkInStore(event, '${store.storeNumber}')"
+                >
+                    Check In
+                </button>
+              `;
 
 
         card.innerHTML = `
@@ -295,36 +455,28 @@ function renderOverview() {
             <div class="store-status-row">
 
                 <h3>
-                    Store ${store.number}
+                    Store ${store.storeNumber}
                 </h3>
 
-                <span
-                    class="store-status
-                    ${getStatusClass(store.status)}"
-                >
-                    ${store.status}
+                <span class="
+                    store-status
+                    ${getStatusClass(status)}
+                ">
+                    ${status}
                 </span>
 
             </div>
 
 
             <div class="store-info-line">
-
                 Technician:
-                <strong>
-                    ${store.technician}
-                </strong>
-
+                <strong>${store.technician}</strong>
             </div>
 
 
             <div class="store-info-line">
-
                 Current Night:
-                <strong>
-                    Night ${store.currentNight}
-                </strong>
-
+                <strong>Night ${store.currentNight}</strong>
             </div>
 
 
@@ -334,16 +486,13 @@ function renderOverview() {
 
                     <div
                         class="progress-fill"
-                        style="width:${progress}%"
+                        style="width: ${progress}%"
                     ></div>
 
                 </div>
 
-
                 <div class="progress-text">
-
                     ${progress}% Complete
-
                 </div>
 
             </div>
@@ -351,147 +500,65 @@ function renderOverview() {
 
             <div class="store-checkin">
 
-                ${checkedInHTML}
+                ${checkInHtml}
 
             </div>
 
         `;
 
 
-        storeGrid.appendChild(
-            card
-        );
+        grid.appendChild(card);
 
     });
 
-
-    updateSummary();
-
-    renderRecentUpdates();
-
 }
 
 
 /* =========================================================
-   STATUS CLASS
+   CHECK-IN
 ========================================================= */
 
-function getStatusClass(status) {
+function checkInStore(event, storeNumber) {
 
-    return status
-        .toLowerCase()
-        .replaceAll(" ", "-");
-
-}
+    event.stopPropagation();
 
 
-/* =========================================================
-   SUMMARY
-========================================================= */
+    const store = getStore(storeNumber);
 
-function updateSummary() {
+    if (!store) {
+        return;
+    }
 
-    document
-        .getElementById(
-            "totalStores"
-        )
-        .textContent = 12;
-
-
-    let inProgress = 0;
-
-    let completed = 0;
-
-    let checkedIn = 0;
-
-
-    stores.forEach(store => {
-
-        if (
-            store.status ===
-            "In Progress"
-        ) {
-
-            inProgress++;
-
-        }
-
-
-        if (
-            store.status ===
-            "Completed"
-        ) {
-
-            completed++;
-
-        }
-
-
-        if (store.checkedIn) {
-
-            checkedIn++;
-
-        }
-
-    });
-
-
-    document
-        .getElementById(
-            "inProgressStores"
-        )
-        .textContent =
-        inProgress;
-
-
-    document
-        .getElementById(
-            "completedStores"
-        )
-        .textContent =
-        completed;
-
-
-    document
-        .getElementById(
-            "checkedInStores"
-        )
-        .textContent =
-        checkedIn;
-
-}
-
-
-/* =========================================================
-   PROGRESS
-========================================================= */
-
-function calculateProgress(store) {
-
-    if (
-        !store.tasks ||
-        !store.tasks.length
-    ) {
-
-        return 0;
-
+    if (store.checkedIn) {
+        return;
     }
 
 
-    const completed =
-        store.tasks.filter(
-            task =>
-                task.status ===
-                "Completed"
-        ).length;
+    const timestamp = getCurrentTimestamp();
+
+    store.checkedIn = timestamp;
 
 
-    return Math.round(
-        (
-            completed /
-            store.tasks.length
-        ) * 100
-    );
+    /* IMPORTANT:
+       Check-in IS allowed in Recent Updates.
+    */
+
+    recentUpdates.unshift({
+
+        storeNumber: store.storeNumber,
+
+        technician: store.technician,
+
+        message: "✓ Technician checked in for deployment.",
+
+        timestamp: timestamp,
+
+        source: "check-in"
+
+    });
+
+
+    renderOverview();
 
 }
 
@@ -503,133 +570,77 @@ function calculateProgress(store) {
 function renderRecentUpdates() {
 
     const container =
-        document.getElementById(
-            "recentUpdates"
-        );
-
+        document.getElementById("recentUpdates");
 
     container.innerHTML = "";
 
 
-    recentUpdates
-        .slice()
-        .reverse()
-        .forEach(item => {
-
-            const div =
-                document.createElement(
-                    "div"
-                );
-
-
-            div.className =
-                "update-item";
-
-
-            div.innerHTML = `
-
-                <div class="update-header">
-
-                    <span class="update-store">
-                        Store ${item.store}
-                    </span>
-
-                    <span>—</span>
-
-                    <span class="update-tech">
-                        ${item.technician}
-                    </span>
-
-                </div>
-
-
-                <div class="update-message">
-
-                    ${item.update}
-
-                </div>
-
-
-                <div class="update-time">
-
-                    ${formatTimestamp(
-                        item.timestamp
-                    )}
-
-                </div>
-
-            `;
-
-
-            container.appendChild(
-                div
-            );
-
-        });
-
-}
-
-
-/* =========================================================
-   STORE CHECK-IN
-========================================================= */
-
-function checkInStore(
-    event,
-    storeNumber
-) {
-
     /*
-        Prevent the button click from
-        opening the Store Detail page.
+       Extra protection:
+       Only technician and check-in updates
+       are allowed to appear here.
     */
 
-    event.stopPropagation();
+    const visibleUpdates =
+        recentUpdates.filter(
+            update =>
+                update.source === "technician" ||
+                update.source === "check-in"
+        );
 
 
-    const store =
-        getStore(storeNumber);
+    if (visibleUpdates.length === 0) {
 
-
-    if (!store) {
+        container.innerHTML = `
+            <div class="empty-updates">
+                No technician updates yet.
+            </div>
+        `;
 
         return;
-
     }
 
 
-    if (store.checkedIn) {
+    visibleUpdates.forEach(update => {
 
-        return;
+        const item =
+            document.createElement("div");
 
-    }
-
-
-    const timestamp =
-        getCurrentTimestamp();
+        item.className = "update-item";
 
 
-    store.checkedIn =
-        timestamp;
+        item.innerHTML = `
+
+            <div class="update-header">
+
+                <span class="update-store">
+                    Store ${update.storeNumber}
+                </span>
+
+                <span>—</span>
+
+                <span class="update-tech">
+                    ${update.technician}
+                </span>
+
+            </div>
 
 
-    recentUpdates.push({
+            <div class="update-message">
+                ${update.message}
+            </div>
 
-        store: store.number,
 
-        technician:
-            store.technician,
+            <div class="update-time">
+                ${formatTimestamp(update.timestamp)}
+            </div>
 
-        update:
-            "Technician checked in for deployment.",
+        `;
 
-        timestamp:
-            timestamp
+
+        container.appendChild(item);
 
     });
-
-
-    renderOverview();
 
 }
 
@@ -638,44 +649,24 @@ function checkInStore(
    OPEN STORE DETAIL
 ========================================================= */
 
-function openStoreDetail(
-    storeNumber
-) {
+function openStoreDetail(storeNumber) {
 
-    const store =
-        getStore(storeNumber);
+    selectedStoreNumber = storeNumber;
 
 
-    if (!store) {
+    document.getElementById("overviewPage")
+        .classList.add("hidden");
 
-        return;
-
-    }
-
-
-    selectedStoreNumber =
-        storeNumber;
-
-
-    document
-        .getElementById(
-            "overviewPage"
-        )
-        .classList.add(
-            "hidden"
-        );
-
-
-    document
-        .getElementById(
-            "storeDetailPage"
-        )
-        .classList.remove(
-            "hidden"
-        );
+    document.getElementById("storeDetailPage")
+        .classList.remove("hidden");
 
 
     renderStoreDetail();
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
 
 }
 
@@ -687,77 +678,59 @@ function openStoreDetail(
 function renderStoreDetail() {
 
     const store =
-        getStore(
-            selectedStoreNumber
-        );
-
+        getStore(selectedStoreNumber);
 
     if (!store) {
-
         return;
-
     }
 
 
-    document
-        .getElementById(
-            "detailStoreNumber"
-        )
-        .textContent =
-        store.number;
+    const status =
+        getStoreStatus(store);
 
 
-    document
-        .getElementById(
-            "detailStoreNumberInfo"
-        )
-        .textContent =
-        store.number;
+    document.getElementById(
+        "detailStoreNumber"
+    ).textContent = store.storeNumber;
 
 
-    document
-        .getElementById(
-            "detailTechnician"
-        )
-        .textContent =
-        store.technician;
+    document.getElementById(
+        "detailStoreNumberInfo"
+    ).textContent = store.storeNumber;
 
 
-    document
-        .getElementById(
-            "detailCurrentNight"
-        )
-        .textContent =
+    document.getElementById(
+        "detailTechnician"
+    ).textContent = store.technician;
+
+
+    document.getElementById(
+        "detailCurrentNight"
+    ).textContent =
         `Night ${store.currentNight}`;
 
 
-    document
-        .getElementById(
-            "detailCheckIn"
-        )
-        .textContent =
+    document.getElementById(
+        "detailCheckIn"
+    ).textContent =
         store.checkedIn
-            ? formatTimestamp(
-                store.checkedIn
-            )
-            : "Not Checked In";
+            ? formatTimestamp(store.checkedIn)
+            : "Not checked in";
 
 
-    document
-        .getElementById(
-            "detailStoreStatus"
-        )
-        .textContent =
-        `${store.status} • ${calculateProgress(store)}% deployment progress`;
+    document.getElementById(
+        "detailStoreStatus"
+    ).textContent =
+        `${status} • ${calculateProgress(store)}% Complete`;
 
 
-    document
-        .getElementById(
-            "assignedNight"
-        )
-        .value =
+    document.getElementById(
+        "assignedNight"
+    ).value =
         store.currentNight;
 
+
+    renderScopeManagementOptions();
 
     renderNightSections();
 
@@ -765,15 +738,575 @@ function renderStoreDetail() {
 
 
 /* =========================================================
-   RENDER NIGHTS
+   ASSIGN NIGHT
+========================================================= */
+
+function saveNightAssignment() {
+
+    const store =
+        getStore(selectedStoreNumber);
+
+    if (!store) {
+        return;
+    }
+
+
+    const night =
+        Number(
+            document.getElementById(
+                "assignedNight"
+            ).value
+        );
+
+
+    store.currentNight = night;
+
+
+    document.getElementById(
+        "assignmentMessage"
+    ).textContent =
+        `Technician assignment updated to Night ${night}.`;
+
+
+    renderStoreDetail();
+
+}
+
+
+/* =========================================================
+   ADD SCOPE
+========================================================= */
+
+function addScope() {
+
+    const store =
+        getStore(selectedStoreNumber);
+
+    if (!store) {
+        return;
+    }
+
+
+    const night =
+        Number(
+            document.getElementById(
+                "scopeNight"
+            ).value
+        );
+
+
+    const description =
+        document.getElementById(
+            "scopeDescription"
+        ).value.trim();
+
+
+    if (!description) {
+
+        alert(
+            "Please enter a scope description."
+        );
+
+        return;
+    }
+
+
+    /*
+       IMPORTANT:
+       New scope ALWAYS starts as Not Started.
+    */
+
+    store.tasks.push({
+
+        id: Date.now(),
+
+        night: night,
+
+        description: description,
+
+        status: "Not Started",
+
+        history: []
+
+    });
+
+
+    document.getElementById(
+        "scopeDescription"
+    ).value = "";
+
+
+    /*
+       Deployment Team action is intentionally
+       NOT added to Recent Updates.
+    */
+
+    renderStoreDetail();
+
+}
+
+
+/* =========================================================
+   SCOPE MANAGEMENT DROPDOWN
+========================================================= */
+
+function renderScopeManagementOptions() {
+
+    const store =
+        getStore(selectedStoreNumber);
+
+    if (!store) {
+        return;
+    }
+
+
+    const select =
+        document.getElementById(
+            "manageScope"
+        );
+
+
+    const previousValue =
+        select.value;
+
+
+    select.innerHTML = "";
+
+
+    if (store.tasks.length === 0) {
+
+        const option =
+            document.createElement("option");
+
+        option.value = "";
+
+        option.textContent =
+            "No scopes available";
+
+        select.appendChild(option);
+
+        return;
+    }
+
+
+    store.tasks.forEach(task => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = task.id;
+
+
+        option.textContent =
+            `Night ${task.night} — ${task.description} (${task.status})`;
+
+
+        select.appendChild(option);
+
+    });
+
+
+    if (
+        store.tasks.some(
+            task =>
+                String(task.id) === previousValue
+        )
+    ) {
+
+        select.value = previousValue;
+
+    }
+
+}
+
+
+/* =========================================================
+   SCOPE ACTION UI
+========================================================= */
+
+function handleScopeActionChange() {
+
+    const action =
+        document.getElementById(
+            "scopeAction"
+        ).value;
+
+
+    const reasonGroup =
+        document.getElementById(
+            "scopeReasonGroup"
+        );
+
+
+    const moveNightGroup =
+        document.getElementById(
+            "moveNightGroup"
+        );
+
+
+    reasonGroup.classList.add("hidden");
+
+    moveNightGroup.classList.add("hidden");
+
+
+    if (action === "pending") {
+
+        reasonGroup.classList.remove("hidden");
+
+    }
+
+
+    if (action === "cancel") {
+
+        reasonGroup.classList.remove("hidden");
+
+    }
+
+
+    if (action === "move") {
+
+        reasonGroup.classList.remove("hidden");
+
+        moveNightGroup.classList.remove("hidden");
+
+    }
+
+}
+
+
+/* =========================================================
+   APPLY SCOPE MANAGEMENT
+========================================================= */
+
+function applyScopeManagement() {
+
+    const store =
+        getStore(selectedStoreNumber);
+
+    if (!store) {
+        return;
+    }
+
+
+    const taskId =
+        document.getElementById(
+            "manageScope"
+        ).value;
+
+
+    const action =
+        document.getElementById(
+            "scopeAction"
+        ).value;
+
+
+    const reason =
+        document.getElementById(
+            "scopeReason"
+        ).value.trim();
+
+
+    const task =
+        store.tasks.find(
+            item =>
+                String(item.id) === String(taskId)
+        );
+
+
+    if (!task) {
+
+        alert(
+            "Please select a scope."
+        );
+
+        return;
+    }
+
+
+    if (!action) {
+
+        alert(
+            "Please select an action."
+        );
+
+        return;
+    }
+
+
+    /*
+       A completed or cancelled scope
+       should not be moved/cancelled again.
+    */
+
+    if (
+        task.status === "Completed" &&
+        action !== "pending"
+    ) {
+
+        alert(
+            "A completed scope cannot be cancelled or moved."
+        );
+
+        return;
+    }
+
+
+    if (
+        task.status === "Cancelled" &&
+        action !== "cancel"
+    ) {
+
+        alert(
+            "A cancelled scope cannot be moved or changed."
+        );
+
+        return;
+    }
+
+
+    if (!reason) {
+
+        alert(
+            "Please enter a reason or note."
+        );
+
+        return;
+    }
+
+
+    const timestamp =
+        getCurrentTimestamp();
+
+
+    /* =========================================
+       PENDING
+    ========================================== */
+
+    if (action === "pending") {
+
+        const previousStatus =
+            task.status;
+
+
+        task.status = "Pending";
+
+
+        task.history =
+            task.history || [];
+
+
+        task.history.push({
+
+            action: "Marked as Pending",
+
+            timestamp: timestamp,
+
+            night: task.night,
+
+            previousStatus: previousStatus,
+
+            reason: reason
+
+        });
+
+
+        showScopeManagementMessage(
+            "Scope marked as Pending."
+        );
+
+    }
+
+
+    /* =========================================
+       CANCEL
+    ========================================== */
+
+    if (action === "cancel") {
+
+        const previousStatus =
+            task.status;
+
+
+        task.status = "Cancelled";
+
+
+        task.cancellationReason =
+            reason;
+
+
+        task.history =
+            task.history || [];
+
+
+        task.history.push({
+
+            action: "Cancelled",
+
+            timestamp: timestamp,
+
+            night: task.night,
+
+            previousStatus: previousStatus,
+
+            reason: reason
+
+        });
+
+
+        showScopeManagementMessage(
+            "Scope cancelled."
+        );
+
+    }
+
+
+    /* =========================================
+       MOVE TO ANOTHER NIGHT
+    ========================================== */
+
+    if (action === "move") {
+
+        const targetNight =
+            Number(
+                document.getElementById(
+                    "moveToNight"
+                ).value
+            );
+
+
+        const originalNight =
+            task.night;
+
+
+        if (
+            targetNight === originalNight
+        ) {
+
+            alert(
+                "Please select a different deployment night."
+            );
+
+            return;
+        }
+
+
+        const previousStatus =
+            task.status;
+
+
+        task.originalNight =
+            task.originalNight ||
+            originalNight;
+
+
+        task.night =
+            targetNight;
+
+
+        /*
+           Once moved, it becomes a fresh
+           pending scope for the technician
+           on the new night.
+        */
+
+        task.status = "Not Started";
+
+
+        task.moveReason =
+            reason;
+
+
+        task.history =
+            task.history || [];
+
+
+        task.history.push({
+
+            action: "Moved to Another Night",
+
+            timestamp: timestamp,
+
+            fromNight: originalNight,
+
+            toNight: targetNight,
+
+            previousStatus: previousStatus,
+
+            reason: reason
+
+        });
+
+
+        showScopeManagementMessage(
+            `Scope moved from Night ${originalNight} to Night ${targetNight}.`
+        );
+
+    }
+
+
+    /*
+       Deployment Team action:
+       NEVER added to Recent Updates.
+    */
+
+
+    document.getElementById(
+        "scopeAction"
+    ).value = "";
+
+
+    document.getElementById(
+        "scopeReason"
+    ).value = "";
+
+
+    renderStoreDetail();
+
+}
+
+
+/* =========================================================
+   MANAGEMENT MESSAGE
+========================================================= */
+
+function showScopeManagementMessage(
+    message
+) {
+
+    const element =
+        document.getElementById(
+            "scopeManagementMessage"
+        );
+
+
+    element.textContent =
+        message;
+
+
+    setTimeout(
+        function () {
+
+            element.textContent = "";
+
+        },
+        3000
+    );
+
+}
+
+
+/* =========================================================
+   NIGHT SECTIONS
 ========================================================= */
 
 function renderNightSections() {
 
     const store =
-        getStore(
-            selectedStoreNumber
-        );
+        getStore(selectedStoreNumber);
+
+    if (!store) {
+        return;
+    }
 
 
     const container =
@@ -791,7 +1324,7 @@ function renderNightSections() {
         night++
     ) {
 
-        const tasks =
+        const nightTasks =
             store.tasks.filter(
                 task =>
                     task.night === night
@@ -799,84 +1332,71 @@ function renderNightSections() {
 
 
         const section =
-            document.createElement(
-                "div"
-            );
-
+            document.createElement("div");
 
         section.className =
             "night-section";
 
 
-        section.innerHTML = `
+        const header =
+            document.createElement("div");
 
-            <div class="night-header">
-
-                <h4>
-                    Night ${night}
-                </h4>
-
-                <span>
-                    ${tasks.length}
-                    scope item(s)
-                </span>
-
-            </div>
+        header.className =
+            "night-header";
 
 
-            <div
-                class="scope-list"
-                id="night-${night}"
-            ></div>
+        header.innerHTML = `
+
+            <h4>
+                Night ${night}
+            </h4>
+
+            <span>
+                ${nightTasks.length}
+                ${nightTasks.length === 1
+                    ? "scope"
+                    : "scopes"}
+            </span>
 
         `;
 
 
-        container.appendChild(
-            section
-        );
+        section.appendChild(header);
 
 
-        const scopeList =
-            section.querySelector(
-                ".scope-list"
-            );
+        const list =
+            document.createElement("div");
+
+        list.className =
+            "scope-list";
 
 
-        if (!tasks.length) {
+        if (nightTasks.length === 0) {
 
-            scopeList.innerHTML = `
-
+            list.innerHTML = `
                 <div class="empty-scope">
-
-                    No scope added for
-                    Night ${night}.
-
+                    No deployment scope assigned.
                 </div>
-
             `;
 
-            continue;
+        } else {
+
+            nightTasks.forEach(
+                task => {
+
+                    list.appendChild(
+                        createScopeElement(task)
+                    );
+
+                }
+            );
 
         }
 
 
-        tasks.forEach(
-            (task, taskIndex) => {
+        section.appendChild(list);
 
-                const taskElement =
-                    createScopeElement(
-                        task,
-                        taskIndex
-                    );
-
-
-                scopeList.appendChild(
-                    taskElement
-                );
-
-            }
-        );
+        container.appendChild(section);
 
     }
 
@@ -884,83 +1404,220 @@ function renderNightSections() {
 
 
 /* =========================================================
-   CREATE SCOPE ITEM
+   CREATE SCOPE ELEMENT
 ========================================================= */
 
-function createScopeElement(
-    task,
-    taskIndex
-) {
+function createScopeElement(task) {
 
-    const div =
-        document.createElement(
-            "div"
-        );
+    const item =
+        document.createElement("div");
 
-
-    div.className =
+    item.className =
         "scope-item";
 
 
-    let pressTimer = null;
-
-
-    function startPress(event) {
-
-        if (
-            event.type ===
-                "mousedown" &&
-            event.button !== 0
-        ) {
-
-            return;
-
-        }
-
-
-        pressTimer =
-            setTimeout(
-                () => {
-
-                    div.classList.add(
-                        "long-press-active"
-                    );
-
-                },
-                700
-            );
-
-    }
-
-
-    function cancelPress() {
-
-        clearTimeout(
-            pressTimer
+    const statusClass =
+        getScopeStatusClass(
+            task.status
         );
 
+
+    const historyHtml =
+        buildScopeHistoryHtml(task);
+
+
+    item.innerHTML = `
+
+        <div class="scope-main">
+
+            <div class="scope-description">
+                ${task.description}
+            </div>
+
+            <div class="
+                scope-status
+                ${statusClass}
+            ">
+                ${task.status}
+            </div>
+
+        </div>
+
+
+        ${historyHtml}
+
+
+        <button
+            class="scope-delete"
+            onclick="deleteScope(event, ${task.id})"
+        >
+            Delete Scope
+        </button>
+
+    `;
+
+
+    setupLongPress(
+        item,
+        task.id
+    );
+
+
+    return item;
+
+}
+
+
+/* =========================================================
+   SCOPE HISTORY
+========================================================= */
+
+function buildScopeHistoryHtml(task) {
+
+    if (
+        !task.history ||
+        task.history.length === 0
+    ) {
+
+        return "";
+
     }
 
 
-    div.addEventListener(
+    let historyItems = "";
+
+
+    task.history.forEach(
+        history => {
+
+            let text = "";
+
+
+            if (
+                history.action ===
+                "Moved to Another Night"
+            ) {
+
+                text =
+                    `Moved from Night ${history.fromNight} to Night ${history.toNight} — ${history.reason}`;
+
+            }
+
+
+            else if (
+                history.action ===
+                "Cancelled"
+            ) {
+
+                text =
+                    `Cancelled — ${history.reason}`;
+
+            }
+
+
+            else if (
+                history.action ===
+                "Marked as Pending"
+            ) {
+
+                text =
+                    `Pending — ${history.reason}`;
+
+            }
+
+
+            else {
+
+                text =
+                    `${history.action} — ${history.reason || ""}`;
+
+            }
+
+
+            historyItems += `
+
+                <div class="scope-history-item">
+                    ${text}
+                    <br>
+                    ${formatTimestamp(history.timestamp)}
+                </div>
+
+            `;
+
+        }
+    );
+
+
+    return `
+
+        <div class="scope-history">
+
+            <strong>History</strong>
+
+            ${historyItems}
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   LONG PRESS
+========================================================= */
+
+function setupLongPress(
+    element,
+    taskId
+) {
+
+    let timer = null;
+
+
+    const startPress =
+        function () {
+
+            timer =
+                setTimeout(
+                    function () {
+
+                        element.classList.add(
+                            "long-press-active"
+                        );
+
+                    },
+                    600
+                );
+
+        };
+
+
+    const cancelPress =
+        function () {
+
+            clearTimeout(timer);
+
+        };
+
+
+    element.addEventListener(
         "mousedown",
         startPress
     );
 
-
-    div.addEventListener(
+    element.addEventListener(
         "mouseup",
         cancelPress
     );
 
-
-    div.addEventListener(
+    element.addEventListener(
         "mouseleave",
         cancelPress
     );
 
 
-    div.addEventListener(
+    element.addEventListener(
         "touchstart",
         startPress,
         {
@@ -968,163 +1625,10 @@ function createScopeElement(
         }
     );
 
-
-    div.addEventListener(
+    element.addEventListener(
         "touchend",
         cancelPress
     );
-
-
-    div.addEventListener(
-        "touchmove",
-        cancelPress
-    );
-
-
-    div.innerHTML = `
-
-        <div class="scope-main">
-
-            <div class="scope-description">
-
-                ${task.description}
-
-            </div>
-
-
-            <div class="scope-status">
-
-                ${task.status}
-
-            </div>
-
-        </div>
-
-
-        <button
-            class="scope-delete"
-            onclick="deleteScope(
-                ${taskIndex},
-                ${task.night}
-            )"
-        >
-            Delete
-        </button>
-
-    `;
-
-
-    return div;
-
-}
-
-
-/* =========================================================
-   ADD SCOPE
-========================================================= */
-
-function addScope() {
-
-    const store =
-        getStore(
-            selectedStoreNumber
-        );
-
-
-    const night =
-        Number(
-            document
-                .getElementById(
-                    "scopeNight"
-                )
-                .value
-        );
-
-
-    const description =
-        document
-            .getElementById(
-                "scopeDescription"
-            )
-            .value
-            .trim();
-
-
-    const status =
-        document
-            .getElementById(
-                "scopeStatus"
-            )
-            .value;
-
-
-    if (!description) {
-
-        alert(
-            "Please enter the deployment scope."
-        );
-
-        return;
-
-    }
-
-
-    store.tasks.push({
-
-        night:
-            night,
-
-        description:
-            description,
-
-        status:
-            status
-
-    });
-
-
-    /*
-        If a scope is added to a store
-        that was Not Started, move it
-        to In Progress.
-    */
-
-    if (
-        store.status ===
-        "Not Started"
-    ) {
-
-        store.status =
-            "In Progress";
-
-    }
-
-
-    recentUpdates.push({
-
-        store:
-            store.number,
-
-        technician:
-            store.technician,
-
-        update:
-            `Added scope "${description}" to Night ${night}.`,
-
-        timestamp:
-            getCurrentTimestamp()
-
-    });
-
-
-    document
-        .getElementById(
-            "scopeDescription"
-        )
-        .value = "";
-
-
-    renderStoreDetail();
 
 }
 
@@ -1134,74 +1638,55 @@ function addScope() {
 ========================================================= */
 
 function deleteScope(
-    taskIndex,
-    night
+    event,
+    taskId
 ) {
 
+    event.stopPropagation();
+
+
     const store =
-        getStore(
-            selectedStoreNumber
-        );
+        getStore(selectedStoreNumber);
 
-
-    const tasks =
-        store.tasks.filter(
-            task =>
-                task.night === night
-        );
+    if (!store) {
+        return;
+    }
 
 
     const task =
-        tasks[taskIndex];
+        store.tasks.find(
+            item =>
+                item.id === taskId
+        );
 
 
     if (!task) {
-
         return;
-
     }
 
 
     const confirmed =
         confirm(
-            `Delete "${task.description}" from Night ${night}?`
+            `Delete "${task.description}"?`
         );
 
 
     if (!confirmed) {
-
         return;
-
     }
 
 
-    const actualIndex =
-        store.tasks.indexOf(
-            task
+    store.tasks =
+        store.tasks.filter(
+            item =>
+                item.id !== taskId
         );
 
 
-    store.tasks.splice(
-        actualIndex,
-        1
-    );
-
-
-    recentUpdates.push({
-
-        store:
-            store.number,
-
-        technician:
-            store.technician,
-
-        update:
-            `Deleted scope "${task.description}" from Night ${night}.`,
-
-        timestamp:
-            getCurrentTimestamp()
-
-    });
+    /*
+       Deployment Team deletion is NOT
+       added to Recent Updates.
+    */
 
 
     renderStoreDetail();
@@ -1210,162 +1695,43 @@ function deleteScope(
 
 
 /* =========================================================
-   EDIT STORE + TECHNICIAN
+   EDIT STORE INFO
 ========================================================= */
 
 function editStoreInfo() {
 
     const store =
-        getStore(
-            selectedStoreNumber
-        );
+        getStore(selectedStoreNumber);
 
-
-    const newStoreNumber =
-        prompt(
-            "Enter Store Number:",
-            store.number
-        );
-
-
-    if (
-        newStoreNumber === null ||
-        !newStoreNumber.trim()
-    ) {
-
+    if (!store) {
         return;
-
     }
 
 
-    const newTechnician =
+    const technician =
         prompt(
-            "Enter Technician Name:",
+            "Technician name:",
             store.technician
         );
 
 
     if (
-        newTechnician === null ||
-        !newTechnician.trim()
+        technician === null ||
+        technician.trim() === ""
     ) {
 
         return;
-
     }
-
-
-    const cleanStoreNumber =
-        newStoreNumber.trim();
-
-
-    const duplicate =
-        stores.some(
-            existing =>
-                existing !== store &&
-                existing.number ===
-                    cleanStoreNumber
-        );
-
-
-    if (duplicate) {
-
-        alert(
-            "That Store Number already exists."
-        );
-
-        return;
-
-    }
-
-
-    const oldStoreNumber =
-        store.number;
-
-
-    store.number =
-        cleanStoreNumber;
 
 
     store.technician =
-        newTechnician.trim();
+        technician.trim();
 
 
-    selectedStoreNumber =
-        cleanStoreNumber;
-
-
-    recentUpdates.push({
-
-        store:
-            cleanStoreNumber,
-
-        technician:
-            store.technician,
-
-        update:
-            `Store information updated from Store ${oldStoreNumber}.`,
-
-        timestamp:
-            getCurrentTimestamp()
-
-    });
-
-
-    renderStoreDetail();
-
-}
-
-
-/* =========================================================
-   SAVE NIGHT ASSIGNMENT
-========================================================= */
-
-function saveNightAssignment() {
-
-    const store =
-        getStore(
-            selectedStoreNumber
-        );
-
-
-    const night =
-        Number(
-            document
-                .getElementById(
-                    "assignedNight"
-                )
-                .value
-        );
-
-
-    store.currentNight =
-        night;
-
-
-    recentUpdates.push({
-
-        store:
-            store.number,
-
-        technician:
-            store.technician,
-
-        update:
-            `Technician scope assignment changed to Night ${night}.`,
-
-        timestamp:
-            getCurrentTimestamp()
-
-    });
-
-
-    document
-        .getElementById(
-            "assignmentMessage"
-        )
-        .textContent =
-        `Assignment saved. Technician is currently assigned to Night ${night}.`;
+    /*
+       Deployment Team edit is NOT
+       added to Recent Updates.
+    */
 
 
     renderStoreDetail();
@@ -1379,132 +1745,79 @@ function saveNightAssignment() {
 
 function backToOverview() {
 
-    document
-        .getElementById(
-            "storeDetailPage"
-        )
-        .classList.add(
-            "hidden"
-        );
+    selectedStoreNumber = null;
 
 
-    document
-        .getElementById(
-            "overviewPage"
-        )
-        .classList.remove(
-            "hidden"
-        );
+    document.getElementById(
+        "storeDetailPage"
+    ).classList.add("hidden");
+
+
+    document.getElementById(
+        "overviewPage"
+    ).classList.remove("hidden");
 
 
     renderOverview();
 
-}
 
-
-/* =========================================================
-   TIMESTAMP
-========================================================= */
-
-function getCurrentTimestamp() {
-
-    const now =
-        new Date();
-
-
-    const year =
-        now.getFullYear();
-
-
-    const month =
-        String(
-            now.getMonth() + 1
-        )
-        .padStart(
-            2,
-            "0"
-        );
-
-
-    const day =
-        String(
-            now.getDate()
-        )
-        .padStart(
-            2,
-            "0"
-        );
-
-
-    const hours =
-        String(
-            now.getHours()
-        )
-        .padStart(
-            2,
-            "0"
-        );
-
-
-    const minutes =
-        String(
-            now.getMinutes()
-        )
-        .padStart(
-            2,
-            "0"
-        );
-
-
-    return `${year}-${month}-${day} ${hours}:${minutes}`;
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
 
 }
 
 
 /* =========================================================
-   DISPLAY TIMESTAMP
+   FUTURE TECHNICIAN UPDATE HELPER
 ========================================================= */
 
-function formatTimestamp(
-    timestamp
+/*
+   This function is ready for the future
+   Technician View.
+
+   When a technician changes task progress,
+   we can call:
+
+   addTechnicianUpdate(
+       "0123",
+       "Started removing Register 3."
+   );
+
+   This WILL appear in Recent Updates.
+
+   Deployment Team actions DO NOT use this.
+*/
+
+function addTechnicianUpdate(
+    storeNumber,
+    message
 ) {
 
-    if (!timestamp) {
+    const store =
+        getStore(storeNumber);
 
-        return "";
-
+    if (!store) {
+        return;
     }
 
 
-    const date =
-        new Date(
-            timestamp.replace(
-                " ",
-                "T"
-            )
-        );
+    recentUpdates.unshift({
+
+        storeNumber: store.storeNumber,
+
+        technician: store.technician,
+
+        message: message,
+
+        timestamp: getCurrentTimestamp(),
+
+        source: "technician"
+
+    });
 
 
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return timestamp;
-
-    }
-
-
-    return date.toLocaleString(
-        "en-US",
-        {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-            hour: "numeric",
-            minute: "2-digit"
-        }
-    );
+    renderOverview();
 
 }
