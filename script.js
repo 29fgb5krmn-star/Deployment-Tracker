@@ -16,14 +16,12 @@ let stores = [
         checkedIn: "2026-10-05 16:11",
 
         tasks: [
-
             {
                 id: 1,
                 night: 1,
                 description: "Install Network Equipment",
                 status: "Completed",
-                history: [],
-                originalScopeId: null
+                history: []
             },
 
             {
@@ -31,8 +29,7 @@ let stores = [
                 night: 1,
                 description: "Configure POS Terminals",
                 status: "Completed",
-                history: [],
-                originalScopeId: null
+                history: []
             },
 
             {
@@ -40,8 +37,7 @@ let stores = [
                 night: 2,
                 description: "Install CCTV Cameras",
                 status: "Completed",
-                history: [],
-                originalScopeId: null
+                history: []
             },
 
             {
@@ -49,8 +45,7 @@ let stores = [
                 night: 3,
                 description: "Test Network Connectivity",
                 status: "In Progress",
-                history: [],
-                originalScopeId: null
+                history: []
             },
 
             {
@@ -58,8 +53,7 @@ let stores = [
                 night: 3,
                 description: "Validate Registers",
                 status: "Not Started",
-                history: [],
-                originalScopeId: null
+                history: []
             },
 
             {
@@ -67,10 +61,8 @@ let stores = [
                 night: 4,
                 description: "Final System Validation",
                 status: "Not Started",
-                history: [],
-                originalScopeId: null
+                history: []
             }
-
         ]
     },
 
@@ -82,14 +74,12 @@ let stores = [
         checkedIn: "2026-10-05 16:11",
 
         tasks: [
-
             {
                 id: 7,
                 night: 1,
                 description: "Install Network Equipment",
                 status: "Completed",
-                history: [],
-                originalScopeId: null
+                history: []
             },
 
             {
@@ -97,10 +87,8 @@ let stores = [
                 night: 1,
                 description: "Configure POS Terminals",
                 status: "Completed",
-                history: [],
-                originalScopeId: null
+                history: []
             }
-
         ]
     },
 
@@ -108,7 +96,7 @@ let stores = [
     {
         storeNumber: "0789",
         technician: "Technician C",
-        currentNight: 1,
+        currentNight: 2,
         checkedIn: "",
         tasks: []
     },
@@ -144,7 +132,7 @@ let stores = [
 
 
 // ============================================================
-// GLOBAL VARIABLES
+// VARIABLES
 // ============================================================
 
 let selectedStoreNumber = null;
@@ -155,10 +143,12 @@ let nextTaskId = 100;
 
 
 // ============================================================
-// INITIAL LOAD
+// PAGE LOAD
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", function () {
+
+    seedExistingCheckIns();
 
     renderOverview();
 
@@ -166,7 +156,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 // ============================================================
-// HELPERS
+// BASIC HELPERS
 // ============================================================
 
 function getSelectedStore() {
@@ -184,15 +174,60 @@ function getCurrentTimestamp() {
 
     const year = now.getFullYear();
 
-    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const month =
+        String(now.getMonth() + 1).padStart(2, "0");
 
-    const day = String(now.getDate()).padStart(2, "0");
+    const day =
+        String(now.getDate()).padStart(2, "0");
 
-    const hours = String(now.getHours()).padStart(2, "0");
+    const hours =
+        String(now.getHours()).padStart(2, "0");
 
-    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const minutes =
+        String(now.getMinutes()).padStart(2, "0");
 
     return `${year}-${month}-${day} ${hours}:${minutes}`;
+
+}
+
+
+function formatCheckInTime(timestamp) {
+
+    if (!timestamp) {
+        return "";
+    }
+
+    const parts = timestamp.split(" ");
+
+    if (parts.length !== 2) {
+        return timestamp;
+    }
+
+    const dateParts = parts[0].split("-");
+    const timeParts = parts[1].split(":");
+
+    const year = Number(dateParts[0]);
+    const month = Number(dateParts[1]) - 1;
+    const day = Number(dateParts[2]);
+
+    const hour = Number(timeParts[0]);
+    const minute = Number(timeParts[1]);
+
+    const date = new Date(
+        year,
+        month,
+        day,
+        hour,
+        minute
+    );
+
+    return date.toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+    });
 
 }
 
@@ -201,8 +236,7 @@ function getStatusClass(status) {
 
     return status
         .toLowerCase()
-        .replaceAll(" ", "-")
-        .replaceAll("'", "");
+        .replaceAll(" ", "-");
 
 }
 
@@ -210,9 +244,7 @@ function getStatusClass(status) {
 function getScopeStatusClass(status) {
 
     if (status === "Moved to Another Night") {
-
         return "moved";
-
     }
 
     return getStatusClass(status);
@@ -227,49 +259,37 @@ function getScopeStatusClass(status) {
 function getStoreStatus(store) {
 
     if (!store.tasks || store.tasks.length === 0) {
-
         return "Not Started";
-
     }
 
-
-    const activeTasks = store.tasks.filter(
-        task => task.status !== "Cancelled"
-    );
-
+    const activeTasks =
+        store.tasks.filter(
+            task => task.status !== "Cancelled"
+        );
 
     if (activeTasks.length === 0) {
-
         return "Cancelled";
-
     }
 
-
-    const allCompleted = activeTasks.every(
-        task => task.status === "Completed"
-    );
-
+    const allCompleted =
+        activeTasks.every(
+            task => task.status === "Completed"
+        );
 
     if (allCompleted) {
-
         return "Completed";
-
     }
 
-
-    const hasProgress = activeTasks.some(
-        task =>
-            task.status === "In Progress" ||
-            task.status === "Completed"
-    );
-
+    const hasProgress =
+        activeTasks.some(
+            task =>
+                task.status === "In Progress" ||
+                task.status === "Completed"
+        );
 
     if (hasProgress) {
-
         return "In Progress";
-
     }
-
 
     return "Not Started";
 
@@ -283,28 +303,22 @@ function getStoreStatus(store) {
 function calculateProgress(store) {
 
     if (!store.tasks || store.tasks.length === 0) {
-
         return 0;
-
     }
 
-
-    const activeTasks = store.tasks.filter(
-        task => task.status !== "Cancelled"
-    );
-
+    const activeTasks =
+        store.tasks.filter(
+            task => task.status !== "Cancelled"
+        );
 
     if (activeTasks.length === 0) {
-
         return 0;
-
     }
 
-
-    const completedTasks = activeTasks.filter(
-        task => task.status === "Completed"
-    );
-
+    const completedTasks =
+        activeTasks.filter(
+            task => task.status === "Completed"
+        );
 
     return Math.round(
         (completedTasks.length / activeTasks.length) * 100
@@ -325,29 +339,20 @@ function renderOverview() {
     const storeDetailPage =
         document.getElementById("storeDetailPage");
 
-
     if (overviewPage) {
-
         overviewPage.classList.remove("hidden");
-
     }
 
-
     if (storeDetailPage) {
-
         storeDetailPage.classList.add("hidden");
-
     }
 
 
     const storeGrid =
         document.getElementById("storeGrid");
 
-
     if (!storeGrid) {
-
         return;
-
     }
 
 
@@ -366,7 +371,6 @@ function renderOverview() {
         const card =
             document.createElement("div");
 
-
         card.className =
             "store-card";
 
@@ -379,6 +383,59 @@ function renderOverview() {
 
         };
 
+
+        let checkInHTML;
+
+
+        // ----------------------------------------------------
+        // CHECK-IN DISPLAY
+        // ----------------------------------------------------
+
+        if (store.checkedIn) {
+
+            checkInHTML = `
+
+                <div class="store-checkin">
+
+                    <button
+                        class="store-checkin-button checked"
+                        disabled
+                    >
+                        ✓ Checked In
+                    </button>
+
+                    <div class="check-in-time">
+                        Checked in at
+                        ${formatCheckInTime(store.checkedIn)}
+                    </div>
+
+                </div>
+
+            `;
+
+        } else {
+
+            checkInHTML = `
+
+                <div class="store-checkin">
+
+                    <button
+                        class="store-checkin-button"
+                        onclick="event.stopPropagation(); checkIn('${store.storeNumber}')"
+                    >
+                        Technician Check-In
+                    </button>
+
+                </div>
+
+            `;
+
+        }
+
+
+        // ----------------------------------------------------
+        // STORE CARD
+        // ----------------------------------------------------
 
         card.innerHTML = `
 
@@ -411,14 +468,6 @@ function renderOverview() {
             </div>
 
 
-            <div class="store-info-line">
-
-                <strong>Progress:</strong>
-                ${progress}%
-
-            </div>
-
-
             <div class="store-progress">
 
                 <div class="progress-bar">
@@ -431,49 +480,13 @@ function renderOverview() {
                 </div>
 
                 <div class="progress-text">
-                    ${progress}% complete
+                    ${progress}% Complete
                 </div>
 
             </div>
 
 
-            <div class="store-checkin">
-
-                ${
-                    store.checkedIn
-
-                    ?
-
-                    `
-                        <div class="checked-in">
-                            ✓ Checked In
-                        </div>
-
-                        <div class="check-in-time">
-                            ${store.checkedIn}
-                        </div>
-
-                        <button
-                            class="store-checkin-button checked"
-                            disabled
-                        >
-                            Checked In
-                        </button>
-                    `
-
-                    :
-
-                    `
-                        <button
-                            class="store-checkin-button"
-                            onclick="event.stopPropagation(); checkIn('${store.storeNumber}')"
-                        >
-                            Technician Check-In
-                        </button>
-                    `
-                }
-
-            </div>
+            ${checkInHTML}
 
         `;
 
@@ -516,57 +529,79 @@ function renderSummary() {
 
     const checkedInStores =
         stores.filter(
-            store =>
-                !!store.checkedIn
+            store => !!store.checkedIn
         ).length;
 
 
     const totalElement =
         document.getElementById("totalStores");
 
-
     const inProgressElement =
         document.getElementById("inProgressStores");
 
-
     const completedElement =
         document.getElementById("completedStores");
-
 
     const checkedInElement =
         document.getElementById("checkedInStores");
 
 
     if (totalElement) {
-
         totalElement.textContent =
             totalStores;
-
     }
-
 
     if (inProgressElement) {
-
         inProgressElement.textContent =
             inProgressStores;
-
     }
-
 
     if (completedElement) {
-
         completedElement.textContent =
             completedStores;
-
     }
-
 
     if (checkedInElement) {
-
         checkedInElement.textContent =
             checkedInStores;
-
     }
+
+}
+
+
+// ============================================================
+// EXISTING CHECK-IN HISTORY
+// ============================================================
+
+function seedExistingCheckIns() {
+
+    stores.forEach(store => {
+
+        if (!store.checkedIn) {
+            return;
+        }
+
+
+        recentUpdates.push({
+
+            storeNumber:
+                store.storeNumber,
+
+            technician:
+                store.technician,
+
+            message:
+                "Technician checked in",
+
+            timestamp:
+                store.checkedIn,
+
+            source:
+                "check-in"
+
+        });
+
+    });
 
 }
 
@@ -585,16 +620,12 @@ function checkIn(storeNumber) {
 
 
     if (!store) {
-
         return;
-
     }
 
 
     if (store.checkedIn) {
-
         return;
-
     }
 
 
@@ -642,9 +673,7 @@ function renderRecentUpdates() {
 
 
     if (!container) {
-
         return;
-
     }
 
 
@@ -670,7 +699,6 @@ function renderRecentUpdates() {
         `;
 
         return;
-
     }
 
 
@@ -678,7 +706,6 @@ function renderRecentUpdates() {
 
         const item =
             document.createElement("div");
-
 
         item.className =
             "update-item";
@@ -733,22 +760,17 @@ function openStoreDetail(storeNumber) {
     const overviewPage =
         document.getElementById("overviewPage");
 
-
     const storeDetailPage =
         document.getElementById("storeDetailPage");
 
 
     if (overviewPage) {
-
         overviewPage.classList.add("hidden");
-
     }
 
 
     if (storeDetailPage) {
-
         storeDetailPage.classList.remove("hidden");
-
     }
 
 
@@ -768,9 +790,7 @@ function renderStoreDetail() {
 
 
     if (!store) {
-
         return;
-
     }
 
 
@@ -779,30 +799,25 @@ function renderStoreDetail() {
             "detailStoreNumber"
         );
 
-
     const detailStoreNumberInfo =
         document.getElementById(
             "detailStoreNumberInfo"
         );
-
 
     const detailTechnician =
         document.getElementById(
             "detailTechnician"
         );
 
-
     const detailCurrentNight =
         document.getElementById(
             "detailCurrentNight"
         );
 
-
     const detailCheckIn =
         document.getElementById(
             "detailCheckIn"
         );
-
 
     const detailStoreStatus =
         document.getElementById(
@@ -852,17 +867,11 @@ function renderStoreDetail() {
 
     if (detailStoreStatus) {
 
-        const status =
-            getStoreStatus(store);
-
-
         detailStoreStatus.textContent =
-            status;
+            getStoreStatus(store);
 
     }
 
-
-    // Set current assigned night dropdown.
 
     const assignedNight =
         document.getElementById(
@@ -898,13 +907,8 @@ function renderNightSections() {
 
 
     if (!container) {
-
         return;
-
     }
-
-
-    container.innerHTML = "";
 
 
     const store =
@@ -912,22 +916,17 @@ function renderNightSections() {
 
 
     if (!store) {
-
         return;
-
     }
 
 
-    for (
-        let night = 1;
-        night <= 5;
-        night++
-    ) {
+    container.innerHTML = "";
 
+
+    for (let night = 1; night <= 5; night++) {
 
         const section =
             document.createElement("div");
-
 
         section.className =
             "night-section";
@@ -942,7 +941,6 @@ function renderNightSections() {
 
         const header =
             document.createElement("div");
-
 
         header.className =
             "night-header";
@@ -964,7 +962,6 @@ function renderNightSections() {
 
         const scopeList =
             document.createElement("div");
-
 
         scopeList.className =
             "scope-list";
@@ -1021,7 +1018,7 @@ function createScopeElement(task) {
 
 
     element.className =
-        `scope-item ${statusClass}`;
+        "scope-item";
 
 
     element.setAttribute(
@@ -1033,7 +1030,6 @@ function createScopeElement(task) {
     const main =
         document.createElement("div");
 
-
     main.className =
         "scope-main";
 
@@ -1041,10 +1037,8 @@ function createScopeElement(task) {
     const description =
         document.createElement("div");
 
-
     description.className =
         "scope-description";
-
 
     description.textContent =
         task.description;
@@ -1053,10 +1047,8 @@ function createScopeElement(task) {
     const status =
         document.createElement("span");
 
-
     status.className =
         `scope-status ${statusClass}`;
-
 
     status.textContent =
         task.status;
@@ -1066,11 +1058,12 @@ function createScopeElement(task) {
 
     main.appendChild(status);
 
-
     element.appendChild(main);
 
 
-    // History
+    // --------------------------------------------------------
+    // HISTORY
+    // --------------------------------------------------------
 
     if (
         task.history &&
@@ -1080,14 +1073,11 @@ function createScopeElement(task) {
         const historyContainer =
             document.createElement("div");
 
-
         historyContainer.className =
             "scope-history";
 
-
         historyContainer.innerHTML =
             buildScopeHistoryHtml(task);
-
 
         element.appendChild(
             historyContainer
@@ -1096,15 +1086,18 @@ function createScopeElement(task) {
     }
 
 
-    // Delete button
+    // --------------------------------------------------------
+    // DELETE BUTTON
+    // --------------------------------------------------------
 
     const deleteButton =
         document.createElement("button");
 
-
     deleteButton.className =
         "scope-delete";
 
+    deleteButton.type =
+        "button";
 
     deleteButton.textContent =
         "Delete";
@@ -1138,25 +1131,20 @@ function createScopeElement(task) {
 
 
         pressTimer =
-            setTimeout(
-                function () {
+            setTimeout(function () {
 
-                    element.classList.add(
-                        "long-press-active"
-                    );
+                element.classList.add(
+                    "long-press-active"
+                );
 
-                },
-                700
-            );
+            }, 700);
 
     }
 
 
     function cancelLongPress() {
 
-        clearTimeout(
-            pressTimer
-        );
+        clearTimeout(pressTimer);
 
     }
 
@@ -1164,9 +1152,7 @@ function createScopeElement(task) {
     element.addEventListener(
         "touchstart",
         startLongPress,
-        {
-            passive: true
-        }
+        { passive: true }
     );
 
 
@@ -1220,7 +1206,7 @@ function createScopeElement(task) {
 
 
 // ============================================================
-// SCOPE HISTORY
+// SCOPE HISTORY HTML
 // ============================================================
 
 function buildScopeHistoryHtml(task) {
@@ -1254,35 +1240,26 @@ function buildScopeHistoryHtml(task) {
 
                 ${
                     history.reason
-
                     ?
-
                     `
                         <div>
                             Reason: ${history.reason}
                         </div>
                     `
-
                     :
-
                     ""
                 }
 
-
                 ${
                     history.fromNight
-
                     ?
-
                     `
                         <div>
                             Night ${history.fromNight}
                             → Night ${history.toNight}
                         </div>
                     `
-
                     :
-
                     ""
                 }
 
@@ -1299,7 +1276,7 @@ function buildScopeHistoryHtml(task) {
 
 
 // ============================================================
-// ADD DEPLOYMENT SCOPE
+// ADD SCOPE
 // ============================================================
 
 function addScope() {
@@ -1309,9 +1286,7 @@ function addScope() {
 
 
     if (!store) {
-
         return;
-
     }
 
 
@@ -1320,7 +1295,6 @@ function addScope() {
             "scopeNight"
         );
 
-
     const scopeInput =
         document.getElementById(
             "scopeDescription"
@@ -1328,9 +1302,7 @@ function addScope() {
 
 
     if (!nightInput || !scopeInput) {
-
         return;
-
     }
 
 
@@ -1355,23 +1327,6 @@ function addScope() {
     }
 
 
-    const newTask = {
-
-        id: nextTaskId++,
-
-        night: night,
-
-        description: description,
-
-        status: "Not Started",
-
-        history: [],
-
-        originalScopeId: null
-
-    };
-
-
     if (!store.tasks) {
 
         store.tasks = [];
@@ -1379,9 +1334,24 @@ function addScope() {
     }
 
 
-    store.tasks.push(
-        newTask
-    );
+    store.tasks.push({
+
+        id:
+            nextTaskId++,
+
+        night:
+            night,
+
+        description:
+            description,
+
+        status:
+            "Not Started",
+
+        history:
+            []
+
+    });
 
 
     scopeInput.value = "";
@@ -1405,9 +1375,7 @@ function renderScopeManagementOptions() {
 
 
     if (!select) {
-
         return;
-
     }
 
 
@@ -1416,9 +1384,7 @@ function renderScopeManagementOptions() {
 
 
     if (!store) {
-
         return;
-
     }
 
 
@@ -1458,7 +1424,7 @@ function renderScopeManagementOptions() {
 
 
 // ============================================================
-// SCOPE ACTION CHANGE
+// ACTION CHANGE
 // ============================================================
 
 function handleScopeActionChange() {
@@ -1468,12 +1434,10 @@ function handleScopeActionChange() {
             "scopeAction"
         );
 
-
     const reasonGroup =
         document.getElementById(
             "scopeReasonGroup"
         );
-
 
     const moveGroup =
         document.getElementById(
@@ -1482,9 +1446,7 @@ function handleScopeActionChange() {
 
 
     if (!actionSelect) {
-
         return;
-
     }
 
 
@@ -1547,9 +1509,7 @@ function applyScopeManagement() {
 
 
     if (!store) {
-
         return;
-
     }
 
 
@@ -1558,18 +1518,15 @@ function applyScopeManagement() {
             "manageScope"
         );
 
-
     const actionSelect =
         document.getElementById(
             "scopeAction"
         );
 
-
     const reasonInput =
         document.getElementById(
             "scopeReason"
         );
-
 
     const targetNightSelect =
         document.getElementById(
@@ -1578,9 +1535,7 @@ function applyScopeManagement() {
 
 
     if (!scopeSelect || !actionSelect) {
-
         return;
-
     }
 
 
@@ -1668,22 +1623,12 @@ function applyScopeManagement() {
         }
 
 
-        const previousStatus =
-            task.status;
-
-
         task.status =
             "Pending";
 
 
-        task.pendingReason =
-            reason;
-
-
         if (!task.history) {
-
             task.history = [];
-
         }
 
 
@@ -1694,12 +1639,6 @@ function applyScopeManagement() {
 
             timestamp:
                 timestamp,
-
-            night:
-                task.night,
-
-            previousStatus:
-                previousStatus,
 
             reason:
                 reason
@@ -1758,14 +1697,8 @@ function applyScopeManagement() {
             "Cancelled";
 
 
-        task.cancellationReason =
-            reason;
-
-
         if (!task.history) {
-
             task.history = [];
-
         }
 
 
@@ -1776,9 +1709,6 @@ function applyScopeManagement() {
 
             timestamp:
                 timestamp,
-
-            night:
-                task.night,
 
             reason:
                 reason
@@ -1820,9 +1750,7 @@ function applyScopeManagement() {
 
 
         if (!targetNightSelect) {
-
             return;
-
         }
 
 
@@ -1830,18 +1758,6 @@ function applyScopeManagement() {
             Number(
                 targetNightSelect.value
             );
-
-
-        if (!targetNight) {
-
-            showScopeManagementMessage(
-                "Please select the target night.",
-                true
-            );
-
-            return;
-
-        }
 
 
         if (
@@ -1863,14 +1779,12 @@ function applyScopeManagement() {
 
 
         if (!task.history) {
-
             task.history = [];
-
         }
 
 
         // ----------------------------------------------------
-        // ORIGINAL SCOPE STAYS WHERE IT IS
+        // KEEP ORIGINAL SCOPE IN ORIGINAL NIGHT
         // ----------------------------------------------------
 
         task.history.push({
@@ -1894,10 +1808,10 @@ function applyScopeManagement() {
 
 
         // ----------------------------------------------------
-        // CREATE NEW COPY
+        // CREATE NEW ACTIVE COPY
         // ----------------------------------------------------
 
-        const movedTask = {
+        store.tasks.push({
 
             id:
                 nextTaskId++,
@@ -1935,17 +1849,9 @@ function applyScopeManagement() {
             ],
 
             originalScopeId:
-                task.id,
+                task.id
 
-            originalNight:
-                originalNight
-
-        };
-
-
-        store.tasks.push(
-            movedTask
-        );
+        });
 
 
         showScopeManagementMessage(
@@ -2010,9 +1916,7 @@ function deleteScope(taskId) {
 
 
     if (!store) {
-
         return;
-
     }
 
 
@@ -2024,9 +1928,7 @@ function deleteScope(taskId) {
 
 
     if (!task) {
-
         return;
-
     }
 
 
@@ -2037,9 +1939,7 @@ function deleteScope(taskId) {
 
 
     if (!confirmed) {
-
         return;
-
     }
 
 
@@ -2066,9 +1966,7 @@ function editStoreInfo() {
 
 
     if (!store) {
-
         return;
-
     }
 
 
@@ -2079,22 +1977,15 @@ function editStoreInfo() {
         );
 
 
-    if (
-        newStoreNumber === null
-    ) {
-
+    if (newStoreNumber === null) {
         return;
-
     }
 
 
     const cleanedStoreNumber =
         newStoreNumber
             .trim()
-            .replace(
-                /^Store\s*/i,
-                ""
-            );
+            .replace(/^Store\s*/i, "");
 
 
     if (!cleanedStoreNumber) {
@@ -2135,12 +2026,8 @@ function editStoreInfo() {
         );
 
 
-    if (
-        newTechnician === null
-    ) {
-
+    if (newTechnician === null) {
         return;
-
     }
 
 
@@ -2178,9 +2065,7 @@ function saveNightAssignment() {
 
 
     if (!store) {
-
         return;
-
     }
 
 
@@ -2197,9 +2082,7 @@ function saveNightAssignment() {
 
 
     if (!assignedNight) {
-
         return;
-
     }
 
 
@@ -2240,7 +2123,6 @@ function backToOverview() {
         document.getElementById(
             "overviewPage"
         );
-
 
     const storeDetailPage =
         document.getElementById(
@@ -2283,15 +2165,12 @@ function addTechnicianUpdate(
     const store =
         stores.find(
             item =>
-                item.storeNumber ===
-                storeNumber
+                item.storeNumber === storeNumber
         );
 
 
     if (!store) {
-
         return;
-
     }
 
 
@@ -2300,9 +2179,7 @@ function addTechnicianUpdate(
 
 
     if (!cleanMessage) {
-
         return;
-
     }
 
 
