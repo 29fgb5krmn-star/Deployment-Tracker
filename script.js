@@ -1062,6 +1062,27 @@ function createScopeElement(task) {
 
     element.appendChild(main);
 
+    // Show latest reason/notes if available
+if (task.history && task.history.length > 0) {
+
+    const latestHistory =
+        task.history[task.history.length - 1];
+
+    if (latestHistory.reason) {
+
+        const reason =
+            document.createElement("div");
+
+        reason.className =
+            "scope-reason";
+
+        reason.innerHTML =
+            `<strong>Reason:</strong> ${latestHistory.reason}`;
+
+        element.appendChild(reason);
+    }
+}
+
 
     // --------------------------------------------------------
     // DELETE BUTTON
