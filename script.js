@@ -157,6 +157,10 @@ let recentUpdates = [];
 
 let nextTaskId = 100;
 
+let assignmentMessageTimer = null;
+
+let scopeManagementMessageTimer = null;
+
 
 // ============================================================
 // PAGE LOAD
@@ -290,6 +294,59 @@ function getScopeStatusClass(status) {
     }
 
     return getStatusClass(status);
+
+}
+
+
+// ============================================================
+// SELECT PLACEHOLDER HELPERS
+// ============================================================
+
+function setupDeploymentNightSelect(selectId) {
+
+    const select =
+        document.getElementById(selectId);
+
+    if (!select) {
+        return;
+    }
+
+
+    // Remove any existing placeholder
+    const existingPlaceholder =
+        select.querySelector('option[data-placeholder="true"]');
+
+    if (existingPlaceholder) {
+        existingPlaceholder.remove();
+    }
+
+
+    // Create fresh placeholder
+    const placeholder =
+        document.createElement("option");
+
+    placeholder.value = "";
+
+    placeholder.textContent =
+        "Select deployment night";
+
+    placeholder.disabled = true;
+
+    placeholder.selected = true;
+
+    placeholder.setAttribute(
+        "data-placeholder",
+        "true"
+    );
+
+
+    select.insertBefore(
+        placeholder,
+        select.firstChild
+    );
+
+
+    select.value = "";
 
 }
 
@@ -909,17 +966,16 @@ function renderStoreDetail() {
     }
 
 
-    const assignedNight =
-        document.getElementById(
-            "assignedNight"
-        );
+    // Scope Assignment dropdown
+    setupDeploymentNightSelect(
+        "assignedNight"
+    );
 
 
-    if (assignedNight) {
-
-        assignedNight.value = "";
-
-    }
+    // Add Deployment Scope dropdown
+    setupDeploymentNightSelect(
+        "scopeNight"
+    );
 
 
     renderNightSections();
@@ -1109,46 +1165,87 @@ function createScopeElement(task) {
             "scope-reason";
 
 
+        const reasonText =
+            document.createElement("div");
+
+
+        const reasonLabel =
+            document.createElement("strong");
+
+        reasonLabel.textContent =
+            "Reason: ";
+
+
+        reasonText.appendChild(
+            reasonLabel
+        );
+
+
+        reasonText.appendChild(
+            document.createTextNode(
+                task.reason
+            )
+        );
+
+
+        reason.appendChild(
+            reasonText
+        );
+
+
         const timestampText =
             formatReasonTimestamp(
                 task.reasonTimestamp
             );
 
 
-        reason.innerHTML = `
+        if (timestampText) {
 
-            <div>
-                <strong>Reason:</strong>
-                ${task.reason}
-            </div>
+            const reasonTime =
+                document.createElement("div");
 
-            ${
-                timestampText
-                    ? `
-                        <div class="scope-reason-time">
-                            ${timestampText}
-                        </div>
-                    `
-                    : ""
-            }
+            reasonTime.className =
+                "scope-reason-time";
 
-        `;
+            reasonTime.textContent =
+                timestampText;
 
 
-        element.appendChild(reason);
+            reason.appendChild(
+                reasonTime
+            );
+
+        }
+
+
+        element.appendChild(
+            reason
+        );
 
     }
 
 
     // --------------------------------------------------------
-    // EDIT BUTTON
+    // ACTION BUTTONS
+    // Hidden until long press
+    // --------------------------------------------------------
+
+    const actions =
+        document.createElement("div");
+
+    actions.className =
+        "scope-actions";
+
+
+    // --------------------------------------------------------
+    // EDIT SCOPE
     // --------------------------------------------------------
 
     const editButton =
         document.createElement("button");
 
     editButton.className =
-        "scope-edit";
+        "scope-action-button scope-edit";
 
     editButton.type =
         "button";
@@ -1167,20 +1264,42 @@ function createScopeElement(task) {
         };
 
 
-    element.appendChild(
-        editButton
-    );
+    // --------------------------------------------------------
+    // EDIT REASON
+    // --------------------------------------------------------
+
+    const editReasonButton =
+        document.createElement("button");
+
+    editReasonButton.className =
+        "scope-action-button scope-edit-reason";
+
+    editReasonButton.type =
+        "button";
+
+    editReasonButton.textContent =
+        "Edit Reason";
+
+
+    editReasonButton.onclick =
+        function (event) {
+
+            event.stopPropagation();
+
+            editReason(task.id);
+
+        };
 
 
     // --------------------------------------------------------
-    // DELETE BUTTON
+    // DELETE
     // --------------------------------------------------------
 
     const deleteButton =
         document.createElement("button");
 
     deleteButton.className =
-        "scope-delete";
+        "scope-action-button scope-delete";
 
     deleteButton.type =
         "button";
@@ -1199,8 +1318,21 @@ function createScopeElement(task) {
         };
 
 
-    element.appendChild(
+    actions.appendChild(
+        editButton
+    );
+
+    actions.appendChild(
+        editReasonButton
+    );
+
+    actions.appendChild(
         deleteButton
+    );
+
+
+    element.appendChild(
+        actions
     );
 
 
@@ -1213,7 +1345,9 @@ function createScopeElement(task) {
 
     function startLongPress() {
 
-        clearTimeout(pressTimer);
+        clearTimeout(
+            pressTimer
+        );
 
 
         pressTimer =
@@ -1230,7 +1364,9 @@ function createScopeElement(task) {
 
     function cancelLongPress() {
 
-        clearTimeout(pressTimer);
+        clearTimeout(
+            pressTimer
+        );
 
     }
 
@@ -1332,6 +1468,17 @@ function addScope() {
         scopeInput.value.trim();
 
 
+    if (!night) {
+
+        alert(
+            "Please select a deployment night."
+        );
+
+        return;
+
+    }
+
+
     if (!description) {
 
         alert(
@@ -1377,6 +1524,13 @@ function addScope() {
 
 
     scopeInput.value = "";
+
+
+    // Reset Add Deployment Scope dropdown
+    setupDeploymentNightSelect(
+        "scopeNight"
+    );
+
 
     renderStoreDetail();
 
@@ -1439,6 +1593,28 @@ function renderScopeManagementOptions() {
     });
 
 
+    // Make sure old Edit Reason option is removed
+    const actionSelect =
+        document.getElementById(
+            "scopeAction"
+        );
+
+
+    if (actionSelect) {
+
+        const oldEditReasonOption =
+            actionSelect.querySelector(
+                'option[value="editReason"]'
+            );
+
+
+        if (oldEditReasonOption) {
+            oldEditReasonOption.remove();
+        }
+
+    }
+
+
     handleScopeActionChange();
 
 }
@@ -1495,6 +1671,17 @@ function resetScopeManagementForm() {
         message.textContent = "";
     }
 
+
+    if (scopeManagementMessageTimer) {
+
+        clearTimeout(
+            scopeManagementMessageTimer
+        );
+
+        scopeManagementMessageTimer = null;
+
+    }
+
 }
 
 
@@ -1507,11 +1694,6 @@ function handleScopeActionChange() {
     const actionSelect =
         document.getElementById(
             "scopeAction"
-        );
-
-    const scopeSelect =
-        document.getElementById(
-            "manageScope"
         );
 
     const reasonGroup =
@@ -1539,35 +1721,8 @@ function handleScopeActionChange() {
         actionSelect.value;
 
 
-    const selectedTaskId =
-        scopeSelect
-            ? Number(scopeSelect.value)
-            : 0;
-
-
-    let selectedTask = null;
-
-
-    const store =
-        getSelectedStore();
-
-
-    if (
-        store &&
-        selectedTaskId
-    ) {
-
-        selectedTask =
-            store.tasks.find(
-                task =>
-                    task.id === selectedTaskId
-            );
-
-    }
-
-
     // --------------------------------------------------------
-    // REASON FIELD
+    // ONLY THESE THREE ACTIONS CAN ADD A REASON
     // --------------------------------------------------------
 
     if (reasonGroup) {
@@ -1575,8 +1730,7 @@ function handleScopeActionChange() {
         if (
             action === "pending" ||
             action === "cancel" ||
-            action === "move" ||
-            action === "editReason"
+            action === "move"
         ) {
 
             reasonGroup.classList.remove(
@@ -1594,26 +1748,7 @@ function handleScopeActionChange() {
     }
 
 
-    // --------------------------------------------------------
-    // LOAD EXISTING REASON FOR EDIT
-    // --------------------------------------------------------
-
-    if (
-        action === "editReason" &&
-        selectedTask &&
-        reasonInput
-    ) {
-
-        reasonInput.value =
-            selectedTask.reason || "";
-
-        reasonInput.placeholder =
-            "Update reason or notes";
-
-    } else if (
-        action !== "editReason" &&
-        reasonInput
-    ) {
+    if (reasonInput) {
 
         reasonInput.value = "";
 
@@ -1753,46 +1888,6 @@ function applyScopeManagement() {
 
 
     // ========================================================
-    // EDIT REASON / NOTES
-    // ========================================================
-
-    if (action === "editReason") {
-
-        if (!reason) {
-
-            showScopeManagementMessage(
-                "Please enter a reason or note.",
-                true
-            );
-
-            return;
-
-        }
-
-
-        task.reason =
-            reason;
-
-        task.reasonTimestamp =
-            timestamp;
-
-
-        showScopeManagementMessage(
-            "Reason / notes updated.",
-            false
-        );
-
-
-        resetScopeManagementFieldsAfterSave();
-
-        renderStoreDetail();
-
-        return;
-
-    }
-
-
-    // ========================================================
     // PENDING
     // ========================================================
 
@@ -1825,6 +1920,25 @@ function applyScopeManagement() {
             reason
                 ? timestamp
                 : "";
+
+
+        if (!task.history) {
+            task.history = [];
+        }
+
+
+        task.history.push({
+
+            action:
+                "Marked as Pending",
+
+            reason:
+                reason,
+
+            timestamp:
+                timestamp
+
+        });
 
 
         showScopeManagementMessage(
@@ -1890,6 +2004,25 @@ function applyScopeManagement() {
                 : "";
 
 
+        if (!task.history) {
+            task.history = [];
+        }
+
+
+        task.history.push({
+
+            action:
+                "Cancelled",
+
+            reason:
+                reason,
+
+            timestamp:
+                timestamp
+
+        });
+
+
         showScopeManagementMessage(
             "Scope cancelled.",
             false
@@ -1936,6 +2069,18 @@ function applyScopeManagement() {
             );
 
 
+        if (!targetNight) {
+
+            showScopeManagementMessage(
+                "Please select a deployment night.",
+                true
+            );
+
+            return;
+
+        }
+
+
         if (
             targetNight === task.night
         ) {
@@ -1980,6 +2125,31 @@ function applyScopeManagement() {
         });
 
 
+        if (!task.history) {
+            task.history = [];
+        }
+
+
+        task.history.push({
+
+            action:
+                "Moved to Another Night",
+
+            reason:
+                reason,
+
+            timestamp:
+                timestamp,
+
+            fromNight:
+                task.night,
+
+            toNight:
+                targetNight
+
+        });
+
+
         showScopeManagementMessage(
             `Scope copied to Night ${targetNight}.`,
             false
@@ -1993,6 +2163,16 @@ function applyScopeManagement() {
         return;
 
     }
+
+
+    // --------------------------------------------------------
+    // SAFETY NET
+    // --------------------------------------------------------
+
+    showScopeManagementMessage(
+        "This action does not support adding a reason.",
+        true
+    );
 
 }
 
@@ -2068,6 +2248,15 @@ function showScopeManagementMessage(
     }
 
 
+    if (scopeManagementMessageTimer) {
+
+        clearTimeout(
+            scopeManagementMessageTimer
+        );
+
+    }
+
+
     element.textContent =
         message;
 
@@ -2078,19 +2267,15 @@ function showScopeManagementMessage(
             : "#047857";
 
 
-    if (!isError) {
-
+    scopeManagementMessageTimer =
         setTimeout(function () {
 
-            if (element.textContent === message) {
+            element.textContent = "";
 
-                element.textContent = "";
-
-            }
+            scopeManagementMessageTimer =
+                null;
 
         }, 5000);
-
-    }
 
 }
 
@@ -2151,6 +2336,132 @@ function editScope(taskId) {
 
     task.description =
         cleanedDescription;
+
+
+    renderStoreDetail();
+
+}
+
+
+// ============================================================
+// EDIT REASON
+// ============================================================
+
+function editReason(taskId) {
+
+    const store =
+        getSelectedStore();
+
+
+    if (!store) {
+        return;
+    }
+
+
+    const task =
+        store.tasks.find(
+            item =>
+                item.id === taskId
+        );
+
+
+    if (!task) {
+        return;
+    }
+
+
+    const currentReason =
+        task.reason || "";
+
+
+    const newReason =
+        prompt(
+            "Edit reason / notes:",
+            currentReason
+        );
+
+
+    if (newReason === null) {
+        return;
+    }
+
+
+    const cleanedReason =
+        newReason.trim();
+
+
+    const timestamp =
+        getCurrentTimestamp();
+
+
+    // --------------------------------------------------------
+    // CLEAR REASON
+    // --------------------------------------------------------
+
+    if (!cleanedReason) {
+
+        task.reason =
+            "";
+
+        task.reasonTimestamp =
+            "";
+
+
+        if (!task.history) {
+            task.history = [];
+        }
+
+
+        task.history.push({
+
+            action:
+                "Reason cleared",
+
+            reason:
+                "",
+
+            timestamp:
+                timestamp
+
+        });
+
+
+        renderStoreDetail();
+
+        return;
+
+    }
+
+
+    // --------------------------------------------------------
+    // UPDATE REASON
+    // --------------------------------------------------------
+
+    task.reason =
+        cleanedReason;
+
+
+    task.reasonTimestamp =
+        timestamp;
+
+
+    if (!task.history) {
+        task.history = [];
+    }
+
+
+    task.history.push({
+
+        action:
+            "Reason updated",
+
+        reason:
+            cleanedReason,
+
+        timestamp:
+            timestamp
+
+    });
 
 
     renderStoreDetail();
@@ -2361,6 +2672,26 @@ function saveNightAssignment() {
             assignmentMessage.style.color =
                 "#b91c1c";
 
+
+            if (assignmentMessageTimer) {
+
+                clearTimeout(
+                    assignmentMessageTimer
+                );
+
+            }
+
+
+            assignmentMessageTimer =
+                setTimeout(function () {
+
+                    assignmentMessage.textContent = "";
+
+                    assignmentMessageTimer =
+                        null;
+
+                }, 5000);
+
         }
 
         return;
@@ -2380,10 +2711,14 @@ function saveNightAssignment() {
     }
 
 
+    const successMessage =
+        `Current assigned night updated to Night ${selectedNight}.`;
+
+
     if (assignmentMessage) {
 
         assignmentMessage.textContent =
-            `Current assigned night updated to Night ${selectedNight}.`;
+            successMessage;
 
         assignmentMessage.style.color =
             "#047857";
@@ -2391,24 +2726,41 @@ function saveNightAssignment() {
     }
 
 
-    // Reset dropdown
-    assignedNight.value = "";
+    // Reset dropdown back to placeholder
+    setupDeploymentNightSelect(
+        "assignedNight"
+    );
+
+
+    // Clear previous timer
+    if (assignmentMessageTimer) {
+
+        clearTimeout(
+            assignmentMessageTimer
+        );
+
+    }
 
 
     // Clear success message after 5 seconds
-    setTimeout(function () {
+    assignmentMessageTimer =
+        setTimeout(function () {
 
-        if (
-            assignmentMessage &&
-            assignmentMessage.textContent ===
-                `Current assigned night updated to Night ${selectedNight}.`
-        ) {
+            if (
+                assignmentMessage &&
+                assignmentMessage.textContent ===
+                    successMessage
+            ) {
 
-            assignmentMessage.textContent = "";
+                assignmentMessage.textContent = "";
 
-        }
+            }
 
-    }, 5000);
+
+            assignmentMessageTimer =
+                null;
+
+        }, 5000);
 
 }
 
