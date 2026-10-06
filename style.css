@@ -463,6 +463,7 @@ button:hover {
     border-bottom: 1px solid #f0f0f0;
     user-select: none;
     -webkit-user-select: none;
+    transition: background 0.15s ease;
 }
 
 .scope-item:last-child {
@@ -522,16 +523,56 @@ button:hover {
     color: #6d28d9;
 }
 
-.scope-delete {
-    display: none;
-    margin-top: 10px;
-    background: #dc2626;
-    font-size: 12px;
-    padding: 7px 10px;
+
+/* SCOPE REASON / NOTES */
+
+.scope-reason {
+    margin-top: 9px;
+    padding: 9px 11px;
+    background: #f8fafc;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.45;
 }
 
-.scope-item.long-press-active .scope-delete {
-    display: inline-block;
+.scope-reason strong {
+    color: #334155;
+}
+
+.scope-reason-time {
+    margin-top: 4px;
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+
+/* SCOPE ACTIONS */
+
+.scope-actions {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.scope-item.long-press-active .scope-actions {
+    display: flex;
+}
+
+.scope-action-button {
+    font-size: 12px;
+    padding: 7px 11px;
+    border-radius: 7px;
+    color: white;
+}
+
+.scope-edit {
+    background: #2563eb;
+}
+
+.scope-delete {
+    background: #dc2626;
 }
 
 
@@ -683,16 +724,29 @@ button:hover {
     }
 
     .scope-reason {
-    margin-top: 8px;
-    padding: 8px 10px;
-    background: #f8fafc;
-    border-radius: 8px;
-    font-size: 13px;
-    color: #64748b;
-}
+        margin-top: 8px;
+        padding: 8px 10px;
+        background: #f8fafc;
+        border-radius: 8px;
+        font-size: 13px;
+        color: #64748b;
+    }
 
     .scope-reason strong {
-    color: #334155;
-}
+        color: #334155;
+    }
+
+    .scope-reason-time {
+        font-size: 11px;
+    }
+
+    .scope-actions {
+        width: 100%;
+    }
+
+    .scope-action-button {
+        flex: 1;
+        min-width: 0;
+    }
 
 }
