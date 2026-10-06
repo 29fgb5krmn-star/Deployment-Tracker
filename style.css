@@ -682,4 +682,17 @@ button:hover {
         margin-left: 12px;
     }
 
+    .scope-reason {
+    margin-top: 8px;
+    padding: 8px 10px;
+    background: #f8fafc;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #64748b;
+}
+
+    .scope-reason strong {
+    color: #334155;
+}
+
 }
