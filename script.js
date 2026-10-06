@@ -4,6 +4,30 @@
 
 
 // ============================================================
+// TIMEZONE CONFIGURATION
+// ============================================================
+//
+// Fixed US timezone offsets are used intentionally so that:
+// EST = UTC-5
+// CST = UTC-6
+// MST = UTC-7
+// PST = UTC-8
+//
+// This prevents automatic daylight-saving changes such as
+// EST becoming EDT.
+// ============================================================
+
+const STORE_TIMEZONES = {
+
+    EST: -5,
+    CST: -6,
+    MST: -7,
+    PST: -8
+
+};
+
+
+// ============================================================
 // SAMPLE DATA
 // ============================================================
 
@@ -12,10 +36,12 @@ let stores = [
     {
         storeNumber: "0123",
         technician: "Technician A",
+        timezone: "EST",
         currentNight: 3,
         checkedIn: "2026-10-05 16:11",
 
         tasks: [
+
             {
                 id: 1,
                 night: 1,
@@ -75,17 +101,23 @@ let stores = [
                 reasonTimestamp: "",
                 history: []
             }
-        ]
+
+        ],
+
+        fixtureHandover: {}
+
     },
 
 
     {
         storeNumber: "0456",
         technician: "Technician B",
+        timezone: "PST",
         currentNight: 1,
         checkedIn: "2026-10-05 16:11",
 
         tasks: [
+
             {
                 id: 7,
                 night: 1,
@@ -105,43 +137,55 @@ let stores = [
                 reasonTimestamp: "",
                 history: []
             }
-        ]
+
+        ],
+
+        fixtureHandover: {}
+
     },
 
 
     {
         storeNumber: "0789",
         technician: "Technician C",
+        timezone: "CST",
         currentNight: 2,
         checkedIn: "",
-        tasks: []
+        tasks: [],
+        fixtureHandover: {}
     },
 
 
     {
         storeNumber: "1011",
         technician: "Technician D",
+        timezone: "MST",
         currentNight: 1,
         checkedIn: "",
-        tasks: []
+        tasks: [],
+        fixtureHandover: {}
     },
 
 
     {
         storeNumber: "1213",
         technician: "Technician E",
+        timezone: "EST",
         currentNight: 1,
         checkedIn: "",
-        tasks: []
+        tasks: [],
+        fixtureHandover: {}
     },
 
 
     {
         storeNumber: "1415",
         technician: "Technician F",
+        timezone: "PST",
         currentNight: 1,
         checkedIn: "",
-        tasks: []
+        tasks: [],
+        fixtureHandover: {}
     }
 
 ];
@@ -188,92 +232,204 @@ function getSelectedStore() {
 }
 
 
-function getCurrentTimestamp() {
+// ============================================================
+// TIMEZONE HELPERS
+// ============================================================
 
-    const now = new Date();
+function getStoreTimezone(store) {
 
-    const year = now.getFullYear();
+    if (
+        store &&
+        STORE_TIMEZONES[store.timezone] !== undefined
+    ) {
+
+        return store.timezone;
+
+    }
+
+    return "EST";
+
+}
+
+
+function getTimezoneOffset(store) {
+
+    const timezone =
+        getStoreTimezone(store);
+
+    return STORE_TIMEZONES[timezone];
+
+}
+
+
+// ============================================================
+// CURRENT STORE TIME
+// ============================================================
+
+function getCurrentTimestamp(store = getSelectedStore()) {
+
+    const now =
+        new Date();
+
+    const offsetHours =
+        getTimezoneOffset(store);
+
+    const utcMilliseconds =
+        now.getTime() +
+        (now.getTimezoneOffset() * 60000);
+
+    const storeMilliseconds =
+        utcMilliseconds +
+        (offsetHours * 60 * 60 * 1000);
+
+    const storeDate =
+        new Date(storeMilliseconds);
+
+
+    const year =
+        storeDate.getUTCFullYear();
 
     const month =
-        String(now.getMonth() + 1).padStart(2, "0");
+        String(
+            storeDate.getUTCMonth() + 1
+        ).padStart(2, "0");
 
     const day =
-        String(now.getDate()).padStart(2, "0");
+        String(
+            storeDate.getUTCDate()
+        ).padStart(2, "0");
 
     const hours =
-        String(now.getHours()).padStart(2, "0");
+        String(
+            storeDate.getUTCHours()
+        ).padStart(2, "0");
 
     const minutes =
-        String(now.getMinutes()).padStart(2, "0");
+        String(
+            storeDate.getUTCMinutes()
+        ).padStart(2, "0");
+
 
     return `${year}-${month}-${day} ${hours}:${minutes}`;
 
 }
 
 
-function formatCheckInTime(timestamp) {
+function getDisplayTimestamp(
+    timestamp,
+    timezone
+) {
 
     if (!timestamp) {
         return "";
     }
 
-    const parts = timestamp.split(" ");
+
+    const parts =
+        timestamp.split(" ");
+
 
     if (parts.length !== 2) {
-        return timestamp;
+        return `${timestamp} ${timezone || ""}`.trim();
     }
 
-    const dateParts = parts[0].split("-");
-    const timeParts = parts[1].split(":");
 
-    const year = Number(dateParts[0]);
-    const month = Number(dateParts[1]) - 1;
-    const day = Number(dateParts[2]);
+    const dateParts =
+        parts[0].split("-");
 
-    const hour = Number(timeParts[0]);
-    const minute = Number(timeParts[1]);
+    const timeParts =
+        parts[1].split(":");
 
-    const date = new Date(
-        year,
-        month,
-        day,
-        hour,
-        minute
-    );
 
-    return date.toLocaleString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-        hour: "numeric",
-        minute: "2-digit"
-    });
+    if (
+        dateParts.length !== 3 ||
+        timeParts.length !== 2
+    ) {
+
+        return `${timestamp} ${timezone || ""}`.trim();
+
+    }
+
+
+    const year =
+        Number(dateParts[0]);
+
+    const month =
+        Number(dateParts[1]) - 1;
+
+    const day =
+        Number(dateParts[2]);
+
+    const hour =
+        Number(timeParts[0]);
+
+    const minute =
+        Number(timeParts[1]);
+
+
+    const date =
+        new Date(
+            Date.UTC(
+                year,
+                month,
+                day,
+                hour,
+                minute
+            )
+        );
+
+
+    const formatted =
+        date.toLocaleString(
+            "en-US",
+            {
+                timeZone: "UTC",
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+                hour: "numeric",
+                minute: "2-digit"
+            }
+        );
+
+
+    return `${formatted} ${timezone || ""}`.trim();
 
 }
 
 
-function formatReasonTimestamp(timestamp) {
+function formatCheckInTime(
+    timestamp,
+    store = getSelectedStore()
+) {
 
     if (!timestamp) {
         return "";
     }
 
-    const date =
-        new Date(
-            timestamp.replace(" ", "T")
-        );
 
-    if (isNaN(date.getTime())) {
-        return timestamp;
+    return getDisplayTimestamp(
+        timestamp,
+        getStoreTimezone(store)
+    );
+
+}
+
+
+function formatReasonTimestamp(
+    timestamp,
+    store = getSelectedStore()
+) {
+
+    if (!timestamp) {
+        return "";
     }
 
-    return date.toLocaleString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-        hour: "numeric",
-        minute: "2-digit"
-    });
+
+    return getDisplayTimestamp(
+        timestamp,
+        getStoreTimezone(store)
+    );
 
 }
 
@@ -307,32 +463,38 @@ function setupDeploymentNightSelect(selectId) {
     const select =
         document.getElementById(selectId);
 
+
     if (!select) {
         return;
     }
 
 
-    // Remove any existing placeholder
     const existingPlaceholder =
-        select.querySelector('option[data-placeholder="true"]');
+        select.querySelector(
+            'option[data-placeholder="true"]'
+        );
+
 
     if (existingPlaceholder) {
         existingPlaceholder.remove();
     }
 
 
-    // Create fresh placeholder
     const placeholder =
         document.createElement("option");
 
-    placeholder.value = "";
+
+    placeholder.value =
+        "";
 
     placeholder.textContent =
         "Select deployment night";
 
-    placeholder.disabled = true;
+    placeholder.disabled =
+        true;
 
-    placeholder.selected = true;
+    placeholder.selected =
+        true;
 
     placeholder.setAttribute(
         "data-placeholder",
@@ -346,7 +508,8 @@ function setupDeploymentNightSelect(selectId) {
     );
 
 
-    select.value = "";
+    select.value =
+        "";
 
 }
 
@@ -361,23 +524,30 @@ function getStoreStatus(store) {
         return "Not Started";
     }
 
+
     const activeTasks =
         store.tasks.filter(
-            task => task.status !== "Cancelled"
+            task =>
+                task.status !== "Cancelled"
         );
+
 
     if (activeTasks.length === 0) {
         return "Cancelled";
     }
 
+
     const allCompleted =
         activeTasks.every(
-            task => task.status === "Completed"
+            task =>
+                task.status === "Completed"
         );
+
 
     if (allCompleted) {
         return "Completed";
     }
+
 
     const hasProgress =
         activeTasks.some(
@@ -386,9 +556,11 @@ function getStoreStatus(store) {
                 task.status === "Completed"
         );
 
+
     if (hasProgress) {
         return "In Progress";
     }
+
 
     return "Not Started";
 
@@ -405,22 +577,31 @@ function calculateProgress(store) {
         return 0;
     }
 
+
     const activeTasks =
         store.tasks.filter(
-            task => task.status !== "Cancelled"
+            task =>
+                task.status !== "Cancelled"
         );
+
 
     if (activeTasks.length === 0) {
         return 0;
     }
 
+
     const completedTasks =
         activeTasks.filter(
-            task => task.status === "Completed"
+            task =>
+                task.status === "Completed"
         );
 
+
     return Math.round(
-        (completedTasks.length / activeTasks.length) * 100
+        (
+            completedTasks.length /
+            activeTasks.length
+        ) * 100
     );
 
 }
@@ -433,14 +614,20 @@ function calculateProgress(store) {
 function renderOverview() {
 
     const overviewPage =
-        document.getElementById("overviewPage");
+        document.getElementById(
+            "overviewPage"
+        );
 
     const storeDetailPage =
-        document.getElementById("storeDetailPage");
+        document.getElementById(
+            "storeDetailPage"
+        );
+
 
     if (overviewPage) {
         overviewPage.classList.remove("hidden");
     }
+
 
     if (storeDetailPage) {
         storeDetailPage.classList.add("hidden");
@@ -448,14 +635,18 @@ function renderOverview() {
 
 
     const storeGrid =
-        document.getElementById("storeGrid");
+        document.getElementById(
+            "storeGrid"
+        );
+
 
     if (!storeGrid) {
         return;
     }
 
 
-    storeGrid.innerHTML = "";
+    storeGrid.innerHTML =
+        "";
 
 
     stores.forEach(store => {
@@ -470,17 +661,19 @@ function renderOverview() {
         const card =
             document.createElement("div");
 
+
         card.className =
             "store-card";
 
 
-        card.onclick = function () {
+        card.onclick =
+            function () {
 
-            openStoreDetail(
-                store.storeNumber
-            );
+                openStoreDetail(
+                    store.storeNumber
+                );
 
-        };
+            };
 
 
         let checkInHTML;
@@ -501,7 +694,7 @@ function renderOverview() {
 
                     <div class="check-in-time">
                         Checked in at
-                        ${formatCheckInTime(store.checkedIn)}
+                        ${formatCheckInTime(store.checkedIn, store)}
                     </div>
 
                 </div>
@@ -547,6 +740,14 @@ function renderOverview() {
 
                 <strong>Technician:</strong>
                 ${store.technician || "Unassigned"}
+
+            </div>
+
+
+            <div class="store-info-line">
+
+                <strong>Timezone:</strong>
+                ${getStoreTimezone(store)}
 
             </div>
 
@@ -620,21 +821,30 @@ function renderSummary() {
 
     const checkedInStores =
         stores.filter(
-            store => !!store.checkedIn
+            store =>
+                !!store.checkedIn
         ).length;
 
 
     const totalElement =
-        document.getElementById("totalStores");
+        document.getElementById(
+            "totalStores"
+        );
 
     const inProgressElement =
-        document.getElementById("inProgressStores");
+        document.getElementById(
+            "inProgressStores"
+        );
 
     const completedElement =
-        document.getElementById("completedStores");
+        document.getElementById(
+            "completedStores"
+        );
 
     const checkedInElement =
-        document.getElementById("checkedInStores");
+        document.getElementById(
+            "checkedInStores"
+        );
 
 
     if (totalElement) {
@@ -721,7 +931,7 @@ function checkIn(storeNumber) {
 
 
     const timestamp =
-        getCurrentTimestamp();
+        getCurrentTimestamp(store);
 
 
     store.checkedIn =
@@ -760,7 +970,9 @@ function checkIn(storeNumber) {
 function renderRecentUpdates() {
 
     const container =
-        document.getElementById("recentUpdates");
+        document.getElementById(
+            "recentUpdates"
+        );
 
 
     if (!container) {
@@ -768,7 +980,8 @@ function renderRecentUpdates() {
     }
 
 
-    container.innerHTML = "";
+    container.innerHTML =
+        "";
 
 
     const updates =
@@ -790,6 +1003,7 @@ function renderRecentUpdates() {
         `;
 
         return;
+
     }
 
 
@@ -798,8 +1012,21 @@ function renderRecentUpdates() {
         const item =
             document.createElement("div");
 
+
         item.className =
             "update-item";
+
+
+        const store =
+            stores.find(
+                item =>
+                    item.storeNumber ===
+                    update.storeNumber
+            );
+
+
+        const timezone =
+            getStoreTimezone(store);
 
 
         item.innerHTML = `
@@ -825,7 +1052,10 @@ function renderRecentUpdates() {
 
 
             <div class="update-time">
-                ${update.timestamp}
+                ${getDisplayTimestamp(
+                    update.timestamp,
+                    timezone
+                )}
             </div>
 
         `;
@@ -849,10 +1079,14 @@ function openStoreDetail(storeNumber) {
 
 
     const overviewPage =
-        document.getElementById("overviewPage");
+        document.getElementById(
+            "overviewPage"
+        );
 
     const storeDetailPage =
-        document.getElementById("storeDetailPage");
+        document.getElementById(
+            "storeDetailPage"
+        );
 
 
     if (overviewPage) {
@@ -887,6 +1121,11 @@ function renderStoreDetail() {
     }
 
 
+    if (!store.fixtureHandover) {
+        store.fixtureHandover = {};
+    }
+
+
     const detailStoreNumber =
         document.getElementById(
             "detailStoreNumber"
@@ -905,6 +1144,11 @@ function renderStoreDetail() {
     const detailCurrentNight =
         document.getElementById(
             "detailCurrentNight"
+        );
+
+    const detailTimezone =
+        document.getElementById(
+            "detailTimezone"
         );
 
     const detailCheckIn =
@@ -937,7 +1181,8 @@ function renderStoreDetail() {
     if (detailTechnician) {
 
         detailTechnician.textContent =
-            store.technician || "Unassigned";
+            store.technician ||
+            "Unassigned";
 
     }
 
@@ -950,10 +1195,23 @@ function renderStoreDetail() {
     }
 
 
+    if (detailTimezone) {
+
+        detailTimezone.textContent =
+            getStoreTimezone(store);
+
+    }
+
+
     if (detailCheckIn) {
 
         detailCheckIn.textContent =
-            store.checkedIn || "Not checked in";
+            store.checkedIn
+                ? formatCheckInTime(
+                    store.checkedIn,
+                    store
+                )
+                : "Not checked in";
 
     }
 
@@ -1011,13 +1269,24 @@ function renderNightSections() {
     }
 
 
-    container.innerHTML = "";
+    if (!store.fixtureHandover) {
+        store.fixtureHandover = {};
+    }
 
 
-    for (let night = 1; night <= 5; night++) {
+    container.innerHTML =
+        "";
+
+
+    for (
+        let night = 1;
+        night <= 5;
+        night++
+    ) {
 
         const section =
             document.createElement("div");
+
 
         section.className =
             "night-section";
@@ -1032,6 +1301,7 @@ function renderNightSections() {
 
         const header =
             document.createElement("div");
+
 
         header.className =
             "night-header";
@@ -1051,8 +1321,25 @@ function renderNightSections() {
         `;
 
 
+        // ====================================================
+        // FIXTURE HANDOVER
+        // Completely separate from deployment scopes
+        // ====================================================
+
+        const fixtureBox =
+            createFixtureHandoverElement(
+                store,
+                night
+            );
+
+
+        // ====================================================
+        // SCOPE LIST
+        // ====================================================
+
         const scopeList =
             document.createElement("div");
+
 
         scopeList.className =
             "scope-list";
@@ -1083,11 +1370,309 @@ function renderNightSections() {
 
         section.appendChild(header);
 
+        section.appendChild(fixtureBox);
+
         section.appendChild(scopeList);
 
         container.appendChild(section);
 
     }
+
+}
+
+
+// ============================================================
+// FIXTURE HANDOVER ELEMENT
+// ============================================================
+
+function createFixtureHandoverElement(
+    store,
+    night
+) {
+
+    const box =
+        document.createElement("div");
+
+
+    box.className =
+        "fixture-handover";
+
+
+    const saved =
+        store.fixtureHandover &&
+        store.fixtureHandover[night]
+            ? store.fixtureHandover[night]
+            : null;
+
+
+    const title =
+        document.createElement("div");
+
+
+    title.className =
+        "fixture-handover-title";
+
+
+    title.textContent =
+        "Fixture Handover Time";
+
+
+    box.appendChild(title);
+
+
+    const row =
+        document.createElement("div");
+
+
+    row.className =
+        "fixture-handover-row";
+
+
+    const inputGroup =
+        document.createElement("div");
+
+
+    inputGroup.className =
+        "fixture-handover-input-group";
+
+
+    const label =
+        document.createElement("label");
+
+
+    label.textContent =
+        "Time fixture was handed over";
+
+
+    const input =
+        document.createElement("input");
+
+
+    input.type =
+        "time";
+
+    input.id =
+        `fixtureHandover-${night}`;
+
+    input.value =
+        saved && saved.time
+            ? saved.time
+            : "";
+
+
+    inputGroup.appendChild(label);
+
+    inputGroup.appendChild(input);
+
+
+    const saveButton =
+        document.createElement("button");
+
+
+    saveButton.type =
+        "button";
+
+    saveButton.className =
+        "fixture-handover-save";
+
+    saveButton.textContent =
+        "Save Time";
+
+
+    saveButton.onclick =
+        function (event) {
+
+            event.stopPropagation();
+
+            saveFixtureHandover(
+                night
+            );
+
+        };
+
+
+    row.appendChild(inputGroup);
+
+    row.appendChild(saveButton);
+
+    box.appendChild(row);
+
+
+    if (saved && saved.time) {
+
+        const display =
+            document.createElement("div");
+
+
+        display.className =
+            "fixture-handover-display";
+
+
+        display.textContent =
+            `✓ Fixture handed over at ${formatTimeForDisplay(saved.time)} ${getStoreTimezone(store)}`;
+
+
+        box.appendChild(display);
+
+
+        if (saved.updatedAt) {
+
+            const updated =
+                document.createElement("div");
+
+
+            updated.className =
+                "fixture-handover-updated";
+
+
+            updated.textContent =
+                `Recorded/updated at ${formatReasonTimestamp(
+                    saved.updatedAt,
+                    store
+                )}`;
+
+
+            box.appendChild(updated);
+
+        }
+
+    } else {
+
+        const display =
+            document.createElement("div");
+
+
+        display.className =
+            "fixture-handover-display";
+
+
+        display.style.color =
+            "#94a3b8";
+
+
+        display.textContent =
+            "No fixture handover time recorded.";
+
+
+        box.appendChild(display);
+
+    }
+
+
+    return box;
+
+}
+
+
+// ============================================================
+// FORMAT FIXTURE TIME
+// ============================================================
+
+function formatTimeForDisplay(timeValue) {
+
+    if (!timeValue) {
+        return "";
+    }
+
+
+    const parts =
+        timeValue.split(":");
+
+
+    if (parts.length < 2) {
+        return timeValue;
+    }
+
+
+    let hour =
+        Number(parts[0]);
+
+    const minute =
+        parts[1];
+
+
+    if (isNaN(hour)) {
+        return timeValue;
+    }
+
+
+    const suffix =
+        hour >= 12
+            ? "PM"
+            : "AM";
+
+
+    hour =
+        hour % 12 || 12;
+
+
+    return `${hour}:${minute} ${suffix}`;
+
+}
+
+
+// ============================================================
+// SAVE FIXTURE HANDOVER
+// ============================================================
+
+function saveFixtureHandover(night) {
+
+    const store =
+        getSelectedStore();
+
+
+    if (!store) {
+        return;
+    }
+
+
+    const input =
+        document.getElementById(
+            `fixtureHandover-${night}`
+        );
+
+
+    if (!input) {
+        return;
+    }
+
+
+    const selectedTime =
+        input.value;
+
+
+    if (!selectedTime) {
+
+        alert(
+            "Please enter the fixture handover time."
+        );
+
+        return;
+
+    }
+
+
+    if (!store.fixtureHandover) {
+        store.fixtureHandover = {};
+    }
+
+
+    const timestamp =
+        getCurrentTimestamp(store);
+
+
+    store.fixtureHandover[night] = {
+
+        time:
+            selectedTime,
+
+        updatedAt:
+            timestamp
+
+    };
+
+
+    renderNightSections();
 
 }
 
@@ -1121,6 +1706,7 @@ function createScopeElement(task) {
     const main =
         document.createElement("div");
 
+
     main.className =
         "scope-main";
 
@@ -1128,8 +1714,10 @@ function createScopeElement(task) {
     const description =
         document.createElement("div");
 
+
     description.className =
         "scope-description";
+
 
     description.textContent =
         task.description;
@@ -1138,8 +1726,10 @@ function createScopeElement(task) {
     const status =
         document.createElement("span");
 
+
     status.className =
         `scope-status ${statusClass}`;
+
 
     status.textContent =
         task.status;
@@ -1152,14 +1742,15 @@ function createScopeElement(task) {
     element.appendChild(main);
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // REASON / NOTES
-    // --------------------------------------------------------
+    // ========================================================
 
     if (task.reason) {
 
         const reason =
             document.createElement("div");
+
 
         reason.className =
             "scope-reason";
@@ -1171,6 +1762,7 @@ function createScopeElement(task) {
 
         const reasonLabel =
             document.createElement("strong");
+
 
         reasonLabel.textContent =
             "Reason: ";
@@ -1195,7 +1787,8 @@ function createScopeElement(task) {
 
         const timestampText =
             formatReasonTimestamp(
-                task.reasonTimestamp
+                task.reasonTimestamp,
+                getSelectedStore()
             );
 
 
@@ -1204,8 +1797,10 @@ function createScopeElement(task) {
             const reasonTime =
                 document.createElement("div");
 
+
             reasonTime.className =
                 "scope-reason-time";
+
 
             reasonTime.textContent =
                 timestampText;
@@ -1225,30 +1820,34 @@ function createScopeElement(task) {
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // ACTION BUTTONS
     // Hidden until long press
-    // --------------------------------------------------------
+    // ========================================================
 
     const actions =
         document.createElement("div");
+
 
     actions.className =
         "scope-actions";
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // EDIT SCOPE
-    // --------------------------------------------------------
+    // ========================================================
 
     const editButton =
         document.createElement("button");
 
+
     editButton.className =
         "scope-action-button scope-edit";
 
+
     editButton.type =
         "button";
+
 
     editButton.textContent =
         "Edit";
@@ -1264,45 +1863,61 @@ function createScopeElement(task) {
         };
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // EDIT REASON
-    // --------------------------------------------------------
+    // Only shown when a reason already exists
+    // ========================================================
 
-    const editReasonButton =
-        document.createElement("button");
+    if (task.reason) {
 
-    editReasonButton.className =
-        "scope-action-button scope-edit-reason";
-
-    editReasonButton.type =
-        "button";
-
-    editReasonButton.textContent =
-        "Edit Reason";
+        const editReasonButton =
+            document.createElement("button");
 
 
-    editReasonButton.onclick =
-        function (event) {
-
-            event.stopPropagation();
-
-            editReason(task.id);
-
-        };
+        editReasonButton.className =
+            "scope-action-button scope-edit-reason";
 
 
-    // --------------------------------------------------------
+        editReasonButton.type =
+            "button";
+
+
+        editReasonButton.textContent =
+            "Edit Reason";
+
+
+        editReasonButton.onclick =
+            function (event) {
+
+                event.stopPropagation();
+
+                editReason(task.id);
+
+            };
+
+
+        actions.appendChild(
+            editReasonButton
+        );
+
+    }
+
+
+    // ========================================================
     // DELETE
-    // --------------------------------------------------------
+    // ========================================================
 
     const deleteButton =
         document.createElement("button");
 
+
     deleteButton.className =
         "scope-action-button scope-delete";
 
+
     deleteButton.type =
         "button";
+
 
     deleteButton.textContent =
         "Delete";
@@ -1322,9 +1937,61 @@ function createScopeElement(task) {
         editButton
     );
 
+
     actions.appendChild(
-        editReasonButton
+        deleteButton
     );
+
+
+    actions.appendChild(
+        deleteButton
+    );
+
+
+    // Prevent duplicate button if browser somehow reuses node
+    // by rebuilding the action area safely.
+    actions.innerHTML = "";
+
+
+    actions.appendChild(
+        editButton
+    );
+
+
+    if (task.reason) {
+
+        const editReasonButton =
+            document.createElement("button");
+
+
+        editReasonButton.className =
+            "scope-action-button scope-edit-reason";
+
+
+        editReasonButton.type =
+            "button";
+
+
+        editReasonButton.textContent =
+            "Edit Reason";
+
+
+        editReasonButton.onclick =
+            function (event) {
+
+                event.stopPropagation();
+
+                editReason(task.id);
+
+            };
+
+
+        actions.appendChild(
+            editReasonButton
+        );
+
+    }
+
 
     actions.appendChild(
         deleteButton
@@ -1336,11 +2003,12 @@ function createScopeElement(task) {
     );
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // LONG PRESS
-    // --------------------------------------------------------
+    // ========================================================
 
-    let pressTimer = null;
+    let pressTimer =
+        null;
 
 
     function startLongPress() {
@@ -1351,13 +2019,34 @@ function createScopeElement(task) {
 
 
         pressTimer =
-            setTimeout(function () {
+            setTimeout(
+                function () {
 
-                element.classList.add(
-                    "long-press-active"
-                );
+                    document
+                        .querySelectorAll(
+                            ".scope-item.long-press-active"
+                        )
+                        .forEach(item => {
 
-            }, 700);
+                            if (item !== element) {
+
+                                item.classList.remove(
+                                    "long-press-active"
+                                );
+
+                            }
+
+                        });
+
+
+                    element.classList.add(
+                        "long-press-active"
+                    );
+
+
+                },
+                700
+            );
 
     }
 
@@ -1491,9 +2180,7 @@ function addScope() {
 
 
     if (!store.tasks) {
-
         store.tasks = [];
-
     }
 
 
@@ -1523,10 +2210,10 @@ function addScope() {
     });
 
 
-    scopeInput.value = "";
+    scopeInput.value =
+        "";
 
 
-    // Reset Add Deployment Scope dropdown
     setupDeploymentNightSelect(
         "scopeNight"
     );
@@ -1593,7 +2280,8 @@ function renderScopeManagementOptions() {
     });
 
 
-    // Make sure old Edit Reason option is removed
+    // Remove old Edit Reason action if an older HTML version
+    // is still being used.
     const actionSelect =
         document.getElementById(
             "scopeAction"
@@ -1612,6 +2300,17 @@ function renderScopeManagementOptions() {
             oldEditReasonOption.remove();
         }
 
+
+        if (
+            actionSelect.value ===
+            "editReason"
+        ) {
+
+            actionSelect.value =
+                "";
+
+        }
+
     }
 
 
@@ -1627,45 +2326,70 @@ function renderScopeManagementOptions() {
 function resetScopeManagementForm() {
 
     const scopeSelect =
-        document.getElementById("manageScope");
+        document.getElementById(
+            "manageScope"
+        );
 
     const actionSelect =
-        document.getElementById("scopeAction");
+        document.getElementById(
+            "scopeAction"
+        );
 
     const reasonInput =
-        document.getElementById("scopeReason");
+        document.getElementById(
+            "scopeReason"
+        );
 
     const reasonGroup =
-        document.getElementById("scopeReasonGroup");
+        document.getElementById(
+            "scopeReasonGroup"
+        );
 
     const moveGroup =
-        document.getElementById("moveNightGroup");
+        document.getElementById(
+            "moveNightGroup"
+        );
 
     const message =
-        document.getElementById("scopeManagementMessage");
+        document.getElementById(
+            "scopeManagementMessage"
+        );
 
 
     if (scopeSelect) {
         scopeSelect.value = "";
     }
 
+
     if (actionSelect) {
         actionSelect.value = "";
     }
 
+
     if (reasonInput) {
-        reasonInput.value = "";
+
+        reasonInput.value =
+            "";
+
         reasonInput.placeholder =
             "Enter reason or notes";
+
     }
+
 
     if (reasonGroup) {
-        reasonGroup.classList.add("hidden");
+        reasonGroup.classList.add(
+            "hidden"
+        );
     }
 
+
     if (moveGroup) {
-        moveGroup.classList.add("hidden");
+        moveGroup.classList.add(
+            "hidden"
+        );
     }
+
 
     if (message) {
         message.textContent = "";
@@ -1678,7 +2402,8 @@ function resetScopeManagementForm() {
             scopeManagementMessageTimer
         );
 
-        scopeManagementMessageTimer = null;
+        scopeManagementMessageTimer =
+            null;
 
     }
 
@@ -1721,10 +2446,8 @@ function handleScopeActionChange() {
         actionSelect.value;
 
 
-    // --------------------------------------------------------
-    // ONLY THESE THREE ACTIONS CAN ADD A REASON
-    // --------------------------------------------------------
-
+    // Only Pending, Cancelled and Move
+    // can create a reason.
     if (reasonGroup) {
 
         if (
@@ -1750,17 +2473,14 @@ function handleScopeActionChange() {
 
     if (reasonInput) {
 
-        reasonInput.value = "";
+        reasonInput.value =
+            "";
 
         reasonInput.placeholder =
             "Enter reason or notes";
 
     }
 
-
-    // --------------------------------------------------------
-    // MOVE FIELD
-    // --------------------------------------------------------
 
     if (moveGroup) {
 
@@ -1884,7 +2604,7 @@ function applyScopeManagement() {
 
 
     const timestamp =
-        getCurrentTimestamp();
+        getCurrentTimestamp(store);
 
 
     // ========================================================
@@ -2117,7 +2837,8 @@ function applyScopeManagement() {
                     ? timestamp
                     : "",
 
-            history: [],
+            history:
+                [],
 
             originalScopeId:
                 task.id
@@ -2165,12 +2886,9 @@ function applyScopeManagement() {
     }
 
 
-    // --------------------------------------------------------
-    // SAFETY NET
-    // --------------------------------------------------------
-
+    // Safety net
     showScopeManagementMessage(
-        "This action does not support adding a reason.",
+        "This action is not supported.",
         true
     );
 
@@ -2184,41 +2902,63 @@ function applyScopeManagement() {
 function resetScopeManagementFieldsAfterSave() {
 
     const scopeSelect =
-        document.getElementById("manageScope");
+        document.getElementById(
+            "manageScope"
+        );
 
     const actionSelect =
-        document.getElementById("scopeAction");
+        document.getElementById(
+            "scopeAction"
+        );
 
     const reasonInput =
-        document.getElementById("scopeReason");
+        document.getElementById(
+            "scopeReason"
+        );
 
     const reasonGroup =
-        document.getElementById("scopeReasonGroup");
+        document.getElementById(
+            "scopeReasonGroup"
+        );
 
     const moveGroup =
-        document.getElementById("moveNightGroup");
+        document.getElementById(
+            "moveNightGroup"
+        );
 
 
     if (scopeSelect) {
         scopeSelect.value = "";
     }
 
+
     if (actionSelect) {
         actionSelect.value = "";
     }
 
+
     if (reasonInput) {
-        reasonInput.value = "";
+
+        reasonInput.value =
+            "";
+
         reasonInput.placeholder =
             "Enter reason or notes";
+
     }
+
 
     if (reasonGroup) {
-        reasonGroup.classList.add("hidden");
+        reasonGroup.classList.add(
+            "hidden"
+        );
     }
 
+
     if (moveGroup) {
-        moveGroup.classList.add("hidden");
+        moveGroup.classList.add(
+            "hidden"
+        );
     }
 
 }
@@ -2268,14 +3008,18 @@ function showScopeManagementMessage(
 
 
     scopeManagementMessageTimer =
-        setTimeout(function () {
+        setTimeout(
+            function () {
 
-            element.textContent = "";
+                element.textContent =
+                    "";
 
-            scopeManagementMessageTimer =
-                null;
+                scopeManagementMessageTimer =
+                    null;
 
-        }, 5000);
+            },
+            5000
+        );
 
 }
 
@@ -2370,8 +3114,15 @@ function editReason(taskId) {
     }
 
 
+    // Edit Reason is only available for scopes
+    // that already have a reason.
+    if (!task.reason) {
+        return;
+    }
+
+
     const currentReason =
-        task.reason || "";
+        task.reason;
 
 
     const newReason =
@@ -2391,12 +3142,12 @@ function editReason(taskId) {
 
 
     const timestamp =
-        getCurrentTimestamp();
+        getCurrentTimestamp(store);
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // CLEAR REASON
-    // --------------------------------------------------------
+    // ========================================================
 
     if (!cleanedReason) {
 
@@ -2433,9 +3184,9 @@ function editReason(taskId) {
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // UPDATE REASON
-    // --------------------------------------------------------
+    // ========================================================
 
     task.reason =
         cleanedReason;
@@ -2549,7 +3300,10 @@ function editStoreInfo() {
     const cleanedStoreNumber =
         newStoreNumber
             .trim()
-            .replace(/^Store\s*/i, "");
+            .replace(
+                /^Store\s*/i,
+                ""
+            );
 
 
     if (!cleanedStoreNumber) {
@@ -2595,6 +3349,39 @@ function editStoreInfo() {
     }
 
 
+    const newTimezone =
+        prompt(
+            "Enter Store Timezone (EST, CST, MST, or PST):",
+            getStoreTimezone(store)
+        );
+
+
+    if (newTimezone === null) {
+        return;
+    }
+
+
+    const cleanedTimezone =
+        newTimezone
+            .trim()
+            .toUpperCase();
+
+
+    if (
+        !STORE_TIMEZONES.hasOwnProperty(
+            cleanedTimezone
+        )
+    ) {
+
+        alert(
+            "Invalid timezone. Please use EST, CST, MST, or PST."
+        );
+
+        return;
+
+    }
+
+
     store.storeNumber =
         cleanedStoreNumber;
 
@@ -2602,6 +3389,10 @@ function editStoreInfo() {
     store.technician =
         newTechnician.trim() ||
         "Unassigned";
+
+
+    store.timezone =
+        cleanedTimezone;
 
 
     selectedStoreNumber =
@@ -2683,14 +3474,18 @@ function saveNightAssignment() {
 
 
             assignmentMessageTimer =
-                setTimeout(function () {
+                setTimeout(
+                    function () {
 
-                    assignmentMessage.textContent = "";
+                        assignmentMessage.textContent =
+                            "";
 
-                    assignmentMessageTimer =
-                        null;
+                        assignmentMessageTimer =
+                            null;
 
-                }, 5000);
+                    },
+                    5000
+                );
 
         }
 
@@ -2726,13 +3521,11 @@ function saveNightAssignment() {
     }
 
 
-    // Reset dropdown back to placeholder
     setupDeploymentNightSelect(
         "assignedNight"
     );
 
 
-    // Clear previous timer
     if (assignmentMessageTimer) {
 
         clearTimeout(
@@ -2742,25 +3535,28 @@ function saveNightAssignment() {
     }
 
 
-    // Clear success message after 5 seconds
     assignmentMessageTimer =
-        setTimeout(function () {
+        setTimeout(
+            function () {
 
-            if (
-                assignmentMessage &&
-                assignmentMessage.textContent ===
-                    successMessage
-            ) {
+                if (
+                    assignmentMessage &&
+                    assignmentMessage.textContent ===
+                        successMessage
+                ) {
 
-                assignmentMessage.textContent = "";
+                    assignmentMessage.textContent =
+                        "";
 
-            }
+                }
 
 
-            assignmentMessageTimer =
-                null;
+                assignmentMessageTimer =
+                    null;
 
-        }, 5000);
+            },
+            5000
+        );
 
 }
 
@@ -2851,7 +3647,7 @@ function addTechnicianUpdate(
             cleanMessage,
 
         timestamp:
-            getCurrentTimestamp(),
+            getCurrentTimestamp(store),
 
         source:
             "technician"
