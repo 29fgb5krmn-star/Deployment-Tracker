@@ -1062,25 +1062,19 @@ function createScopeElement(task) {
 
     element.appendChild(main);
 
-    // Show latest reason/notes if available
-if (task.history && task.history.length > 0) {
+    // Show reason / notes if available
+if (task.reason) {
 
-    const latestHistory =
-        task.history[task.history.length - 1];
+    const reason =
+        document.createElement("div");
 
-    if (latestHistory.reason) {
+    reason.className =
+        "scope-reason";
 
-        const reason =
-            document.createElement("div");
+    reason.innerHTML =
+        `<strong>Reason:</strong> ${task.reason}`;
 
-        reason.className =
-            "scope-reason";
-
-        reason.innerHTML =
-            `<strong>Reason:</strong> ${latestHistory.reason}`;
-
-        element.appendChild(reason);
-    }
+    element.appendChild(reason);
 }
 
 
