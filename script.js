@@ -22,6 +22,7 @@ let stores = [
                 description: "Install Network Equipment",
                 status: "Completed",
                 reason: "",
+                reasonTimestamp: "",
                 history: []
             },
 
@@ -31,6 +32,7 @@ let stores = [
                 description: "Configure POS Terminals",
                 status: "Completed",
                 reason: "",
+                reasonTimestamp: "",
                 history: []
             },
 
@@ -40,6 +42,7 @@ let stores = [
                 description: "Install CCTV Cameras",
                 status: "Completed",
                 reason: "",
+                reasonTimestamp: "",
                 history: []
             },
 
@@ -49,6 +52,7 @@ let stores = [
                 description: "Test Network Connectivity",
                 status: "In Progress",
                 reason: "",
+                reasonTimestamp: "",
                 history: []
             },
 
@@ -58,6 +62,7 @@ let stores = [
                 description: "Validate Registers",
                 status: "Not Started",
                 reason: "",
+                reasonTimestamp: "",
                 history: []
             },
 
@@ -67,6 +72,7 @@ let stores = [
                 description: "Final System Validation",
                 status: "Not Started",
                 reason: "",
+                reasonTimestamp: "",
                 history: []
             }
         ]
@@ -86,6 +92,7 @@ let stores = [
                 description: "Install Network Equipment",
                 status: "Completed",
                 reason: "",
+                reasonTimestamp: "",
                 history: []
             },
 
@@ -95,6 +102,7 @@ let stores = [
                 description: "Configure POS Terminals",
                 status: "Completed",
                 reason: "",
+                reasonTimestamp: "",
                 history: []
             }
         ]
@@ -228,6 +236,32 @@ function formatCheckInTime(timestamp) {
         hour,
         minute
     );
+
+    return date.toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+    });
+
+}
+
+
+function formatReasonTimestamp(timestamp) {
+
+    if (!timestamp) {
+        return "";
+    }
+
+    const date =
+        new Date(
+            timestamp.replace(" ", "T")
+        );
+
+    if (isNaN(date.getTime())) {
+        return timestamp;
+    }
 
     return date.toLocaleString("en-US", {
         month: "short",
@@ -883,8 +917,7 @@ function renderStoreDetail() {
 
     if (assignedNight) {
 
-        assignedNight.value =
-            String(store.currentNight || 1);
+        assignedNight.value = "";
 
     }
 
@@ -1062,20 +1095,81 @@ function createScopeElement(task) {
 
     element.appendChild(main);
 
-    // Show reason / notes if available
-if (task.reason) {
 
-    const reason =
-        document.createElement("div");
+    // --------------------------------------------------------
+    // REASON / NOTES
+    // --------------------------------------------------------
 
-    reason.className =
-        "scope-reason";
+    if (task.reason) {
 
-    reason.innerHTML =
-        `<strong>Reason:</strong> ${task.reason}`;
+        const reason =
+            document.createElement("div");
 
-    element.appendChild(reason);
-}
+        reason.className =
+            "scope-reason";
+
+
+        const timestampText =
+            formatReasonTimestamp(
+                task.reasonTimestamp
+            );
+
+
+        reason.innerHTML = `
+
+            <div>
+                <strong>Reason:</strong>
+                ${task.reason}
+            </div>
+
+            ${
+                timestampText
+                    ? `
+                        <div class="scope-reason-time">
+                            ${timestampText}
+                        </div>
+                    `
+                    : ""
+            }
+
+        `;
+
+
+        element.appendChild(reason);
+
+    }
+
+
+    // --------------------------------------------------------
+    // EDIT BUTTON
+    // --------------------------------------------------------
+
+    const editButton =
+        document.createElement("button");
+
+    editButton.className =
+        "scope-edit";
+
+    editButton.type =
+        "button";
+
+    editButton.textContent =
+        "Edit";
+
+
+    editButton.onclick =
+        function (event) {
+
+            event.stopPropagation();
+
+            editScope(task.id);
+
+        };
+
+
+    element.appendChild(
+        editButton
+    );
 
 
     // --------------------------------------------------------
@@ -1273,6 +1367,9 @@ function addScope() {
         reason:
             "",
 
+        reasonTimestamp:
+            "",
+
         history:
             []
 
@@ -1382,6 +1479,8 @@ function resetScopeManagementForm() {
 
     if (reasonInput) {
         reasonInput.value = "";
+        reasonInput.placeholder =
+            "Enter reason or notes";
     }
 
     if (reasonGroup) {
@@ -1659,8 +1758,23 @@ function applyScopeManagement() {
 
     if (action === "editReason") {
 
+        if (!reason) {
+
+            showScopeManagementMessage(
+                "Please enter a reason or note.",
+                true
+            );
+
+            return;
+
+        }
+
+
         task.reason =
             reason;
+
+        task.reasonTimestamp =
+            timestamp;
 
 
         showScopeManagementMessage(
@@ -1705,6 +1819,12 @@ function applyScopeManagement() {
 
         task.reason =
             reason;
+
+
+        task.reasonTimestamp =
+            reason
+                ? timestamp
+                : "";
 
 
         showScopeManagementMessage(
@@ -1762,6 +1882,12 @@ function applyScopeManagement() {
 
         task.reason =
             reason;
+
+
+        task.reasonTimestamp =
+            reason
+                ? timestamp
+                : "";
 
 
         showScopeManagementMessage(
@@ -1824,10 +1950,6 @@ function applyScopeManagement() {
         }
 
 
-        const originalNight =
-            task.night;
-
-
         store.tasks.push({
 
             id:
@@ -1844,6 +1966,11 @@ function applyScopeManagement() {
 
             reason:
                 reason,
+
+            reasonTimestamp:
+                reason
+                    ? timestamp
+                    : "",
 
             history: [],
 
@@ -1949,6 +2076,84 @@ function showScopeManagementMessage(
         isError
             ? "#b91c1c"
             : "#047857";
+
+
+    if (!isError) {
+
+        setTimeout(function () {
+
+            if (element.textContent === message) {
+
+                element.textContent = "";
+
+            }
+
+        }, 5000);
+
+    }
+
+}
+
+
+// ============================================================
+// EDIT SCOPE
+// ============================================================
+
+function editScope(taskId) {
+
+    const store =
+        getSelectedStore();
+
+
+    if (!store) {
+        return;
+    }
+
+
+    const task =
+        store.tasks.find(
+            item =>
+                item.id === taskId
+        );
+
+
+    if (!task) {
+        return;
+    }
+
+
+    const newDescription =
+        prompt(
+            "Edit deployment scope:",
+            task.description
+        );
+
+
+    if (newDescription === null) {
+        return;
+    }
+
+
+    const cleanedDescription =
+        newDescription.trim();
+
+
+    if (!cleanedDescription) {
+
+        alert(
+            "Scope cannot be empty."
+        );
+
+        return;
+
+    }
+
+
+    task.description =
+        cleanedDescription;
+
+
+    renderStoreDetail();
 
 }
 
@@ -2129,6 +2334,12 @@ function saveNightAssignment() {
         );
 
 
+    const detailCurrentNight =
+        document.getElementById(
+            "detailCurrentNight"
+        );
+
+
     if (!assignedNight) {
         return;
     }
@@ -2140,8 +2351,33 @@ function saveNightAssignment() {
         );
 
 
+    if (!selectedNight) {
+
+        if (assignmentMessage) {
+
+            assignmentMessage.textContent =
+                "Please select a deployment night.";
+
+            assignmentMessage.style.color =
+                "#b91c1c";
+
+        }
+
+        return;
+
+    }
+
+
     store.currentNight =
         selectedNight;
+
+
+    if (detailCurrentNight) {
+
+        detailCurrentNight.textContent =
+            `Night ${selectedNight}`;
+
+    }
 
 
     if (assignmentMessage) {
@@ -2149,10 +2385,30 @@ function saveNightAssignment() {
         assignmentMessage.textContent =
             `Current assigned night updated to Night ${selectedNight}.`;
 
+        assignmentMessage.style.color =
+            "#047857";
+
     }
 
 
-    renderStoreDetail();
+    // Reset dropdown
+    assignedNight.value = "";
+
+
+    // Clear success message after 5 seconds
+    setTimeout(function () {
+
+        if (
+            assignmentMessage &&
+            assignmentMessage.textContent ===
+                `Current assigned night updated to Night ${selectedNight}.`
+        ) {
+
+            assignmentMessage.textContent = "";
+
+        }
+
+    }, 5000);
 
 }
 
