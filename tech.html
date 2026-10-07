@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Technician Deployment Tracker</title>
+
+    <link
+        rel="stylesheet"
+        href="tech-style.css"
+    >
+</head>
+
+<body>
+
+    <!-- =====================================================
+         TECHNICIAN LOGIN
+         ===================================================== -->
+
+    <div
+        id="loginPage"
+        class="page"
+    >
+
+        <div class="login-card">
+
+            <div class="login-header">
+
+                <div class="login-icon">
+                    DT
+                </div>
+
+                <h1>
+                    Deployment Tracker
+                </h1>
+
+                <p>
+                    Technician Access
+                </p>
+
+            </div>
+
+            <div class="login-form">
+
+                <label for="storeNumberInput">
+                    Store Number
+                </label>
+
+                <input
+                    type="text"
+                    id="storeNumberInput"
+                    placeholder="Enter store number"
+                    inputmode="numeric"
+                    maxlength="4"
+                >
+
+                <button
+                    type="button"
+                    class="primary-button"
+                    onclick="technicianLogin()"
+                >
+                    Continue
+                </button>
+
+                <div
+                    id="loginMessage"
+                    class="login-message"
+                ></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         TECHNICIAN DASHBOARD
+         ===================================================== -->
+
+    <div
+        id="technicianPage"
+        class="page hidden"
+    >
+
+        <header class="tech-header">
+
+            <div>
+
+                <div class="header-label">
+                    Deployment Tracker
+                </div>
+
+                <h1 id="techStoreNumber">
+                    Store 0000
+                </h1>
+
+                <p id="techName">
+                    Technician
+                </p>
+
+            </div>
+
+            <button
+                type="button"
+                class="logout-button"
+                onclick="technicianLogout()"
+            >
+                Log Out
+            </button>
+
+        </header>
+
+
+        <main class="tech-content">
+
+            <!-- =================================================
+                 STORE INFORMATION
+                 ================================================= -->
+
+            <section class="info-card">
+
+                <div class="info-row">
+
+                    <div>
+                        <span class="info-label">
+                            Store
+                        </span>
+
+                        <strong id="storeInfoNumber">
+                            —
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span class="info-label">
+                            Technician
+                        </span>
+
+                        <strong id="storeInfoTechnician">
+                            —
+                        </strong>
+                    </div>
+
+                </div>
+
+                <div class="info-row">
+
+                    <div>
+                        <span class="info-label">
+                            Current Night
+                        </span>
+
+                        <strong id="storeInfoNight">
+                            —
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span class="info-label">
+                            Timezone
+                        </span>
+
+                        <strong id="storeInfoTimezone">
+                            —
+                        </strong>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 CURRENT NIGHT SCOPE
+                 ================================================= -->
+
+            <section class="scope-card">
+
+                <div class="section-header">
+
+                    <div>
+
+                        <span class="section-label">
+                            CURRENT DEPLOYMENT
+                        </span>
+
+                        <h2 id="currentNightTitle">
+                            Night 1
+                        </h2>
+
+                    </div>
+
+                    <span
+                        id="nightProgress"
+                        class="progress-summary"
+                    >
+                        0% Complete
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="scopeList"
+                    class="technician-scope-list"
+                >
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 FIXTURE HANDOVER
+                 ================================================= -->
+
+            <section class="handover-card">
+
+                <div class="section-header">
+
+                    <div>
+
+                        <span class="section-label">
+                            FIXTURE HANDOVER
+                        </span>
+
+                        <h2>
+                            Fixture Handover
+                        </h2>
+
+                    </div>
+
+                </div>
+
+                <div
+                    id="handoverContent"
+                    class="handover-content"
+                >
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 UPDATE MESSAGE
+                 ================================================= -->
+
+            <div
+                id="technicianMessage"
+                class="technician-message"
+            ></div>
+
+        </main>
+
+    </div>
+
+
+    <script src="tech-script.js"></script>
+
+</body>
+</html>
