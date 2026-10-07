@@ -1,303 +1,213 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <title>Deployment Tracker - Technician</title>
 
-    <title>Technician Deployment Tracker</title>
-
-    <link
-        rel="stylesheet"
-        href="tech-style.css"
-    >
+    <link rel="stylesheet" href="tech-style.css">
 </head>
 
 <body>
 
-    <!-- =====================================================
-         TECHNICIAN LOGIN
-         ===================================================== -->
-
-    <div
-        id="loginPage"
-        class="page"
-    >
+    <!-- =========================
+         LOGIN
+         ========================= -->
+    <div id="loginPage" class="login-page">
 
         <div class="login-card">
+            <div class="login-icon">🔧</div>
 
-            <div class="login-header">
+            <h1>Technician Portal</h1>
+            <p>Enter your assigned store number</p>
 
-                <div class="login-icon">
-                    DT
-                </div>
+            <input
+                type="text"
+                id="storeLoginInput"
+                placeholder="Store Number"
+                maxlength="4"
+            >
 
-                <h1>
-                    Deployment Tracker
-                </h1>
+            <button onclick="loginTechnician()">
+                Continue
+            </button>
 
-                <p>
-                    Technician Access
-                </p>
-
-            </div>
-
-            <div class="login-form">
-
-                <label for="storeNumberInput">
-                    Store Number
-                </label>
-
-                <input
-                    type="text"
-                    id="storeNumberInput"
-                    placeholder="Enter store number"
-                    inputmode="numeric"
-                    maxlength="4"
-                >
-
-                <button
-                    type="button"
-                    class="primary-button"
-                    onclick="technicianLogin()"
-                >
-                    Continue
-                </button>
-
-                <div
-                    id="loginMessage"
-                    class="login-message"
-                ></div>
-
-            </div>
-
+            <p id="loginError" class="login-error"></p>
         </div>
 
     </div>
 
 
-    <!-- =====================================================
+    <!-- =========================
          TECHNICIAN DASHBOARD
-         ===================================================== -->
+         ========================= -->
+    <div id="dashboardPage" class="dashboard-page hidden">
 
-    <div
-        id="technicianPage"
-        class="page hidden"
-    >
-
-        <!-- HEADER -->
-
+        <!-- Header -->
         <header class="tech-header">
 
             <div>
+                <div class="portal-label">TECHNICIAN PORTAL</div>
 
-                <div class="header-label">
-                    Deployment Tracker
-                </div>
-
-                <h1 id="techStoreNumber">
-                    Store 0000
+                <h1>
+                    Store <span id="storeNumber"></span>
                 </h1>
 
-                <p id="techName">
-                    Technician
-                </p>
-
+                <p id="technicianName"></p>
             </div>
 
-            <button
-                type="button"
-                class="logout-button"
-                onclick="technicianLogout()"
-            >
-                Log Out
+            <button class="logout-btn" onclick="logoutTechnician()">
+                Logout
             </button>
 
         </header>
 
 
-        <main class="tech-content">
+        <main class="tech-container">
 
+            <!-- =========================
+                 STORE STATUS
+                 ========================= -->
+            <section class="store-status-card">
 
-            <!-- =================================================
-                 STORE INFORMATION
-                 ================================================= -->
-
-            <section class="info-card">
-
-                <div class="info-row">
-
-                    <div>
-                        <span class="info-label">
-                            Store
-                        </span>
-
-                        <strong id="storeInfoNumber">
-                            —
-                        </strong>
-                    </div>
-
-                    <div>
-                        <span class="info-label">
-                            Technician
-                        </span>
-
-                        <strong id="storeInfoTechnician">
-                            —
-                        </strong>
-                    </div>
-
+                <div class="status-item">
+                    <span>Current Night</span>
+                    <strong id="currentNight"></strong>
                 </div>
 
-                <div class="info-row">
+                <div class="status-item">
+                    <span>Timezone</span>
+                    <strong id="storeTimezone"></strong>
+                </div>
 
-                    <div>
-                        <span class="info-label">
-                            Current Night
-                        </span>
-
-                        <strong id="storeInfoNight">
-                            —
-                        </strong>
-                    </div>
-
-                    <div>
-                        <span class="info-label">
-                            Timezone
-                        </span>
-
-                        <strong id="storeInfoTimezone">
-                            —
-                        </strong>
-                    </div>
-
+                <div class="status-item">
+                    <span>Check-in</span>
+                    <button
+                        id="checkInButton"
+                        class="checkin-btn"
+                        onclick="checkInTechnician()"
+                    >
+                        Check In
+                    </button>
                 </div>
 
             </section>
 
 
-            <!-- =================================================
+            <!-- =========================
                  EQUIPMENT CHECKLIST
-                 ================================================= -->
+                 ========================= -->
+            <section class="equipment-section">
 
-            <section class="equipment-card">
-
-                <div class="section-header">
+                <div class="section-header compact-header">
 
                     <div>
-
-                        <span class="section-label">
-                            STORE EQUIPMENT
-                        </span>
-
-                        <h2>
-                            Equipment Checklist
-                        </h2>
-
+                        <h2>📦 Equipment Checklist</h2>
+                        <p>Verify the equipment received at the store.</p>
                     </div>
 
-                    <span
-                        id="equipmentSummary"
-                        class="progress-summary"
+                    <div
+                        id="equipmentProgress"
+                        class="equipment-progress"
                     >
-                        0 of 0 complete
-                    </span>
+                        0 of 8 complete
+                    </div>
 
                 </div>
 
 
-                <div
-                    id="equipmentList"
-                    class="equipment-list"
-                >
+                <div class="equipment-table-wrapper">
+
+                    <table class="equipment-table">
+
+                        <thead>
+                            <tr>
+                                <th>Equipment</th>
+                                <th>Qty</th>
+                                <th>Tracking ID</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="equipmentList">
+                            <!-- Generated by tech-script.js -->
+                        </tbody>
+
+                    </table>
+
                 </div>
 
             </section>
 
 
-            <!-- =================================================
+            <!-- =========================
                  CURRENT NIGHT SCOPE
-                 ================================================= -->
-
-            <section class="scope-card">
+                 ========================= -->
+            <section class="scope-section">
 
                 <div class="section-header">
 
                     <div>
+                        <h2>🌙 Current Night Scope</h2>
 
-                        <span class="section-label">
-                            CURRENT DEPLOYMENT
-                        </span>
-
-                        <h2 id="currentNightTitle">
-                            Night 1
-                        </h2>
-
+                        <p>
+                            Update the progress of your assigned tasks.
+                        </p>
                     </div>
-
-                    <span
-                        id="nightProgress"
-                        class="progress-summary"
-                    >
-                        0% Complete
-                    </span>
 
                 </div>
 
-
-                <div
-                    id="scopeList"
-                    class="technician-scope-list"
-                >
+                <div id="scopeList" class="scope-list">
+                    <!-- Generated by tech-script.js -->
                 </div>
 
             </section>
 
 
-            <!-- =================================================
+            <!-- =========================
                  FIXTURE HANDOVER
-                 ================================================= -->
-
-            <section class="handover-card">
+                 ========================= -->
+            <section class="fixture-section">
 
                 <div class="section-header">
 
                     <div>
+                        <h2>📦 Fixture Handover</h2>
 
-                        <span class="section-label">
-                            FIXTURE HANDOVER
-                        </span>
-
-                        <h2>
-                            Fixture Handover
-                        </h2>
-
+                        <p>
+                            Confirm once the fixture handover has been completed.
+                        </p>
                     </div>
 
                 </div>
 
-                <div
-                    id="handoverContent"
-                    class="handover-content"
-                >
+                <div class="fixture-card">
+
+                    <div class="fixture-status">
+                        <span>Status</span>
+
+                        <strong id="fixtureStatus">
+                            Not Confirmed
+                        </strong>
+                    </div>
+
+                    <div
+                        id="fixtureTime"
+                        class="fixture-time"
+                    ></div>
+
+                    <button
+                        id="fixtureButton"
+                        class="fixture-btn"
+                        onclick="confirmFixtureHandover()"
+                    >
+                        Confirm Fixture Handover
+                    </button>
+
                 </div>
 
             </section>
-
-
-            <!-- =================================================
-                 MESSAGE
-                 ================================================= -->
-
-            <div
-                id="technicianMessage"
-                class="technician-message"
-            ></div>
-
 
         </main>
 
@@ -307,5 +217,4 @@
     <script src="tech-script.js"></script>
 
 </body>
-
 </html>
