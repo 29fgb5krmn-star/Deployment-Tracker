@@ -1,1687 +1,960 @@
-/* ============================================================
-   TECHNICIAN DEPLOYMENT TRACKER
-   PHASE 1 PROTOTYPE
-   ============================================================ */
+/* =========================================================
+   TECHNICIAN PORTAL
+   ========================================================= */
 
 
-/* ============================================================
+/* =========================================================
    SAMPLE TECHNICIAN DATA
-   ============================================================ */
+   ========================================================= */
 
-const technicianStores = [
+const technicianStores = {
 
-    {
-        storeNumber: "0123",
-
+    "0123": {
         technician: "Technician A",
-
         timezone: "EST",
-
         currentNight: 1,
 
-
-        /* ====================================================
-           CURRENT NIGHT SCOPES
-           ==================================================== */
-
-        tasks: [
-
-            {
-                id: 1,
-                night: 1,
-                description:
-                    "Install Register 1 to new HCS",
-                status:
-                    "Not Started",
-                note:
-                    ""
-            },
-
-            {
-                id: 2,
-                night: 1,
-                description:
-                    "Install Register 2 to new HCS",
-                status:
-                    "Not Started",
-                note:
-                    ""
-            },
-
-            {
-                id: 3,
-                night: 1,
-                description:
-                    "Test Register 1",
-                status:
-                    "Not Started",
-                note:
-                    ""
-            }
-
-        ],
-
-
-        /* ====================================================
-           EQUIPMENT CHECKLIST
-           ==================================================== */
-
         equipment: [
-
             {
-                id: 1,
-                name: "Register 1",
+                id: "EQ-001",
+                name: "New CPU",
+                quantity: 1,
+                trackingId: "TRK-001234",
                 status: "Complete",
                 note: ""
             },
 
             {
-                id: 2,
-                name: "Register 2",
-                status: "Complete",
-                note: ""
-            },
-
-            {
-                id: 3,
-                name: "HCS",
-                status: "Complete",
-                note: ""
-            },
-
-            {
-                id: 4,
-                name: "Pinpad",
-                status: "Missing",
-                note:
-                    "Missing pinpad cable"
-            },
-
-            {
-                id: 5,
-                name: "Scanner",
-                status: "Complete",
-                note: ""
-            },
-
-            {
-                id: 6,
-                name: "Receipt Printer",
+                id: "EQ-002",
+                name: "New handheld scanners (SCO lanes)",
+                quantity: 5,
+                trackingId: "TRK-001235",
                 status: "Incomplete",
-                note:
-                    "Power cable missing"
+                note: "1 of 5 handheld scanners missing."
             },
 
             {
-                id: 7,
-                name: "Network Switch",
+                id: "EQ-003",
+                name: "New printers (SCO lanes)",
+                quantity: 4,
+                trackingId: "TRK-001236",
+                status: "Missing",
+                note: ""
+            },
+
+            {
+                id: "EQ-004",
+                name: "New table top scanners (Regular lanes)",
+                quantity: 5,
+                trackingId: "TRK-001237",
+                status: "Complete",
+                note: ""
+            },
+
+            {
+                id: "EQ-005",
+                name: "New Toshiba Cash Drawers (Regular lanes)",
+                quantity: 5,
+                trackingId: "TRK-001238",
+                status: "Complete",
+                note: ""
+            },
+
+            {
+                id: "EQ-006",
+                name: "Monitor poles (Regular lanes)",
+                quantity: 5,
+                trackingId: "TRK-001239",
+                status: "Complete",
+                note: ""
+            },
+
+            {
+                id: "EQ-007",
+                name: "VE Monitor poles (SCO lanes)",
+                quantity: 4,
+                trackingId: "TRK-001240",
+                status: "Missing",
+                note: ""
+            },
+
+            {
+                id: "EQ-008",
+                name: "Monitor pole (Host stand)",
+                quantity: 1,
+                trackingId: "TRK-001241",
                 status: "Complete",
                 note: ""
             }
-
         ],
 
+        scopes: [
+            {
+                id: "SCOPE-001",
+                title: "Install Register 1 to new HCS",
+                status: "Not Started",
+                note: ""
+            },
 
-        fixtureHandover: null
+            {
+                id: "SCOPE-002",
+                title: "Install Register 2 to new HCS",
+                status: "Not Started",
+                note: ""
+            },
 
+            {
+                id: "SCOPE-003",
+                title: "Test Register 1",
+                status: "Not Started",
+                note: ""
+            }
+        ],
+
+        checkedIn: false,
+        checkInTime: null,
+
+        fixtureHandedOver: false,
+        fixtureTime: null
     },
 
 
-    {
-        storeNumber: "0456",
-
+    "0456": {
         technician: "Technician B",
-
         timezone: "PST",
-
         currentNight: 1,
 
-        tasks: [
+        equipment: createDefaultEquipment(),
 
+        scopes: [
             {
-                id: 10,
-                night: 1,
-                description:
-                    "Install Network Equipment",
-                status:
-                    "Completed",
-                note:
-                    ""
-            },
-
-            {
-                id: 11,
-                night: 1,
-                description:
-                    "Configure POS Terminals",
-                status:
-                    "In Progress",
-                note:
-                    ""
-            }
-
-        ],
-
-        equipment: [
-
-            {
-                id: 10,
-                name: "Register 1",
-                status: "Complete",
+                id: "SCOPE-001",
+                title: "Install Register 1 to new HCS",
+                status: "Not Started",
                 note: ""
             },
 
             {
-                id: 11,
-                name: "Register 2",
-                status: "Complete",
-                note: ""
-            },
-
-            {
-                id: 12,
-                name: "HCS",
-                status: "Complete",
-                note: ""
-            },
-
-            {
-                id: 13,
-                name: "Pinpad",
-                status: "Complete",
+                id: "SCOPE-002",
+                title: "Test Register 1",
+                status: "Not Started",
                 note: ""
             }
-
         ],
 
-        fixtureHandover: null
+        checkedIn: false,
+        checkInTime: null,
 
+        fixtureHandedOver: false,
+        fixtureTime: null
     },
 
 
-    {
-        storeNumber: "0789",
-
+    "0789": {
         technician: "Technician C",
-
         timezone: "CST",
-
         currentNight: 2,
 
-        tasks: [
+        equipment: createDefaultEquipment(),
 
+        scopes: [
             {
-                id: 20,
-                night: 2,
-                description:
-                    "Install Network Equipment",
-                status:
-                    "Not Started",
-                note:
-                    ""
-            }
-
-        ],
-
-        equipment: [
-
-            {
-                id: 20,
-                name: "Register 1",
-                status: "Complete",
-                note: ""
-            },
-
-            {
-                id: 21,
-                name: "Register 2",
-                status: "Complete",
-                note: ""
-            },
-
-            {
-                id: 22,
-                name: "HCS",
-                status: "Complete",
-                note: ""
-            },
-
-            {
-                id: 23,
-                name: "Pinpad",
-                status: "Complete",
+                id: "SCOPE-001",
+                title: "Install Register 1 to new HCS",
+                status: "Not Started",
                 note: ""
             }
-
         ],
 
-        fixtureHandover: null
+        checkedIn: false,
+        checkInTime: null,
 
+        fixtureHandedOver: false,
+        fixtureTime: null
     }
 
-];
+};
 
 
-/* ============================================================
-   CURRENT TECHNICIAN
-   ============================================================ */
+/* =========================================================
+   DEFAULT EQUIPMENT
+   ========================================================= */
 
-let loggedInStoreNumber = null;
+function createDefaultEquipment() {
 
+    return [
+        {
+            id: "EQ-001",
+            name: "New CPU",
+            quantity: 1,
+            trackingId: "TRK-001234",
+            status: "Complete",
+            note: ""
+        },
 
-/* ============================================================
-   PAGE LOAD
-   ============================================================ */
+        {
+            id: "EQ-002",
+            name: "New handheld scanners (SCO lanes)",
+            quantity: 5,
+            trackingId: "TRK-001235",
+            status: "Complete",
+            note: ""
+        },
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+        {
+            id: "EQ-003",
+            name: "New printers (SCO lanes)",
+            quantity: 4,
+            trackingId: "TRK-001236",
+            status: "Complete",
+            note: ""
+        },
 
-        showLoginPage();
+        {
+            id: "EQ-004",
+            name: "New table top scanners (Regular lanes)",
+            quantity: 5,
+            trackingId: "TRK-001237",
+            status: "Complete",
+            note: ""
+        },
 
-    }
-);
+        {
+            id: "EQ-005",
+            name: "New Toshiba Cash Drawers (Regular lanes)",
+            quantity: 5,
+            trackingId: "TRK-001238",
+            status: "Complete",
+            note: ""
+        },
 
+        {
+            id: "EQ-006",
+            name: "Monitor poles (Regular lanes)",
+            quantity: 5,
+            trackingId: "TRK-001239",
+            status: "Complete",
+            note: ""
+        },
 
-/* ============================================================
-   GET STORE
-   ============================================================ */
+        {
+            id: "EQ-007",
+            name: "VE Monitor poles (SCO lanes)",
+            quantity: 4,
+            trackingId: "TRK-001240",
+            status: "Complete",
+            note: ""
+        },
 
-function getTechnicianStore() {
-
-    return technicianStores.find(
-        store =>
-            store.storeNumber ===
-            loggedInStoreNumber
-    );
-
+        {
+            id: "EQ-008",
+            name: "Monitor pole (Host stand)",
+            quantity: 1,
+            trackingId: "TRK-001241",
+            status: "Complete",
+            note: ""
+        }
+    ];
 }
 
 
-/* ============================================================
-   LOGIN
-   ============================================================ */
+/* =========================================================
+   CURRENT TECHNICIAN
+   ========================================================= */
 
-function technicianLogin() {
+let currentStore = null;
+
+
+/* =========================================================
+   LOGIN
+   ========================================================= */
+
+function loginTechnician() {
 
     const input =
-        document.getElementById(
-            "storeNumberInput"
-        );
-
-    const message =
-        document.getElementById(
-            "loginMessage"
-        );
-
-    if (!input) {
-        return;
-    }
-
-
-    const enteredNumber =
-        input.value
-            .trim()
-            .padStart(4, "0");
-
-
-    const store =
-        technicianStores.find(
-            item =>
-                item.storeNumber ===
-                enteredNumber
-        );
-
-
-    if (!store) {
-
-        if (message) {
-
-            message.textContent =
-                "Store not found.";
-
-        }
-
-        return;
-    }
-
-
-    loggedInStoreNumber =
-        store.storeNumber;
-
-
-    if (message) {
-
-        message.textContent =
-            "";
-
-    }
-
-
-    input.value =
-        "";
-
-
-    showTechnicianPage();
-
-}
-
-
-/* ============================================================
-   SHOW LOGIN
-   ============================================================ */
-
-function showLoginPage() {
-
-    const loginPage =
-        document.getElementById(
-            "loginPage"
-        );
-
-    const technicianPage =
-        document.getElementById(
-            "technicianPage"
-        );
-
-
-    if (loginPage) {
-
-        loginPage.classList.remove(
-            "hidden"
-        );
-
-    }
-
-
-    if (technicianPage) {
-
-        technicianPage.classList.add(
-            "hidden"
-        );
-
-    }
-
-}
-
-
-/* ============================================================
-   SHOW TECHNICIAN PAGE
-   ============================================================ */
-
-function showTechnicianPage() {
-
-    const loginPage =
-        document.getElementById(
-            "loginPage"
-        );
-
-    const technicianPage =
-        document.getElementById(
-            "technicianPage"
-        );
-
-
-    if (loginPage) {
-
-        loginPage.classList.add(
-            "hidden"
-        );
-
-    }
-
-
-    if (technicianPage) {
-
-        technicianPage.classList.remove(
-            "hidden"
-        );
-
-    }
-
-
-    renderTechnicianDashboard();
-
-}
-
-
-/* ============================================================
-   LOGOUT
-   ============================================================ */
-
-function technicianLogout() {
-
-    loggedInStoreNumber =
-        null;
-
-    showLoginPage();
-
-}
-
-
-/* ============================================================
-   DASHBOARD
-   ============================================================ */
-
-function renderTechnicianDashboard() {
-
-    const store =
-        getTechnicianStore();
-
-    if (!store) {
-        return;
-    }
-
+        document.getElementById("storeLoginInput");
 
     const storeNumber =
-        document.getElementById(
-            "techStoreNumber"
-        );
+        input.value.trim().padStart(4, "0");
 
-    const technician =
-        document.getElementById(
-            "techName"
-        );
+    const error =
+        document.getElementById("loginError");
 
-    const infoNumber =
-        document.getElementById(
-            "storeInfoNumber"
-        );
+    if (!technicianStores[storeNumber]) {
 
-    const infoTechnician =
-        document.getElementById(
-            "storeInfoTechnician"
-        );
+        error.textContent =
+            "Store not found. Please check your store number.";
 
-    const infoNight =
-        document.getElementById(
-            "storeInfoNight"
-        );
-
-    const infoTimezone =
-        document.getElementById(
-            "storeInfoTimezone"
-        );
-
-    const nightTitle =
-        document.getElementById(
-            "currentNightTitle"
-        );
-
-
-    if (storeNumber) {
-
-        storeNumber.textContent =
-            `Store ${store.storeNumber}`;
-
+        return;
     }
 
+    currentStore = storeNumber;
 
-    if (technician) {
+    error.textContent = "";
 
-        technician.textContent =
-            store.technician;
+    document
+        .getElementById("loginPage")
+        .classList.add("hidden");
 
-    }
+    document
+        .getElementById("dashboardPage")
+        .classList.remove("hidden");
 
-
-    if (infoNumber) {
-
-        infoNumber.textContent =
-            store.storeNumber;
-
-    }
-
-
-    if (infoTechnician) {
-
-        infoTechnician.textContent =
-            store.technician;
-
-    }
-
-
-    if (infoNight) {
-
-        infoNight.textContent =
-            `Night ${store.currentNight}`;
-
-    }
-
-
-    if (infoTimezone) {
-
-        infoTimezone.textContent =
-            store.timezone;
-
-    }
-
-
-    if (nightTitle) {
-
-        nightTitle.textContent =
-            `Night ${store.currentNight}`;
-
-    }
-
-
-    renderEquipmentChecklist();
-
-    renderCurrentNightScopes();
-
-    renderFixtureHandover();
-
+    renderDashboard();
 }
 
 
-/* ============================================================
-   EQUIPMENT CHECKLIST
-   ============================================================ */
+/* =========================================================
+   LOGOUT
+   ========================================================= */
 
-function renderEquipmentChecklist() {
+function logoutTechnician() {
+
+    currentStore = null;
+
+    document
+        .getElementById("dashboardPage")
+        .classList.add("hidden");
+
+    document
+        .getElementById("loginPage")
+        .classList.remove("hidden");
+
+    document
+        .getElementById("storeLoginInput")
+        .value = "";
+}
+
+
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
+
+function renderDashboard() {
 
     const store =
-        getTechnicianStore();
+        technicianStores[currentStore];
+
+    document.getElementById("storeNumber")
+        .textContent = currentStore;
+
+    document.getElementById("technicianName")
+        .textContent = store.technician;
+
+    document.getElementById("currentNight")
+        .textContent = `Night ${store.currentNight}`;
+
+    document.getElementById("storeTimezone")
+        .textContent = store.timezone;
+
+    renderEquipment();
+
+    renderScopes();
+
+    renderCheckIn();
+
+    renderFixture();
+}
+
+
+/* =========================================================
+   EQUIPMENT
+   ========================================================= */
+
+function renderEquipment() {
+
+    const store =
+        technicianStores[currentStore];
 
     const container =
-        document.getElementById(
-            "equipmentList"
-        );
+        document.getElementById("equipmentList");
 
-    const summary =
-        document.getElementById(
-            "equipmentSummary"
-        );
+    container.innerHTML = "";
 
+    store.equipment.forEach((equipment) => {
 
-    if (!store || !container) {
-        return;
-    }
+        const row =
+            document.createElement("tr");
 
+        row.innerHTML = `
+            <td>
+                <div class="equipment-name">
+                    ${escapeHtml(equipment.name)}
+                </div>
+            </td>
 
-    container.innerHTML =
-        "";
+            <td>
+                <span class="equipment-qty">
+                    ${equipment.quantity}
+                </span>
+            </td>
 
+            <td>
+                <div class="tracking-cell">
 
-    const equipment =
-        store.equipment || [];
+                    <span class="tracking-id">
+                        ${escapeHtml(equipment.trackingId)}
+                    </span>
 
+                    <button
+                        class="copy-tracking-btn"
+                        onclick="copyTrackingId('${equipment.id}')"
+                    >
+                        Copy
+                    </button>
 
-    if (equipment.length === 0) {
+                </div>
+            </td>
 
-        container.innerHTML = `
-            <div class="empty-equipment">
-                No equipment checklist assigned.
-            </div>
+            <td>
+
+                <select
+                    class="equipment-status-select"
+                    onchange="updateEquipmentStatus(
+                        '${equipment.id}',
+                        this.value
+                    )"
+                >
+
+                    <option value="Complete"
+                        ${equipment.status === "Complete" ? "selected" : ""}>
+                        Complete
+                    </option>
+
+                    <option value="Incomplete"
+                        ${equipment.status === "Incomplete" ? "selected" : ""}>
+                        Incomplete
+                    </option>
+
+                    <option value="Missing"
+                        ${equipment.status === "Missing" ? "selected" : ""}>
+                        Missing
+                    </option>
+
+                </select>
+
+            </td>
         `;
 
-        if (summary) {
-
-            summary.textContent =
-                "0 of 0 complete";
-
-        }
-
-        return;
-    }
+        container.appendChild(row);
 
 
-    equipment.forEach(
-        item => {
+        /* Add note row only when needed */
 
-            container.appendChild(
-                createEquipmentElement(
-                    item
-                )
-            );
+        if (
+            equipment.status === "Missing" ||
+            equipment.status === "Incomplete"
+        ) {
 
-        }
-    );
+            const noteRow =
+                document.createElement("tr");
 
+            noteRow.className =
+                "equipment-note-row";
 
-    updateEquipmentSummary();
+            let noteHtml = "";
 
-}
+            if (equipment.note) {
 
+                noteHtml = `
+                    <div class="equipment-note">
+                        <strong>Note:</strong>
+                        ${escapeHtml(equipment.note)}
 
-/* ============================================================
-   CREATE EQUIPMENT ITEM
-   ============================================================ */
+                        <button
+                            class="edit-equipment-note"
+                            onclick="addEquipmentNote('${equipment.id}')"
+                        >
+                            Edit
+                        </button>
+                    </div>
+                `;
 
-function createEquipmentElement(
-    item
-) {
+            } else {
 
-    const element =
-        document.createElement(
-            "div"
-        );
-
-    element.className =
-        "equipment-item";
-
-
-    const main =
-        document.createElement(
-            "div"
-        );
-
-    main.className =
-        "equipment-main";
-
-
-    const name =
-        document.createElement(
-            "div"
-        );
-
-    name.className =
-        "equipment-name";
-
-    name.textContent =
-        item.name;
-
-
-    const status =
-        document.createElement(
-            "select"
-        );
-
-    status.className =
-        `equipment-status ${getEquipmentStatusClass(
-            item.status
-        )}`;
-
-
-    [
-        "Complete",
-        "Missing",
-        "Incomplete"
-    ].forEach(
-        statusValue => {
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-            option.value =
-                statusValue;
-
-            option.textContent =
-                statusValue;
-
-            if (
-                item.status ===
-                statusValue
-            ) {
-
-                option.selected =
-                    true;
-
+                noteHtml = `
+                    <button
+                        class="add-equipment-note"
+                        onclick="addEquipmentNote('${equipment.id}')"
+                    >
+                        + Add Note
+                    </button>
+                `;
             }
 
-            status.appendChild(
-                option
-            );
+            noteRow.innerHTML = `
+                <td colspan="4">
+                    ${noteHtml}
+                </td>
+            `;
 
+            container.appendChild(noteRow);
         }
-    );
 
+    });
 
-    status.onchange =
-        function () {
-
-            updateEquipmentStatus(
-                item.id,
-                status.value
-            );
-
-        };
-
-
-    main.appendChild(
-        name
-    );
-
-    main.appendChild(
-        status
-    );
-
-
-    element.appendChild(
-        main
-    );
-
-
-    const noteButton =
-        document.createElement(
-            "button"
-        );
-
-    noteButton.type =
-        "button";
-
-    noteButton.className =
-        "equipment-note-button";
-
-    noteButton.textContent =
-        item.note
-            ? "Edit Note"
-            : "＋ Add Note";
-
-
-    noteButton.onclick =
-        function () {
-
-            editEquipmentNote(
-                item.id
-            );
-
-        };
-
-
-    element.appendChild(
-        noteButton
-    );
-
-
-    if (item.note) {
-
-        const note =
-            document.createElement(
-                "div"
-            );
-
-        note.className =
-            "equipment-note";
-
-        note.textContent =
-            item.note;
-
-        element.appendChild(
-            note
-        );
-
-    }
-
-
-    return element;
-
+    updateEquipmentProgress();
 }
 
 
-/* ============================================================
-   EQUIPMENT STATUS CLASS
-   ============================================================ */
-
-function getEquipmentStatusClass(
-    status
-) {
-
-    return status
-        .toLowerCase()
-        .replaceAll(
-            " ",
-            "-"
-        );
-
-}
-
-
-/* ============================================================
-   UPDATE EQUIPMENT STATUS
-   ============================================================ */
+/* =========================================================
+   EQUIPMENT STATUS UPDATE
+   ========================================================= */
 
 function updateEquipmentStatus(
     equipmentId,
-    newStatus
-) {
-
-    const store =
-        getTechnicianStore();
-
-    if (!store) {
-        return;
-    }
-
-
-    const item =
-        store.equipment.find(
-            equipment =>
-                equipment.id ===
-                equipmentId
-        );
-
-
-    if (!item) {
-        return;
-    }
-
-
-    item.status =
-        newStatus;
-
-
-    renderEquipmentChecklist();
-
-
-    showTechnicianMessage(
-        `${item.name} marked as ${newStatus}.`,
-        false
-    );
-
-}
-
-
-/* ============================================================
-   EQUIPMENT NOTE
-   ============================================================ */
-
-function editEquipmentNote(
-    equipmentId
-) {
-
-    const store =
-        getTechnicianStore();
-
-    if (!store) {
-        return;
-    }
-
-
-    const item =
-        store.equipment.find(
-            equipment =>
-                equipment.id ===
-                equipmentId
-        );
-
-
-    if (!item) {
-        return;
-    }
-
-
-    const note =
-        prompt(
-            `Add note for ${item.name}:`,
-            item.note || ""
-        );
-
-
-    if (note === null) {
-        return;
-    }
-
-
-    item.note =
-        note.trim();
-
-
-    renderEquipmentChecklist();
-
-
-    showTechnicianMessage(
-        item.note
-            ? "Equipment note saved."
-            : "Equipment note cleared.",
-        false
-    );
-
-}
-
-
-/* ============================================================
-   EQUIPMENT SUMMARY
-   ============================================================ */
-
-function updateEquipmentSummary() {
-
-    const store =
-        getTechnicianStore();
-
-    const summary =
-        document.getElementById(
-            "equipmentSummary"
-        );
-
-
-    if (!store || !summary) {
-        return;
-    }
-
-
-    const equipment =
-        store.equipment || [];
-
-
-    const complete =
-        equipment.filter(
-            item =>
-                item.status ===
-                "Complete"
-        ).length;
-
-
-    summary.textContent =
-        `${complete} of ${equipment.length} complete`;
-
-}
-
-
-/* ============================================================
-   CURRENT NIGHT SCOPES
-   ============================================================ */
-
-function renderCurrentNightScopes() {
-
-    const store =
-        getTechnicianStore();
-
-    const container =
-        document.getElementById(
-            "scopeList"
-        );
-
-    const progressSummary =
-        document.getElementById(
-            "nightProgress"
-        );
-
-
-    if (!store || !container) {
-        return;
-    }
-
-
-    container.innerHTML =
-        "";
-
-
-    const currentNightTasks =
-        (store.tasks || []).filter(
-            task =>
-                task.night ===
-                store.currentNight
-        );
-
-
-    if (
-        currentNightTasks.length ===
-        0
-    ) {
-
-        container.innerHTML = `
-            <div class="empty-scope">
-                No deployment scope assigned
-                for this night.
-            </div>
-        `;
-
-
-        if (progressSummary) {
-
-            progressSummary.textContent =
-                "0% Complete";
-
-        }
-
-
-        return;
-
-    }
-
-
-    currentNightTasks.forEach(
-        task => {
-
-            container.appendChild(
-                createTechnicianScope(
-                    task
-                )
-            );
-
-        }
-    );
-
-
-    updateNightProgress(
-        currentNightTasks
-    );
-
-}
-
-
-/* ============================================================
-   CREATE SCOPE
-   ============================================================ */
-
-function createTechnicianScope(
-    task
-) {
-
-    const item =
-        document.createElement(
-            "div"
-        );
-
-    item.className =
-        "scope-item";
-
-
-    const top =
-        document.createElement(
-            "div"
-        );
-
-    top.className =
-        "scope-top";
-
-
-    const description =
-        document.createElement(
-            "div"
-        );
-
-    description.className =
-        "scope-description";
-
-    description.textContent =
-        task.description;
-
-
-    const status =
-        document.createElement(
-            "span"
-        );
-
-    status.className =
-        `scope-status ${getStatusClass(
-            task.status
-        )}`;
-
-    status.textContent =
-        task.status;
-
-
-    top.appendChild(
-        description
-    );
-
-    top.appendChild(
-        status
-    );
-
-
-    item.appendChild(
-        top
-    );
-
-
-    const controls =
-        document.createElement(
-            "div"
-        );
-
-    controls.className =
-        "scope-controls";
-
-
-    [
-        "Not Started",
-        "In Progress",
-        "Completed"
-    ].forEach(
-        statusValue => {
-
-            const button =
-                document.createElement(
-                    "button"
-                );
-
-            button.type =
-                "button";
-
-            button.className =
-                "scope-progress-button";
-
-            button.textContent =
-                statusValue;
-
-
-            if (
-                task.status ===
-                statusValue
-            ) {
-
-                button.classList.add(
-                    "active"
-                );
-
-            }
-
-
-            button.onclick =
-                function () {
-
-                    updateScopeProgress(
-                        task.id,
-                        statusValue
-                    );
-
-                };
-
-
-            controls.appendChild(
-                button
-            );
-
-        }
-    );
-
-
-    item.appendChild(
-        controls
-    );
-
-
-    /* ========================================================
-       TECHNICIAN NOTE
-       ======================================================== */
-
-    const noteButton =
-        document.createElement(
-            "button"
-        );
-
-    noteButton.type =
-        "button";
-
-    noteButton.className =
-        "scope-note-button";
-
-    noteButton.textContent =
-        task.note
-            ? "Edit Note"
-            : "＋ Add Note";
-
-
-    noteButton.onclick =
-        function () {
-
-            editScopeNote(
-                task.id
-            );
-
-        };
-
-
-    item.appendChild(
-        noteButton
-    );
-
-
-    if (task.note) {
-
-        const note =
-            document.createElement(
-                "div"
-            );
-
-        note.className =
-            "equipment-note";
-
-        note.textContent =
-            task.note;
-
-        item.appendChild(
-            note
-        );
-
-    }
-
-
-    return item;
-
-}
-
-
-/* ============================================================
-   STATUS CLASS
-   ============================================================ */
-
-function getStatusClass(
     status
 ) {
 
-    return status
-        .toLowerCase()
-        .replaceAll(
-            " ",
-            "-"
+    const store =
+        technicianStores[currentStore];
+
+    const equipment =
+        store.equipment.find(
+            item => item.id === equipmentId
         );
 
+    if (!equipment) return;
+
+    equipment.status = status;
+
+    /*
+     * Clear note when equipment becomes Complete.
+     */
+    if (status === "Complete") {
+        equipment.note = "";
+    }
+
+    renderEquipment();
 }
 
 
-/* ============================================================
-   UPDATE SCOPE PROGRESS
-   ============================================================ */
+/* =========================================================
+   EQUIPMENT NOTE
+   ========================================================= */
 
-function updateScopeProgress(
-    taskId,
-    newStatus
-) {
+function addEquipmentNote(equipmentId) {
 
     const store =
-        getTechnicianStore();
+        technicianStores[currentStore];
 
-    if (!store) {
-        return;
-    }
-
-
-    const task =
-        store.tasks.find(
-            item =>
-                item.id ===
-                taskId
+    const equipment =
+        store.equipment.find(
+            item => item.id === equipmentId
         );
 
-
-    if (!task) {
-        return;
-    }
-
-
-    task.status =
-        newStatus;
-
-
-    renderCurrentNightScopes();
-
-
-    showTechnicianMessage(
-        `Scope updated to ${newStatus}.`,
-        false
-    );
-
-}
-
-
-/* ============================================================
-   SCOPE NOTE
-   ============================================================ */
-
-function editScopeNote(
-    taskId
-) {
-
-    const store =
-        getTechnicianStore();
-
-    if (!store) {
-        return;
-    }
-
-
-    const task =
-        store.tasks.find(
-            item =>
-                item.id ===
-                taskId
-        );
-
-
-    if (!task) {
-        return;
-    }
-
+    if (!equipment) return;
 
     const note =
         prompt(
-            "Add note for this scope:",
-            task.note || ""
+            "Enter equipment note:",
+            equipment.note || ""
         );
 
+    if (note === null) return;
 
-    if (note === null) {
-        return;
-    }
-
-
-    task.note =
+    equipment.note =
         note.trim();
 
-
-    renderCurrentNightScopes();
-
-
-    showTechnicianMessage(
-        task.note
-            ? "Scope note saved."
-            : "Scope note cleared.",
-        false
-    );
-
+    renderEquipment();
 }
 
 
-/* ============================================================
-   NIGHT PROGRESS
-   ============================================================ */
+/* =========================================================
+   COPY TRACKING ID
+   ========================================================= */
 
-function updateNightProgress(
-    tasks
-) {
-
-    const progressSummary =
-        document.getElementById(
-            "nightProgress"
-        );
-
-
-    if (!progressSummary) {
-        return;
-    }
-
-
-    if (!tasks.length) {
-
-        progressSummary.textContent =
-            "0% Complete";
-
-        return;
-
-    }
-
-
-    const completed =
-        tasks.filter(
-            task =>
-                task.status ===
-                "Completed"
-        ).length;
-
-
-    const percentage =
-        Math.round(
-            (
-                completed /
-                tasks.length
-            ) * 100
-        );
-
-
-    progressSummary.textContent =
-        `${percentage}% Complete`;
-
-}
-
-
-/* ============================================================
-   FIXTURE HANDOVER
-   ============================================================ */
-
-function renderFixtureHandover() {
+function copyTrackingId(equipmentId) {
 
     const store =
-        getTechnicianStore();
+        technicianStores[currentStore];
 
-    const container =
-        document.getElementById(
-            "handoverContent"
+    const equipment =
+        store.equipment.find(
+            item => item.id === equipmentId
         );
 
+    if (!equipment) return;
 
-    if (!store || !container) {
-        return;
-    }
+    navigator.clipboard
+        .writeText(equipment.trackingId)
+        .then(() => {
 
-
-    container.innerHTML =
-        "";
-
-
-    if (
-        store.fixtureHandover
-    ) {
-
-        const confirmed =
-            document.createElement(
-                "div"
+            /*
+             * Simple confirmation.
+             */
+            alert(
+                `Tracking ID copied: ${equipment.trackingId}`
             );
 
-        confirmed.className =
-            "handover-confirmed";
+        })
+        .catch(() => {
 
-        confirmed.textContent =
-            `✓ Fixture handed over at ${formatTime(
-                store.fixtureHandover
-            )} ${store.timezone}`;
+            alert(
+                `Tracking ID: ${equipment.trackingId}`
+            );
 
-
-        container.appendChild(
-            confirmed
-        );
-
-
-        return;
-
-    }
-
-
-    const row =
-        document.createElement(
-            "div"
-        );
-
-    row.className =
-        "handover-row";
-
-
-    const inputGroup =
-        document.createElement(
-            "div"
-        );
-
-    inputGroup.className =
-        "handover-input-group";
-
-
-    const label =
-        document.createElement(
-            "label"
-        );
-
-    label.textContent =
-        "Time fixture was handed over";
-
-
-    const input =
-        document.createElement(
-            "input"
-        );
-
-    input.type =
-        "time";
-
-    input.id =
-        "technicianHandoverTime";
-
-
-    inputGroup.appendChild(
-        label
-    );
-
-    inputGroup.appendChild(
-        input
-    );
-
-
-    const button =
-        document.createElement(
-            "button"
-        );
-
-    button.type =
-        "button";
-
-    button.className =
-        "handover-save";
-
-    button.textContent =
-        "Confirm Handover";
-
-
-    button.onclick =
-        function () {
-
-            saveFixtureHandover();
-
-        };
-
-
-    row.appendChild(
-        inputGroup
-    );
-
-    row.appendChild(
-        button
-    );
-
-
-    container.appendChild(
-        row
-    );
-
+        });
 }
 
 
-/* ============================================================
-   SAVE HANDOVER
-   ============================================================ */
+/* =========================================================
+   EQUIPMENT PROGRESS
+   ========================================================= */
 
-function saveFixtureHandover() {
+function updateEquipmentProgress() {
 
     const store =
-        getTechnicianStore();
+        technicianStores[currentStore];
 
-    const input =
-        document.getElementById(
-            "technicianHandoverTime"
-        );
+    const completed =
+        store.equipment.filter(
+            item => item.status === "Complete"
+        ).length;
 
+    const total =
+        store.equipment.length;
 
-    if (!store || !input) {
-        return;
-    }
-
-
-    if (!input.value) {
-
-        showTechnicianMessage(
-            "Please enter the fixture handover time.",
-            true
-        );
-
-        return;
-
-    }
-
-
-    store.fixtureHandover =
-        input.value;
-
-
-    renderFixtureHandover();
-
-
-    showTechnicianMessage(
-        "Fixture handover confirmed.",
-        false
-    );
-
+    document
+        .getElementById("equipmentProgress")
+        .textContent =
+        `${completed} of ${total} complete`;
 }
 
 
-/* ============================================================
-   FORMAT TIME
-   ============================================================ */
+/* =========================================================
+   NIGHT SCOPE
+   ========================================================= */
 
-function formatTime(
-    timeValue
+function renderScopes() {
+
+    const store =
+        technicianStores[currentStore];
+
+    const container =
+        document.getElementById("scopeList");
+
+    container.innerHTML = "";
+
+    if (!store.scopes.length) {
+
+        container.innerHTML = `
+            <div class="scope-card">
+                <div class="scope-title">
+                    No scope assigned for this night.
+                </div>
+            </div>
+        `;
+
+        return;
+    }
+
+
+    store.scopes.forEach((scope) => {
+
+        const card =
+            document.createElement("div");
+
+        card.className =
+            "scope-card";
+
+        let noteHtml = "";
+
+        if (scope.note) {
+
+            noteHtml = `
+                <div class="scope-note">
+                    <strong>Note:</strong>
+                    ${escapeHtml(scope.note)}
+                </div>
+            `;
+        }
+
+        card.innerHTML = `
+
+            <div class="scope-title">
+                ${escapeHtml(scope.title)}
+            </div>
+
+            <div class="scope-controls">
+
+                <select
+                    class="scope-status-select"
+                    onchange="updateScopeStatus(
+                        '${scope.id}',
+                        this.value
+                    )"
+                >
+
+                    <option value="Not Started"
+                        ${scope.status === "Not Started" ? "selected" : ""}>
+                        Not Started
+                    </option>
+
+                    <option value="In Progress"
+                        ${scope.status === "In Progress" ? "selected" : ""}>
+                        In Progress
+                    </option>
+
+                    <option value="Completed"
+                        ${scope.status === "Completed" ? "selected" : ""}>
+                        Completed
+                    </option>
+
+                </select>
+
+
+                <button
+                    class="scope-note-btn"
+                    onclick="addScopeNote('${scope.id}')"
+                >
+                    ${scope.note ? "Edit Note" : "Add Note"}
+                </button>
+
+            </div>
+
+            ${noteHtml}
+
+        `;
+
+        container.appendChild(card);
+
+    });
+}
+
+
+/* =========================================================
+   SCOPE STATUS
+   ========================================================= */
+
+function updateScopeStatus(
+    scopeId,
+    status
 ) {
 
-    const parts =
-        timeValue.split(":");
+    const store =
+        technicianStores[currentStore];
 
-
-    if (parts.length < 2) {
-        return timeValue;
-    }
-
-
-    let hour =
-        Number(parts[0]);
-
-    const minute =
-        parts[1];
-
-
-    const suffix =
-        hour >= 12
-            ? "PM"
-            : "AM";
-
-
-    hour =
-        hour % 12 || 12;
-
-
-    return `${hour}:${minute} ${suffix}`;
-
-}
-
-
-/* ============================================================
-   MESSAGE
-   ============================================================ */
-
-function showTechnicianMessage(
-    message,
-    isError
-) {
-
-    const element =
-        document.getElementById(
-            "technicianMessage"
+    const scope =
+        store.scopes.find(
+            item => item.id === scopeId
         );
 
+    if (!scope) return;
 
-    if (!element) {
-        return;
+    scope.status = status;
+
+    renderScopes();
+}
+
+
+/* =========================================================
+   SCOPE NOTE
+   ========================================================= */
+
+function addScopeNote(scopeId) {
+
+    const store =
+        technicianStores[currentStore];
+
+    const scope =
+        store.scopes.find(
+            item => item.id === scopeId
+        );
+
+    if (!scope) return;
+
+    const note =
+        prompt(
+            "Enter note:",
+            scope.note || ""
+        );
+
+    if (note === null) return;
+
+    scope.note =
+        note.trim();
+
+    renderScopes();
+}
+
+
+/* =========================================================
+   CHECK-IN
+   ========================================================= */
+
+function checkInTechnician() {
+
+    const store =
+        technicianStores[currentStore];
+
+    if (store.checkedIn) return;
+
+    store.checkedIn = true;
+
+    store.checkInTime =
+        new Date();
+
+    renderCheckIn();
+}
+
+
+function renderCheckIn() {
+
+    const store =
+        technicianStores[currentStore];
+
+    const button =
+        document.getElementById("checkInButton");
+
+    if (store.checkedIn) {
+
+        button.textContent =
+            `Checked In ${formatTime(store.checkInTime)}`;
+
+        button.classList.add("checked-in");
+
+        button.disabled = true;
+
+    } else {
+
+        button.textContent =
+            "Check In";
+
+        button.classList.remove("checked-in");
+
+        button.disabled = false;
+    }
+}
+
+
+/* =========================================================
+   FIXTURE HANDOVER
+   ========================================================= */
+
+function confirmFixtureHandover() {
+
+    const store =
+        technicianStores[currentStore];
+
+    if (store.fixtureHandedOver) return;
+
+    store.fixtureHandedOver = true;
+
+    store.fixtureTime =
+        new Date();
+
+    renderFixture();
+}
+
+
+function renderFixture() {
+
+    const store =
+        technicianStores[currentStore];
+
+    const status =
+        document.getElementById("fixtureStatus");
+
+    const time =
+        document.getElementById("fixtureTime");
+
+    const button =
+        document.getElementById("fixtureButton");
+
+    if (store.fixtureHandedOver) {
+
+        status.textContent =
+            "Confirmed";
+
+        time.textContent =
+            `Confirmed at ${formatDateTime(store.fixtureTime)}`;
+
+        button.textContent =
+            "Fixture Handover Confirmed";
+
+        button.classList.add("confirmed");
+
+        button.disabled = true;
+
+    } else {
+
+        status.textContent =
+            "Not Confirmed";
+
+        time.textContent = "";
+
+        button.textContent =
+            "Confirm Fixture Handover";
+
+        button.classList.remove("confirmed");
+
+        button.disabled = false;
+    }
+}
+
+
+/* =========================================================
+   DATE / TIME
+   ========================================================= */
+
+function formatTime(date) {
+
+    if (!date) return "";
+
+    return new Intl.DateTimeFormat(
+        "en-US",
+        {
+            hour: "numeric",
+            minute: "2-digit"
+        }
+    ).format(date);
+}
+
+
+function formatDateTime(date) {
+
+    if (!date) return "";
+
+    return new Intl.DateTimeFormat(
+        "en-US",
+        {
+            dateStyle: "medium",
+            timeStyle: "short"
+        }
+    ).format(date);
+}
+
+
+/* =========================================================
+   HTML SAFETY
+   ========================================================= */
+
+function escapeHtml(value) {
+
+    if (value === null || value === undefined) {
+        return "";
     }
 
-
-    element.textContent =
-        message;
-
-
-    element.style.color =
-        isError
-            ? "#b91c1c"
-            : "#047857";
-
-
-    setTimeout(
-        function () {
-
-            element.textContent =
-                "";
-
-        },
-        4000
-    );
-
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
+
+
+/* =========================================================
+   ENTER KEY LOGIN
+   ========================================================= */
+
+document
+    .getElementById("storeLoginInput")
+    .addEventListener("keydown", function(event) {
+
+        if (event.key === "Enter") {
+            loginTechnician();
+        }
+
+    });
