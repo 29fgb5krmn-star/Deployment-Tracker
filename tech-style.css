@@ -8,6 +8,7 @@
 
 body {
     margin: 0;
+
     font-family:
         -apple-system,
         BlinkMacSystemFont,
@@ -38,6 +39,7 @@ body {
 
 #loginPage {
     display: flex;
+
     align-items: center;
     justify-content: center;
 
@@ -61,6 +63,7 @@ body {
 
 .login-header {
     text-align: center;
+
     margin-bottom: 30px;
 }
 
@@ -155,12 +158,13 @@ body {
     text-align: center;
 
     font-size: 13px;
+
     color: #b91c1c;
 }
 
 
 /* ============================================================
-   TECHNICIAN HEADER
+   HEADER
    ============================================================ */
 
 .tech-header {
@@ -173,6 +177,7 @@ body {
         max(20px, calc((100vw - 1000px) / 2));
 
     display: flex;
+
     justify-content: space-between;
     align-items: center;
 
@@ -240,6 +245,7 @@ body {
    ============================================================ */
 
 .info-card,
+.equipment-card,
 .scope-card,
 .handover-card {
     background: white;
@@ -252,7 +258,7 @@ body {
 
 
 /* ============================================================
-   STORE INFO
+   STORE INFORMATION
    ============================================================ */
 
 .info-row {
@@ -322,6 +328,140 @@ body {
 
 
 /* ============================================================
+   EQUIPMENT CHECKLIST
+   ============================================================ */
+
+.equipment-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+.equipment-item {
+    border: 1px solid #e2e8f0;
+
+    border-radius: 11px;
+
+    padding: 14px;
+}
+
+.equipment-main {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 12px;
+}
+
+.equipment-name {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.equipment-status {
+    flex-shrink: 0;
+
+    padding: 6px 9px;
+
+    border-radius: 999px;
+
+    border: 1px solid #cbd5e1;
+
+    background: white;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.equipment-status.complete {
+    border-color: #bbf7d0;
+
+    background: #f0fdf4;
+
+    color: #166534;
+}
+
+.equipment-status.missing {
+    border-color: #fecaca;
+
+    background: #fef2f2;
+
+    color: #b91c1c;
+}
+
+.equipment-status.incomplete {
+    border-color: #fde68a;
+
+    background: #fffbeb;
+
+    color: #92400e;
+}
+
+
+/* ============================================================
+   EQUIPMENT STATUS SELECT
+   ============================================================ */
+
+.equipment-select {
+    width: 100%;
+
+    margin-top: 10px;
+
+    padding: 10px;
+
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+
+    background: white;
+
+    font-size: 14px;
+}
+
+
+/* ============================================================
+   ADD NOTE
+   ============================================================ */
+
+.equipment-note-button,
+.scope-note-button {
+    margin-top: 10px;
+
+    padding: 7px 10px;
+
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+
+    background: white;
+    color: #475569;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.equipment-note {
+    margin-top: 9px;
+
+    padding: 10px;
+
+    border-radius: 8px;
+
+    background: #f8fafc;
+
+    color: #475569;
+
+    font-size: 13px;
+
+    line-height: 1.4;
+}
+
+
+/* ============================================================
    SCOPE LIST
    ============================================================ */
 
@@ -382,14 +522,9 @@ body {
     color: #166534;
 }
 
-.scope-status.pending {
-    background: #fef3c7;
-    color: #92400e;
-}
-
 
 /* ============================================================
-   PROGRESS CONTROLS
+   SCOPE CONTROLS
    ============================================================ */
 
 .scope-controls {
@@ -431,6 +566,7 @@ body {
 
 .handover-content {
     display: flex;
+
     flex-direction: column;
 
     gap: 12px;
@@ -499,7 +635,7 @@ body {
 
 
 /* ============================================================
-   MESSAGES
+   MESSAGE
    ============================================================ */
 
 .technician-message {
@@ -516,7 +652,8 @@ body {
    EMPTY STATE
    ============================================================ */
 
-.empty-scope {
+.empty-scope,
+.empty-equipment {
     padding: 20px;
 
     text-align: center;
@@ -564,10 +701,15 @@ body {
         flex-direction: column;
     }
 
+    .equipment-main,
     .scope-top {
         align-items: flex-start;
 
         flex-direction: column;
+    }
+
+    .equipment-status {
+        width: 100%;
     }
 
     .scope-controls {
