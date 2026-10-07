@@ -7,14 +7,14 @@
 // TIMEZONE CONFIGURATION
 // ============================================================
 //
-// Fixed US timezone offsets are used intentionally so that:
+// Fixed US timezone offsets are used intentionally:
+//
 // EST = UTC-5
 // CST = UTC-6
 // MST = UTC-7
 // PST = UTC-8
 //
-// This prevents automatic daylight-saving changes such as
-// EST becoming EDT.
+// This intentionally does NOT apply daylight-saving changes.
 // ============================================================
 
 const STORE_TIMEZONES = {
@@ -315,6 +315,10 @@ function getCurrentTimestamp(store = getSelectedStore()) {
 }
 
 
+// ============================================================
+// DISPLAY TIMESTAMP
+// ============================================================
+
 function getDisplayTimestamp(
     timestamp,
     timezone
@@ -455,7 +459,7 @@ function getScopeStatusClass(status) {
 
 
 // ============================================================
-// SELECT PLACEHOLDER HELPERS
+// SELECT PLACEHOLDER
 // ============================================================
 
 function setupDeploymentNightSelect(selectId) {
@@ -1040,7 +1044,7 @@ function renderRecentUpdates() {
                 <span>—</span>
 
                 <span class="update-tech">
-                    ${update.technician}
+                    ${update.technician || "Unassigned"}
                 </span>
 
             </div>
@@ -1224,17 +1228,13 @@ function renderStoreDetail() {
     }
 
 
-    // Scope Assignment dropdown
     setupDeploymentNightSelect(
         "assignedNight"
     );
 
-
-    // Add Deployment Scope dropdown
     setupDeploymentNightSelect(
         "scopeNight"
     );
-
 
     renderNightSections();
 
@@ -1322,18 +1322,6 @@ function renderNightSections() {
 
 
         // ====================================================
-        // FIXTURE HANDOVER
-        // Completely separate from deployment scopes
-        // ====================================================
-
-        const fixtureBox =
-            createFixtureHandoverElement(
-                store,
-                night
-            );
-
-
-        // ====================================================
         // SCOPE LIST
         // ====================================================
 
@@ -1368,11 +1356,26 @@ function renderNightSections() {
         }
 
 
+        // ====================================================
+        // FIXTURE HANDOVER
+        // Separate from scopes
+        // ====================================================
+
+        const fixtureBox =
+            createFixtureHandoverElement(
+                store,
+                night
+            );
+
+
+        // IMPORTANT:
+        // Header -> Scopes -> Fixture Handover
+
         section.appendChild(header);
 
-        section.appendChild(fixtureBox);
-
         section.appendChild(scopeList);
+
+        section.appendChild(fixtureBox);
 
         container.appendChild(section);
 
@@ -1420,6 +1423,102 @@ function createFixtureHandoverElement(
     box.appendChild(title);
 
 
+    // ========================================================
+    // SAVED STATE
+    // ========================================================
+
+    if (saved && saved.time) {
+
+        const display =
+            document.createElement("div");
+
+
+        display.className =
+            "fixture-handover-display";
+
+
+        const timeText =
+            document.createElement("span");
+
+
+        timeText.textContent =
+            `✓ Fixture handed over at ${formatTimeForDisplay(saved.time)} ${getStoreTimezone(store)}`;
+
+
+        display.appendChild(
+            timeText
+        );
+
+
+        const editButton =
+            document.createElement("button");
+
+
+        editButton.type =
+            "button";
+
+        editButton.className =
+            "fixture-handover-edit";
+
+        editButton.textContent =
+            "Edit";
+
+
+        editButton.onclick =
+            function (event) {
+
+                event.stopPropagation();
+
+                editFixtureHandover(
+                    night
+                );
+
+            };
+
+
+        display.appendChild(
+            editButton
+        );
+
+
+        box.appendChild(
+            display
+        );
+
+
+        if (saved.updatedAt) {
+
+            const updated =
+                document.createElement("div");
+
+
+            updated.className =
+                "fixture-handover-updated";
+
+
+            updated.textContent =
+                `Recorded/updated at ${formatReasonTimestamp(
+                    saved.updatedAt,
+                    store
+                )}`;
+
+
+            box.appendChild(
+                updated
+            );
+
+        }
+
+
+        return box;
+
+    }
+
+
+    // ========================================================
+    // UNSAVED STATE
+    // ========================================================
+
     const row =
         document.createElement("div");
 
@@ -1454,15 +1553,14 @@ function createFixtureHandoverElement(
     input.id =
         `fixtureHandover-${night}`;
 
-    input.value =
-        saved && saved.time
-            ? saved.time
-            : "";
 
+    inputGroup.appendChild(
+        label
+    );
 
-    inputGroup.appendChild(label);
-
-    inputGroup.appendChild(input);
+    inputGroup.appendChild(
+        input
+    );
 
 
     const saveButton =
@@ -1491,72 +1589,39 @@ function createFixtureHandoverElement(
         };
 
 
-    row.appendChild(inputGroup);
+    row.appendChild(
+        inputGroup
+    );
 
-    row.appendChild(saveButton);
-
-    box.appendChild(row);
-
-
-    if (saved && saved.time) {
-
-        const display =
-            document.createElement("div");
+    row.appendChild(
+        saveButton
+    );
 
 
-        display.className =
-            "fixture-handover-display";
+    box.appendChild(
+        row
+    );
 
 
-        display.textContent =
-            `✓ Fixture handed over at ${formatTimeForDisplay(saved.time)} ${getStoreTimezone(store)}`;
+    const noRecord =
+        document.createElement("div");
 
 
-        box.appendChild(display);
+    noRecord.className =
+        "fixture-handover-display";
 
 
-        if (saved.updatedAt) {
-
-            const updated =
-                document.createElement("div");
+    noRecord.style.color =
+        "#94a3b8";
 
 
-            updated.className =
-                "fixture-handover-updated";
+    noRecord.textContent =
+        "No fixture handover time recorded.";
 
 
-            updated.textContent =
-                `Recorded/updated at ${formatReasonTimestamp(
-                    saved.updatedAt,
-                    store
-                )}`;
-
-
-            box.appendChild(updated);
-
-        }
-
-    } else {
-
-        const display =
-            document.createElement("div");
-
-
-        display.className =
-            "fixture-handover-display";
-
-
-        display.style.color =
-            "#94a3b8";
-
-
-        display.textContent =
-            "No fixture handover time recorded.";
-
-
-        box.appendChild(display);
-
-    }
+    box.appendChild(
+        noRecord
+    );
 
 
     return box;
@@ -1657,9 +1722,17 @@ function saveFixtureHandover(night) {
     }
 
 
+    const existing =
+        store.fixtureHandover[night];
+
+
     const timestamp =
         getCurrentTimestamp(store);
 
+
+    // IMPORTANT:
+    // selectedTime is already the store's local wall-clock time.
+    // We DO NOT convert it to another timezone.
 
     store.fixtureHandover[night] = {
 
@@ -1672,7 +1745,211 @@ function saveFixtureHandover(night) {
     };
 
 
-    renderNightSections();
+    const handoverDisplay =
+        formatTimeForDisplay(
+            selectedTime
+        );
+
+
+    const message =
+        existing && existing.time
+            ? `Fixture handover updated to ${handoverDisplay} ${getStoreTimezone(store)} — Night ${night}`
+            : `Fixture handover recorded at ${handoverDisplay} ${getStoreTimezone(store)} — Night ${night}`;
+
+
+    // Technician update for Overview
+    recentUpdates.unshift({
+
+        storeNumber:
+            store.storeNumber,
+
+        technician:
+            store.technician,
+
+        message:
+            message,
+
+        timestamp:
+            timestamp,
+
+        source:
+            "technician"
+
+    });
+
+
+    renderStoreDetail();
+
+    renderOverview();
+
+    // Return to the selected store detail page
+    const overviewPage =
+        document.getElementById(
+            "overviewPage"
+        );
+
+    const storeDetailPage =
+        document.getElementById(
+            "storeDetailPage"
+        );
+
+    if (overviewPage) {
+        overviewPage.classList.add("hidden");
+    }
+
+    if (storeDetailPage) {
+        storeDetailPage.classList.remove("hidden");
+    }
+
+}
+
+
+// ============================================================
+// EDIT FIXTURE HANDOVER
+// ============================================================
+
+function editFixtureHandover(night) {
+
+    const store =
+        getSelectedStore();
+
+
+    if (!store) {
+        return;
+    }
+
+
+    if (
+        !store.fixtureHandover ||
+        !store.fixtureHandover[night]
+    ) {
+
+        return;
+
+    }
+
+
+    const currentTime =
+        store.fixtureHandover[night].time;
+
+
+    const newTime =
+        prompt(
+            "Enter the correct fixture handover time (HH:MM):",
+            currentTime
+        );
+
+
+    if (newTime === null) {
+        return;
+    }
+
+
+    const cleanedTime =
+        newTime.trim();
+
+
+    if (
+        !/^\d{1,2}:\d{2}$/.test(cleanedTime)
+    ) {
+
+        alert(
+            "Please enter the time in HH:MM format."
+        );
+
+        return;
+
+    }
+
+
+    const parts =
+        cleanedTime.split(":");
+
+
+    let hour =
+        Number(parts[0]);
+
+    const minute =
+        Number(parts[1]);
+
+
+    if (
+        hour < 0 ||
+        hour > 23 ||
+        minute < 0 ||
+        minute > 59
+    ) {
+
+        alert(
+            "Invalid time."
+        );
+
+        return;
+
+    }
+
+
+    const formattedTime =
+        `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+
+
+    const timestamp =
+        getCurrentTimestamp(store);
+
+
+    store.fixtureHandover[night] = {
+
+        time:
+            formattedTime,
+
+        updatedAt:
+            timestamp
+
+    };
+
+
+    recentUpdates.unshift({
+
+        storeNumber:
+            store.storeNumber,
+
+        technician:
+            store.technician,
+
+        message:
+            `Fixture handover updated to ${formatTimeForDisplay(formattedTime)} ${getStoreTimezone(store)} — Night ${night}`,
+
+        timestamp:
+            timestamp,
+
+        source:
+            "technician"
+
+    });
+
+
+    renderStoreDetail();
+
+    renderOverview();
+
+
+    const overviewPage =
+        document.getElementById(
+            "overviewPage"
+        );
+
+    const storeDetailPage =
+        document.getElementById(
+            "storeDetailPage"
+        );
+
+    if (overviewPage) {
+        overviewPage.classList.add("hidden");
+    }
+
+    if (storeDetailPage) {
+        storeDetailPage.classList.remove("hidden");
+    }
 
 }
 
@@ -1735,11 +2012,17 @@ function createScopeElement(task) {
         task.status;
 
 
-    main.appendChild(description);
+    main.appendChild(
+        description
+    );
 
-    main.appendChild(status);
+    main.appendChild(
+        status
+    );
 
-    element.appendChild(main);
+    element.appendChild(
+        main
+    );
 
 
     // ========================================================
@@ -1822,7 +2105,6 @@ function createScopeElement(task) {
 
     // ========================================================
     // ACTION BUTTONS
-    // Hidden until long press
     // ========================================================
 
     const actions =
@@ -1833,10 +2115,7 @@ function createScopeElement(task) {
         "scope-actions";
 
 
-    // ========================================================
-    // EDIT SCOPE
-    // ========================================================
-
+    // EDIT
     const editButton =
         document.createElement("button");
 
@@ -1844,10 +2123,8 @@ function createScopeElement(task) {
     editButton.className =
         "scope-action-button scope-edit";
 
-
     editButton.type =
         "button";
-
 
     editButton.textContent =
         "Edit";
@@ -1863,11 +2140,12 @@ function createScopeElement(task) {
         };
 
 
-    // ========================================================
-    // EDIT REASON
-    // Only shown when a reason already exists
-    // ========================================================
+    actions.appendChild(
+        editButton
+    );
 
+
+    // EDIT REASON
     if (task.reason) {
 
         const editReasonButton =
@@ -1877,10 +2155,8 @@ function createScopeElement(task) {
         editReasonButton.className =
             "scope-action-button scope-edit-reason";
 
-
         editReasonButton.type =
             "button";
-
 
         editReasonButton.textContent =
             "Edit Reason";
@@ -1903,10 +2179,7 @@ function createScopeElement(task) {
     }
 
 
-    // ========================================================
     // DELETE
-    // ========================================================
-
     const deleteButton =
         document.createElement("button");
 
@@ -1914,10 +2187,8 @@ function createScopeElement(task) {
     deleteButton.className =
         "scope-action-button scope-delete";
 
-
     deleteButton.type =
         "button";
-
 
     deleteButton.textContent =
         "Delete";
@@ -1931,66 +2202,6 @@ function createScopeElement(task) {
             deleteScope(task.id);
 
         };
-
-
-    actions.appendChild(
-        editButton
-    );
-
-
-    actions.appendChild(
-        deleteButton
-    );
-
-
-    actions.appendChild(
-        deleteButton
-    );
-
-
-    // Prevent duplicate button if browser somehow reuses node
-    // by rebuilding the action area safely.
-    actions.innerHTML = "";
-
-
-    actions.appendChild(
-        editButton
-    );
-
-
-    if (task.reason) {
-
-        const editReasonButton =
-            document.createElement("button");
-
-
-        editReasonButton.className =
-            "scope-action-button scope-edit-reason";
-
-
-        editReasonButton.type =
-            "button";
-
-
-        editReasonButton.textContent =
-            "Edit Reason";
-
-
-        editReasonButton.onclick =
-            function (event) {
-
-                event.stopPropagation();
-
-                editReason(task.id);
-
-            };
-
-
-        actions.appendChild(
-            editReasonButton
-        );
-
-    }
 
 
     actions.appendChild(
@@ -2042,7 +2253,6 @@ function createScopeElement(task) {
                     element.classList.add(
                         "long-press-active"
                     );
-
 
                 },
                 700
@@ -2214,11 +2424,6 @@ function addScope() {
         "";
 
 
-    setupDeploymentNightSelect(
-        "scopeNight"
-    );
-
-
     renderStoreDetail();
 
 }
@@ -2278,40 +2483,6 @@ function renderScopeManagementOptions() {
         );
 
     });
-
-
-    // Remove old Edit Reason action if an older HTML version
-    // is still being used.
-    const actionSelect =
-        document.getElementById(
-            "scopeAction"
-        );
-
-
-    if (actionSelect) {
-
-        const oldEditReasonOption =
-            actionSelect.querySelector(
-                'option[value="editReason"]'
-            );
-
-
-        if (oldEditReasonOption) {
-            oldEditReasonOption.remove();
-        }
-
-
-        if (
-            actionSelect.value ===
-            "editReason"
-        ) {
-
-            actionSelect.value =
-                "";
-
-        }
-
-    }
 
 
     handleScopeActionChange();
@@ -2446,8 +2617,6 @@ function handleScopeActionChange() {
         actionSelect.value;
 
 
-    // Only Pending, Cancelled and Move
-    // can create a reason.
     if (reasonGroup) {
 
         if (
@@ -2886,7 +3055,6 @@ function applyScopeManagement() {
     }
 
 
-    // Safety net
     showScopeManagementMessage(
         "This action is not supported.",
         true
@@ -3114,21 +3282,15 @@ function editReason(taskId) {
     }
 
 
-    // Edit Reason is only available for scopes
-    // that already have a reason.
     if (!task.reason) {
         return;
     }
 
 
-    const currentReason =
-        task.reason;
-
-
     const newReason =
         prompt(
             "Edit reason / notes:",
-            currentReason
+            task.reason
         );
 
 
@@ -3144,10 +3306,6 @@ function editReason(taskId) {
     const timestamp =
         getCurrentTimestamp(store);
 
-
-    // ========================================================
-    // CLEAR REASON
-    // ========================================================
 
     if (!cleanedReason) {
 
@@ -3183,10 +3341,6 @@ function editReason(taskId) {
 
     }
 
-
-    // ========================================================
-    // UPDATE REASON
-    // ========================================================
 
     task.reason =
         cleanedReason;
@@ -3368,7 +3522,8 @@ function editStoreInfo() {
 
 
     if (
-        !STORE_TIMEZONES.hasOwnProperty(
+        !Object.prototype.hasOwnProperty.call(
+            STORE_TIMEZONES,
             cleanedTimezone
         )
     ) {
