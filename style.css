@@ -19,6 +19,15 @@ button {
     cursor: pointer;
 }
 
+.hidden {
+    display: none !important;
+}
+
+
+/* =========================
+   TOP BAR
+========================= */
+
 .topbar {
     background: #111827;
     color: white;
@@ -36,18 +45,21 @@ button {
     font-size: 13px;
 }
 
+
+/* =========================
+   CONTAINER
+========================= */
+
 .container {
     max-width: 1400px;
     margin: auto;
     padding: 28px;
 }
 
-.hidden {
-    display: none !important;
-}
 
-
-/* PAGE HEADER */
+/* =========================
+   PAGE HEADER
+========================= */
 
 .page-header {
     margin-bottom: 24px;
@@ -65,7 +77,9 @@ button {
 }
 
 
-/* SUMMARY */
+/* =========================
+   SUMMARY
+========================= */
 
 .summary-grid {
     display: grid;
@@ -93,7 +107,9 @@ button {
 }
 
 
-/* PANEL */
+/* =========================
+   PANEL
+========================= */
 
 .panel {
     background: white;
@@ -122,7 +138,9 @@ button {
 }
 
 
-/* FORMS */
+/* =========================
+   FORMS
+========================= */
 
 .form-grid {
     display: grid;
@@ -197,7 +215,9 @@ button:hover {
 }
 
 
-/* STORE CARDS */
+/* =========================
+   STORE CARDS
+========================= */
 
 .store-grid {
     display: grid;
@@ -274,7 +294,9 @@ button:hover {
 }
 
 
-/* CHECK-IN */
+/* =========================
+   CHECK-IN
+========================= */
 
 .store-checkin {
     margin-top: 14px;
@@ -307,7 +329,9 @@ button:hover {
 }
 
 
-/* PROGRESS */
+/* =========================
+   PROGRESS
+========================= */
 
 .store-progress {
     margin-top: 14px;
@@ -332,7 +356,9 @@ button:hover {
 }
 
 
-/* RECENT UPDATES */
+/* =========================
+   RECENT UPDATES
+========================= */
 
 .updates-list {
     display: flex;
@@ -381,7 +407,9 @@ button:hover {
 }
 
 
-/* STORE DETAIL */
+/* =========================
+   STORE DETAIL
+========================= */
 
 .store-detail-header {
     display: flex;
@@ -403,9 +431,14 @@ button:hover {
     color: #6b7280;
 }
 
+
+/* =========================
+   STORE INFORMATION
+========================= */
+
 .info-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 16px;
 }
 
@@ -427,7 +460,9 @@ button:hover {
 }
 
 
-/* NIGHTS */
+/* =========================
+   NIGHTS
+========================= */
 
 .night-section {
     border: 1px solid #e5e7eb;
@@ -454,47 +489,51 @@ button:hover {
 }
 
 
-/* FIXTURE HANDOVER */
+/* =========================
+   FIXTURE HANDOVER
+========================= */
 
 .fixture-handover {
-    padding: 14px 18px;
-    background: #f8fafc;
-    border-bottom: 1px solid #e5e7eb;
+    padding: 10px 18px 12px;
+    background: #fafbfc;
+    border-top: 1px solid #e5e7eb;
 }
 
 .fixture-handover-title {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
-    color: #374151;
-    margin-bottom: 8px;
+    color: #475569;
+    margin-bottom: 7px;
 }
 
 .fixture-handover-row {
     display: flex;
     align-items: end;
-    gap: 10px;
+    gap: 8px;
 }
 
 .fixture-handover-input-group {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 4px;
     flex: 1;
+    max-width: 220px;
 }
 
 .fixture-handover-input-group label {
-    font-size: 11px;
-    color: #6b7280;
+    font-size: 10px;
+    color: #94a3b8;
     font-weight: 600;
 }
 
 .fixture-handover input[type="time"] {
     width: 100%;
     border: 1px solid #d1d5db;
-    border-radius: 8px;
-    padding: 9px 10px;
+    border-radius: 7px;
+    padding: 7px 9px;
     background: white;
     outline: none;
+    font-size: 12px;
 }
 
 .fixture-handover input[type="time"]:focus {
@@ -502,26 +541,42 @@ button:hover {
 }
 
 .fixture-handover-save {
-    padding: 9px 12px;
-    font-size: 12px;
+    padding: 7px 10px;
+    font-size: 11px;
+    border-radius: 7px;
 }
 
 .fixture-handover-display {
-    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 7px;
     font-size: 12px;
     color: #047857;
     font-weight: 600;
 }
 
-.fixture-handover-updated {
-    margin-top: 3px;
+.fixture-handover-edit {
+    background: #eef2ff;
+    color: #3730a3;
+    padding: 5px 9px;
     font-size: 11px;
+    border-radius: 6px;
+}
+
+.fixture-handover-updated {
+    width: 100%;
+    margin-top: 3px;
+    font-size: 10px;
     color: #94a3b8;
     font-weight: 400;
 }
 
 
-/* SCOPE LIST */
+/* =========================
+   SCOPE LIST
+========================= */
 
 .scope-list {
     padding: 10px 14px;
@@ -594,7 +649,9 @@ button:hover {
 }
 
 
-/* SCOPE REASON / NOTES */
+/* =========================
+   SCOPE REASON / NOTES
+========================= */
 
 .scope-reason {
     margin-top: 9px;
@@ -617,7 +674,9 @@ button:hover {
 }
 
 
-/* SCOPE ACTIONS */
+/* =========================
+   SCOPE ACTIONS
+========================= */
 
 .scope-actions {
     display: none;
@@ -650,7 +709,9 @@ button:hover {
 }
 
 
-/* EMPTY / MESSAGE */
+/* =========================
+   EMPTY / MESSAGE
+========================= */
 
 .empty-scope {
     padding: 16px;
@@ -673,7 +734,18 @@ button:hover {
 }
 
 
-/* RESPONSIVE */
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1200px) {
+
+    .info-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+}
+
 
 @media (max-width: 1100px) {
 
@@ -826,6 +898,10 @@ button:hover {
     .fixture-handover-row {
         flex-direction: column;
         align-items: stretch;
+    }
+
+    .fixture-handover-input-group {
+        max-width: none;
     }
 
     .fixture-handover-save {
