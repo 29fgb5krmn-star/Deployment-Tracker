@@ -1,1911 +1,4393 @@
-/* =========================================================
-   DEPLOYMENT TRACKER
-   ========================================================= */
+// ============================================================
+// DEPLOYMENT TRACKER
+// ============================================================
 
-/* =========================================================
-   STORE TIMEZONES
-   Store timezone labels mapped to IANA timezone names.
-   IANA automatically handles daylight saving time.
-   ========================================================= */
+
+// ============================================================
+// TIMEZONE CONFIGURATION
+// ============================================================
+//
+// Store timezone labels mapped to real IANA timezones.
+//
+// This allows JavaScript to automatically handle:
+// - Phone/browser timezone
+// - EST / EDT
+// - CST / CDT
+// - MST / MDT
+// - PST / PDT
+// - Arizona (no DST)
+// - Puerto Rico
+// - Guam
+// - Hawaii
+//
+// ============================================================
 
 const STORE_TIMEZONES = {
+
     EST: "America/New_York",
+
     CST: "America/Chicago",
+
     MST: "America/Denver",
+
     ARZ: "America/Phoenix",
+
     PST: "America/Los_Angeles",
+
     "Puerto Rico": "America/Puerto_Rico",
+
     Guam: "Pacific/Guam",
+
     Hawaii: "Pacific/Honolulu"
+
 };
 
 
-/* =========================================================
-   SAMPLE STORE DATA
-   ========================================================= */
+// ============================================================
+// SAMPLE DATA
+// ============================================================
 
 let stores = [
+
     {
-        id: 1,
-        number: "0123",
-        technician: "Tech A",
+        storeNumber: "0123",
+        technician: "Technician A",
+        timezone: "EST",
         currentNight: 3,
-        timezone: "EST",
-        checkIn: "2026-10-05 16:11",
-        scopes: [
+        checkedIn: "2026-10-05 16:11",
+
+        tasks: [
+
             {
-                id: 101,
+                id: 1,
                 night: 1,
-                description: "Remove registers",
+                description: "Install Network Equipment",
                 status: "Completed",
-                reason: ""
+                reason: "",
+                reasonTimestamp: "",
+                history: []
             },
+
             {
-                id: 102,
+                id: 2,
+                night: 1,
+                description: "Configure POS Terminals",
+                status: "Completed",
+                reason: "",
+                reasonTimestamp: "",
+                history: []
+            },
+
+            {
+                id: 3,
                 night: 2,
-                description: "Remove fixtures",
+                description: "Install CCTV Cameras",
                 status: "Completed",
-                reason: ""
+                reason: "",
+                reasonTimestamp: "",
+                history: []
             },
+
             {
-                id: 103,
+                id: 4,
                 night: 3,
-                description: "Install new registers",
-                status: "Not Started",
-                reason: ""
-            }
-        ],
-        fixtureHandovers: {}
-    },
-
-    {
-        id: 2,
-        number: "0456",
-        technician: "Tech B",
-        currentNight: 1,
-        timezone: "PST",
-        checkIn: "2026-10-05 16:11",
-        scopes: [
-            {
-                id: 201,
-                night: 1,
-                description: "Register removal",
+                description: "Test Network Connectivity",
                 status: "In Progress",
-                reason: ""
-            }
-        ],
-        fixtureHandovers: {}
-    },
+                reason: "",
+                reasonTimestamp: "",
+                history: []
+            },
 
-    {
-        id: 3,
-        number: "0789",
-        technician: "Tech C",
-        currentNight: 2,
-        timezone: "CST",
-        checkIn: "",
-        scopes: [
             {
-                id: 301,
-                night: 2,
-                description: "Fixture removal",
+                id: 5,
+                night: 3,
+                description: "Validate Registers",
                 status: "Not Started",
-                reason: ""
+                reason: "",
+                reasonTimestamp: "",
+                history: []
+            },
+
+            {
+                id: 6,
+                night: 4,
+                description: "Final System Validation",
+                status: "Not Started",
+                reason: "",
+                reasonTimestamp: "",
+                history: []
             }
+
         ],
-        fixtureHandovers: {}
+
+        fixtureHandover: {}
+
     },
 
-    {
-        id: 4,
-        number: "1011",
-        technician: "Tech D",
-        currentNight: 1,
-        timezone: "MST",
-        checkIn: "",
-        scopes: [],
-        fixtureHandovers: {}
-    },
 
     {
-        id: 5,
-        number: "1213",
-        technician: "Tech E",
-        currentNight: 2,
-        timezone: "EST",
-        checkIn: "",
-        scopes: [],
-        fixtureHandovers: {}
-    },
-
-    {
-        id: 6,
-        number: "1415",
-        technician: "Tech F",
-        currentNight: 4,
+        storeNumber: "0456",
+        technician: "Technician B",
         timezone: "PST",
-        checkIn: "",
-        scopes: [],
-        fixtureHandovers: {}
+        currentNight: 1,
+        checkedIn: "2026-10-05 16:11",
+
+        tasks: [
+
+            {
+                id: 7,
+                night: 1,
+                description: "Install Network Equipment",
+                status: "Completed",
+                reason: "",
+                reasonTimestamp: "",
+                history: []
+            },
+
+            {
+                id: 8,
+                night: 1,
+                description: "Configure POS Terminals",
+                status: "Completed",
+                reason: "",
+                reasonTimestamp: "",
+                history: []
+            }
+
+        ],
+
+        fixtureHandover: {}
+
+    },
+
+
+    {
+        storeNumber: "0789",
+        technician: "Technician C",
+        timezone: "CST",
+        currentNight: 2,
+        checkedIn: "",
+        tasks: [],
+        fixtureHandover: {}
+    },
+
+
+    {
+        storeNumber: "1011",
+        technician: "Technician D",
+        timezone: "MST",
+        currentNight: 1,
+        checkedIn: "",
+        tasks: [],
+        fixtureHandover: {}
+    },
+
+
+    {
+        storeNumber: "1213",
+        technician: "Technician E",
+        timezone: "EST",
+        currentNight: 1,
+        checkedIn: "",
+        tasks: [],
+        fixtureHandover: {}
+    },
+
+
+    {
+        storeNumber: "1415",
+        technician: "Technician F",
+        timezone: "PST",
+        currentNight: 1,
+        checkedIn: "",
+        tasks: [],
+        fixtureHandover: {}
     }
+
 ];
 
 
-/* =========================================================
-   APP STATE
-   ========================================================= */
+// ============================================================
+// VARIABLES
+// ============================================================
 
-let selectedStoreId = null;
+let selectedStoreNumber = null;
 
 let recentUpdates = [];
 
-let longPressTimer = null;
+let nextTaskId = 100;
+
+let assignmentMessageTimer = null;
+
+let scopeManagementMessageTimer = null;
 
 
-/* =========================================================
-   INITIALIZE
-   ========================================================= */
+// ============================================================
+// PAGE LOAD
+// ============================================================
 
-document.addEventListener("DOMContentLoaded", () => {
-    initializeStores();
-    setupDeploymentNightSelect();
+document.addEventListener("DOMContentLoaded", function () {
+
+    seedExistingCheckIns();
+
     renderOverview();
+
 });
 
 
-function initializeStores() {
-    stores.forEach(store => {
-        if (!Array.isArray(store.scopes)) {
-            store.scopes = [];
-        }
+// ============================================================
+// BASIC HELPERS
+// ============================================================
 
-        if (!store.fixtureHandovers) {
-            store.fixtureHandovers = {};
-        }
-    });
+function getSelectedStore() {
+
+    return stores.find(
+        store => store.storeNumber === selectedStoreNumber
+    );
+
 }
 
 
-/* =========================================================
-   TIMEZONE HELPERS
-   ========================================================= */
+// ============================================================
+// TIMEZONE HELPERS
+// ============================================================
 
-/*
-   Detects the timezone of the device/browser being used.
-
-   Example:
-   Philippines:
-   Asia/Manila
-
-   US Eastern:
-   America/New_York
-*/
-function getDeviceTimezone() {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
-}
-
-
-/*
-   Returns the selected store timezone label.
-*/
 function getStoreTimezone(store) {
-    return store?.timezone || "EST";
-}
 
+    if (
+        store &&
+        Object.prototype.hasOwnProperty.call(
+            STORE_TIMEZONES,
+            store.timezone
+        )
+    ) {
 
-/*
-   Converts a store timezone label to its IANA timezone.
-*/
-function getStoreIanaTimezone(storeOrTimezone) {
-    let timezoneLabel = "EST";
+        return store.timezone;
 
-    if (typeof storeOrTimezone === "object" && storeOrTimezone !== null) {
-        timezoneLabel = getStoreTimezone(storeOrTimezone);
-    } else if (typeof storeOrTimezone === "string") {
-        timezoneLabel = normalizeStoreTimezone(storeOrTimezone) || storeOrTimezone;
     }
 
-    return STORE_TIMEZONES[timezoneLabel] || "America/New_York";
+    return "EST";
+
 }
 
 
-/*
-   Accepts timezone names such as:
-   EST
-   CST
-   MST
-   ARZ
-   PST
-   Puerto Rico
-   Guam
-   Hawaii
-*/
-function normalizeStoreTimezone(value) {
-    if (!value) {
+function getStoreIanaTimezone(store) {
+
+    const timezone =
+        getStoreTimezone(store);
+
+    return STORE_TIMEZONES[timezone] || "America/New_York";
+
+}
+
+
+function getDeviceTimezone() {
+
+    return (
+        Intl.DateTimeFormat().resolvedOptions().timeZone ||
+        "UTC"
+    );
+
+}
+
+
+// ============================================================
+// TIMEZONE PARTS
+// ============================================================
+
+function getTimeZoneParts(
+    date,
+    timeZone
+) {
+
+    const formatter =
+        new Intl.DateTimeFormat(
+            "en-US",
+            {
+                timeZone: timeZone,
+
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+
+                hourCycle: "h23"
+            }
+        );
+
+
+    const parts =
+        formatter.formatToParts(date);
+
+
+    const result = {};
+
+
+    parts.forEach(part => {
+
+        if (part.type !== "literal") {
+
+            result[part.type] =
+                Number(part.value);
+
+        }
+
+    });
+
+
+    return result;
+
+}
+
+
+// ============================================================
+// TIMEZONE OFFSET
+// ============================================================
+
+function getTimeZoneOffsetMs(
+    date,
+    timeZone
+) {
+
+    const parts =
+        getTimeZoneParts(
+            date,
+            timeZone
+        );
+
+
+    const utcTime =
+        Date.UTC(
+            parts.year,
+            parts.month - 1,
+            parts.day,
+            parts.hour,
+            parts.minute,
+            parts.second
+        );
+
+
+    return utcTime - date.getTime();
+
+}
+
+
+// ============================================================
+// CONVERT LOCAL WALL CLOCK TIME
+// TO REAL INSTANT
+// ============================================================
+//
+// Example:
+//
+// Phone timezone = Asia/Manila
+// User enters = 11:28
+//
+// This converts 11:28 AM Manila time
+// into the correct UTC instant.
+//
+// That instant can then be displayed
+// in the store timezone.
+//
+// ============================================================
+
+function zonedDateTimeToDate(
+    parts,
+    timeZone
+) {
+
+    const guess =
+        Date.UTC(
+            parts.year,
+            parts.month - 1,
+            parts.day,
+            parts.hour,
+            parts.minute,
+            parts.second || 0
+        );
+
+
+    let candidate =
+        guess -
+        getTimeZoneOffsetMs(
+            new Date(guess),
+            timeZone
+        );
+
+
+    candidate =
+        guess -
+        getTimeZoneOffsetMs(
+            new Date(candidate),
+            timeZone
+        );
+
+
+    return new Date(candidate);
+
+}
+
+
+// ============================================================
+// TODAY IN DEVICE TIMEZONE
+// ============================================================
+
+function getTodayInDeviceTimezone() {
+
+    const deviceTimezone =
+        getDeviceTimezone();
+
+
+    return getTimeZoneParts(
+        new Date(),
+        deviceTimezone
+    );
+
+}
+
+
+// ============================================================
+// FIXTURE HANDOVER TIME
+// ============================================================
+//
+// Converts a manually entered phone-local time
+// into an actual timestamp.
+//
+// ============================================================
+
+function convertDeviceTimeInputToDate(
+    timeValue
+) {
+
+    if (!timeValue) {
         return null;
     }
 
-    const cleaned = String(value).trim().toLowerCase();
 
-    const aliases = {
-        "est": "EST",
-        "eastern": "EST",
-        "eastern time": "EST",
-        "et": "EST",
+    const parts =
+        timeValue.split(":");
 
-        "cst": "CST",
-        "central": "CST",
-        "central time": "CST",
-        "ct": "CST",
 
-        "mst": "MST",
-        "mountain": "MST",
-        "mountain time": "MST",
-        "mt": "MST",
+    if (parts.length < 2) {
+        return null;
+    }
 
-        "arz": "ARZ",
-        "arizona": "ARZ",
-        "az": "ARZ",
 
-        "pst": "PST",
-        "pacific": "PST",
-        "pacific time": "PST",
-        "pt": "PST",
+    const hour =
+        Number(parts[0]);
 
-        "puerto rico": "Puerto Rico",
-        "puerto rico time": "Puerto Rico",
-        "pr": "Puerto Rico",
+    const minute =
+        Number(parts[1]);
 
-        "guam": "Guam",
 
-        "hawaii": "Hawaii",
-        "hawaiian": "Hawaii"
-    };
+    if (
+        Number.isNaN(hour) ||
+        Number.isNaN(minute)
+    ) {
 
-    return aliases[cleaned] || null;
+        return null;
+
+    }
+
+
+    const today =
+        getTodayInDeviceTimezone();
+
+
+    return zonedDateTimeToDate(
+        {
+            year: today.year,
+            month: today.month,
+            day: today.day,
+            hour: hour,
+            minute: minute,
+            second: 0
+        },
+        getDeviceTimezone()
+    );
+
 }
 
 
-/* =========================================================
-   CURRENT TIMESTAMP
-   ========================================================= */
+// ============================================================
+// CURRENT TIMESTAMP
+// ============================================================
+//
+// Store the actual moment in time.
+//
+// The phone/browser timezone is automatically detected
+// by the browser when the action occurs.
+//
+// The timestamp is stored as ISO UTC.
+//
+// ============================================================
 
-/*
-   IMPORTANT:
-   We store system-generated timestamps as ISO timestamps.
-
-   Example:
-   2026-10-07T03:28:00.000Z
-
-   This represents one exact moment in time.
-
-   When displayed, it is converted automatically from
-   the user's device timezone to the store timezone.
-*/
 function getCurrentTimestamp() {
+
     return new Date().toISOString();
+
 }
 
 
-/* =========================================================
-   FORMAT SYSTEM TIMESTAMPS
-   ========================================================= */
+// ============================================================
+// FORMAT REAL TIMESTAMP FOR STORE
+// ============================================================
 
-function formatInstantForStore(timestamp, store) {
+function formatInstantForStore(
+    timestamp,
+    store,
+    options = {}
+) {
+
     if (!timestamp) {
         return "";
     }
 
-    const date = new Date(timestamp);
+
+    const date =
+        timestamp instanceof Date
+            ? timestamp
+            : new Date(timestamp);
+
 
     if (Number.isNaN(date.getTime())) {
-        return String(timestamp);
-    }
 
-    const timezone = getStoreIanaTimezone(store);
-
-    return new Intl.DateTimeFormat("en-US", {
-        timeZone: timezone,
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-        timeZoneName: "short"
-    }).format(date);
-}
-
-
-/*
-   Time-only version.
-
-   Used when displaying Fixture Handover if needed.
-*/
-function formatInstantTimeForStore(timestamp, store) {
-    if (!timestamp) {
         return "";
+
     }
 
-    const date = new Date(timestamp);
 
-    if (Number.isNaN(date.getTime())) {
-        return String(timestamp);
-    }
+    const timeZone =
+        getStoreIanaTimezone(store);
 
-    const timezone = getStoreIanaTimezone(store);
 
-    return new Intl.DateTimeFormat("en-US", {
-        timeZone: timezone,
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-        timeZoneName: "short"
-    }).format(date);
-}
+    const formatter =
+        new Intl.DateTimeFormat(
+            "en-US",
+            {
+                timeZone: timeZone,
 
+                month: "short",
+                day: "numeric",
+                year: "numeric",
 
-/* =========================================================
-   LEGACY TIMESTAMP SUPPORT
-   ========================================================= */
+                hour: "numeric",
+                minute: "2-digit",
 
-/*
-   Existing sample data uses:
-   YYYY-MM-DD HH:MM
+                hour12: true,
 
-   These older timestamps are already stored as store-local
-   time, so we DO NOT convert them.
-
-   This prevents existing data from changing unexpectedly.
-*/
-function formatLegacyTimestamp(timestamp, timezoneLabel) {
-    if (!timestamp) {
-        return "";
-    }
-
-    const match = String(timestamp).match(
-        /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})$/
-    );
-
-    if (!match) {
-        return String(timestamp);
-    }
-
-    const [
-        ,
-        year,
-        month,
-        day,
-        hour,
-        minute
-    ] = match;
-
-    const date = new Date(
-        Date.UTC(
-            Number(year),
-            Number(month) - 1,
-            Number(day),
-            Number(hour),
-            Number(minute)
-        )
-    );
-
-    const formatted = new Intl.DateTimeFormat("en-US", {
-        timeZone: "UTC",
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true
-    }).format(date);
-
-    return `${formatted} ${timezoneLabel}`;
-}
-
-
-/*
-   Main timestamp formatter.
-
-   New ISO timestamps:
-   Device timezone -> Store timezone automatically.
-
-   Old timestamps:
-   Preserve as store-local time.
-*/
-function getDisplayTimestamp(timestamp, storeOrTimezone) {
-    if (!timestamp) {
-        return "";
-    }
-
-    const timezoneLabel =
-        typeof storeOrTimezone === "object"
-            ? getStoreTimezone(storeOrTimezone)
-            : normalizeStoreTimezone(storeOrTimezone) || storeOrTimezone || "EST";
-
-    const isLegacy =
-        /^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}$/.test(String(timestamp));
-
-    if (isLegacy) {
-        return formatLegacyTimestamp(timestamp, timezoneLabel);
-    }
-
-    return formatInstantForStore(timestamp, {
-        timezone: timezoneLabel
-    });
-}
-
-
-/* =========================================================
-   DEPLOYMENT NIGHT SELECTS
-   ========================================================= */
-
-function setupDeploymentNightSelect() {
-    const selects = [
-        document.getElementById("assignedNight"),
-        document.getElementById("scopeNight"),
-        document.getElementById("moveToNight")
-    ];
-
-    selects.forEach(select => {
-        if (!select) {
-            return;
-        }
-
-        const currentValue = select.value;
-
-        if (!select.querySelector('option[value=""]')) {
-            const placeholder = document.createElement("option");
-
-            placeholder.value = "";
-            placeholder.textContent = "Select deployment night";
-
-            select.insertBefore(
-                placeholder,
-                select.firstChild
-            );
-        }
-
-        /*
-           Make placeholder the default when no value
-           has already been selected.
-        */
-        if (!currentValue) {
-            select.value = "";
-        }
-    });
-}
-
-
-/* =========================================================
-   OVERVIEW
-   ========================================================= */
-
-function renderOverview() {
-    renderSummary();
-    renderStoreGrid();
-    renderRecentUpdates();
-}
-
-
-function renderSummary() {
-    const totalStores = stores.length;
-
-    let inProgress = 0;
-    let completed = 0;
-    let checkedIn = 0;
-
-    stores.forEach(store => {
-        const status = getStoreStatus(store);
-
-        if (status === "In Progress") {
-            inProgress++;
-        }
-
-        if (status === "Completed") {
-            completed++;
-        }
-
-        if (store.checkIn) {
-            checkedIn++;
-        }
-    });
-
-    const totalStoresElement =
-        document.getElementById("totalStores");
-
-    const inProgressElement =
-        document.getElementById("inProgressStores");
-
-    const completedElement =
-        document.getElementById("completedStores");
-
-    const checkedInElement =
-        document.getElementById("checkedInStores");
-
-    if (totalStoresElement) {
-        totalStoresElement.textContent = totalStores;
-    }
-
-    if (inProgressElement) {
-        inProgressElement.textContent = inProgress;
-    }
-
-    if (completedElement) {
-        completedElement.textContent = completed;
-    }
-
-    if (checkedInElement) {
-        checkedInElement.textContent = checkedIn;
-    }
-}
-
-
-/* =========================================================
-   STORE STATUS / PROGRESS
-   ========================================================= */
-
-/*
-   IMPORTANT:
-   Fixture Handover is NOT included in scope progress.
-
-   It is documentation only.
-*/
-function getStoreProgress(store) {
-    const scopes = store.scopes || [];
-
-    if (scopes.length === 0) {
-        return 0;
-    }
-
-    const completed = scopes.filter(
-        scope => scope.status === "Completed"
-    ).length;
-
-    return Math.round(
-        (completed / scopes.length) * 100
-    );
-}
-
-
-function getStoreStatus(store) {
-    const scopes = store.scopes || [];
-
-    if (scopes.length === 0) {
-        return "Not Started";
-    }
-
-    const completed = scopes.every(
-        scope => scope.status === "Completed"
-    );
-
-    if (completed) {
-        return "Completed";
-    }
-
-    const hasStarted = scopes.some(
-        scope =>
-            scope.status === "In Progress" ||
-            scope.status === "Completed" ||
-            scope.status === "Pending" ||
-            scope.status === "Cancelled" ||
-            scope.status === "Moved to Another Night"
-    );
-
-    if (hasStarted) {
-        return "In Progress";
-    }
-
-    return "Not Started";
-}
-
-
-/* =========================================================
-   STORE GRID
-   ========================================================= */
-
-function renderStoreGrid() {
-    const grid = document.getElementById("storeGrid");
-
-    if (!grid) {
-        return;
-    }
-
-    grid.innerHTML = "";
-
-    stores.forEach(store => {
-        const status = getStoreStatus(store);
-        const progress = getStoreProgress(store);
-
-        const card = document.createElement("div");
-
-        card.className = "store-card";
-
-        card.onclick = () => openStoreDetail(store.id);
-
-        card.innerHTML = `
-            <div class="store-card-header">
-                <div>
-                    <span class="eyebrow">Store</span>
-                    <h3>${escapeHtml(store.number)}</h3>
-                </div>
-                <span class="status-badge ${getStatusClass(status)}">
-                    ${escapeHtml(status)}
-                </span>
-            </div>
-
-            <div class="store-card-info">
-                <div>
-                    <span>Technician</span>
-                    <strong>${escapeHtml(store.technician || "Unassigned")}</strong>
-                </div>
-
-                <div>
-                    <span>Current Night</span>
-                    <strong>
-                        ${store.currentNight
-                            ? `Night ${store.currentNight}`
-                            : "Not Assigned"}
-                    </strong>
-                </div>
-
-                <div>
-                    <span>Timezone</span>
-                    <strong>${escapeHtml(getStoreTimezone(store))}</strong>
-                </div>
-
-                <div>
-                    <span>Check-In</span>
-                    <strong>
-                        ${
-                            store.checkIn
-                                ? getDisplayTimestamp(store.checkIn, store)
-                                : "Not Checked In"
-                        }
-                    </strong>
-                </div>
-            </div>
-
-            <div class="progress-section">
-                <div class="progress-label">
-                    <span>Scope Progress</span>
-                    <strong>${progress}%</strong>
-                </div>
-
-                <div class="progress-bar">
-                    <div
-                        class="progress-fill"
-                        style="width: ${progress}%"
-                    ></div>
-                </div>
-            </div>
-        `;
-
-        grid.appendChild(card);
-    });
-}
-
-
-function getStatusClass(status) {
-    return String(status)
-        .toLowerCase()
-        .replace(/\s+/g, "-");
-}
-
-
-/* =========================================================
-   RECENT UPDATES
-   ========================================================= */
-
-function addRecentUpdate(store, message, source = "deployment") {
-    recentUpdates.unshift({
-        id: Date.now() + Math.random(),
-        storeId: store.id,
-        storeNumber: store.number,
-        technician: store.technician,
-        message,
-        source,
-        timestamp: getCurrentTimestamp()
-    });
-
-    /*
-       Keep only the latest 50 updates.
-    */
-    recentUpdates = recentUpdates.slice(0, 50);
-}
-
-
-function renderRecentUpdates() {
-    const container =
-        document.getElementById("recentUpdates");
-
-    if (!container) {
-        return;
-    }
-
-    if (recentUpdates.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state">
-                No recent updates yet.
-            </div>
-        `;
-
-        return;
-    }
-
-    container.innerHTML = "";
-
-    recentUpdates.forEach(update => {
-        const store = stores.find(
-            item => item.id === update.storeId
+                timeZoneName:
+                    options.includeTimezone === false
+                        ? undefined
+                        : "short"
+            }
         );
+
+
+    return formatter.format(date);
+
+}
+
+
+// ============================================================
+// LEGACY TIMESTAMP DISPLAY
+// ============================================================
+//
+// Old sample data uses:
+//
+// YYYY-MM-DD HH:MM
+//
+// These values were already stored as store-local time,
+// so we preserve their existing meaning.
+//
+// ============================================================
+
+function formatLegacyTimestamp(
+    timestamp,
+    timezone
+) {
+
+    if (!timestamp) {
+        return "";
+    }
+
+
+    const parts =
+        timestamp.split(" ");
+
+
+    if (parts.length !== 2) {
+
+        return `${timestamp} ${timezone || ""}`.trim();
+
+    }
+
+
+    const dateParts =
+        parts[0].split("-");
+
+    const timeParts =
+        parts[1].split(":");
+
+
+    if (
+        dateParts.length !== 3 ||
+        timeParts.length !== 2
+    ) {
+
+        return `${timestamp} ${timezone || ""}`.trim();
+
+    }
+
+
+    const year =
+        Number(dateParts[0]);
+
+    const month =
+        Number(dateParts[1]) - 1;
+
+    const day =
+        Number(dateParts[2]);
+
+    const hour =
+        Number(timeParts[0]);
+
+    const minute =
+        Number(timeParts[1]);
+
+
+    const date =
+        new Date(
+            Date.UTC(
+                year,
+                month,
+                day,
+                hour,
+                minute
+            )
+        );
+
+
+    const formatted =
+        date.toLocaleString(
+            "en-US",
+            {
+                timeZone: "UTC",
+
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+
+                hour: "numeric",
+                minute: "2-digit",
+
+                hour12: true
+            }
+        );
+
+
+    return `${formatted} ${timezone || ""}`.trim();
+
+}
+
+
+// ============================================================
+// DISPLAY TIMESTAMP
+// ============================================================
+
+function getDisplayTimestamp(
+    timestamp,
+    timezoneOrStore
+) {
+
+    if (!timestamp) {
+        return "";
+    }
+
+
+    let store = null;
+
+    let timezone =
+        "";
+
+
+    if (
+        timezoneOrStore &&
+        typeof timezoneOrStore === "object"
+    ) {
+
+        store =
+            timezoneOrStore;
+
+        timezone =
+            getStoreTimezone(store);
+
+    } else {
+
+        timezone =
+            timezoneOrStore || "";
+
+    }
+
+
+    // ========================================================
+    // NEW ISO TIMESTAMP
+    // ========================================================
+
+    if (
+        typeof timestamp === "string" &&
+        (
+            timestamp.includes("T") ||
+            timestamp.endsWith("Z")
+        )
+    ) {
 
         if (!store) {
-            return;
+
+            return timestamp;
+
         }
 
-        const item = document.createElement("div");
 
-        item.className = "update-item";
-
-        item.innerHTML = `
-            <div class="update-item-main">
-                <strong>
-                    Store ${escapeHtml(update.storeNumber)}
-                </strong>
-
-                <p>${escapeHtml(update.message)}</p>
-
-                <span>
-                    ${escapeHtml(update.technician || "Unknown")}
-                </span>
-            </div>
-
-            <div class="update-item-time">
-                ${escapeHtml(
-                    getDisplayTimestamp(
-                        update.timestamp,
-                        store
-                    )
-                )}
-            </div>
-        `;
-
-        container.appendChild(item);
-    });
-}
-
-
-/* =========================================================
-   OPEN STORE DETAIL
-   ========================================================= */
-
-function openStoreDetail(storeId) {
-    selectedStoreId = storeId;
-
-    const store = stores.find(
-        item => item.id === storeId
-    );
-
-    if (!store) {
-        return;
-    }
-
-    document
-        .getElementById("overviewPage")
-        ?.classList.add("hidden");
-
-    document
-        .getElementById("storeDetailPage")
-        ?.classList.remove("hidden");
-
-    renderStoreDetail();
-}
-
-
-function backToOverview() {
-    selectedStoreId = null;
-
-    document
-        .getElementById("storeDetailPage")
-        ?.classList.add("hidden");
-
-    document
-        .getElementById("overviewPage")
-        ?.classList.remove("hidden");
-
-    renderOverview();
-}
-
-
-/* =========================================================
-   STORE DETAIL
-   ========================================================= */
-
-function renderStoreDetail() {
-    const store = stores.find(
-        item => item.id === selectedStoreId
-    );
-
-    if (!store) {
-        return;
-    }
-
-    document.getElementById("detailStoreNumber").textContent =
-        store.number;
-
-    document.getElementById("detailStoreNumberInfo").textContent =
-        store.number;
-
-    document.getElementById("detailTechnician").textContent =
-        store.technician || "Unassigned";
-
-    document.getElementById("detailCurrentNight").textContent =
-        store.currentNight
-            ? `Night ${store.currentNight}`
-            : "Not Assigned";
-
-    document.getElementById("detailTimezone").textContent =
-        getStoreTimezone(store);
-
-    document.getElementById("detailCheckIn").textContent =
-        store.checkIn
-            ? getDisplayTimestamp(store.checkIn, store)
-            : "Not Checked In";
-
-    document.getElementById("detailStoreStatus").textContent =
-        `${getStoreStatus(store)} • ${getStoreProgress(store)}% scope progress`;
-
-    const assignedNight =
-        document.getElementById("assignedNight");
-
-    if (assignedNight) {
-        assignedNight.value =
-            store.currentNight
-                ? String(store.currentNight)
-                : "";
-    }
-
-    renderManageScopeDropdown();
-    renderNightSections();
-}
-
-
-/* =========================================================
-   CHECK-IN
-   ========================================================= */
-
-function checkInTechnician() {
-    const store = stores.find(
-        item => item.id === selectedStoreId
-    );
-
-    if (!store) {
-        return;
-    }
-
-    /*
-       System timestamp = exact phone/browser moment.
-       It will automatically display in the store timezone.
-    */
-    store.checkIn = getCurrentTimestamp();
-
-    addRecentUpdate(
-        store,
-        "Technician checked in.",
-        "technician"
-    );
-
-    renderStoreDetail();
-    renderOverview();
-}
-
-
-/* =========================================================
-   SCOPE ASSIGNMENT
-   ========================================================= */
-
-function saveNightAssignment() {
-    const store = stores.find(
-        item => item.id === selectedStoreId
-    );
-
-    if (!store) {
-        return;
-    }
-
-    const select =
-        document.getElementById("assignedNight");
-
-    const night = select?.value;
-
-    if (!night) {
-        showMessage(
-            "assignmentMessage",
-            "Please select a deployment night."
+        return formatInstantForStore(
+            timestamp,
+            store
         );
 
-        return;
     }
 
-    store.currentNight = Number(night);
 
-    addRecentUpdate(
-        store,
-        `Current deployment night updated to Night ${night}.`,
-        "deployment"
+    // ========================================================
+    // LEGACY TIMESTAMP
+    // ========================================================
+
+    return formatLegacyTimestamp(
+        timestamp,
+        timezone
     );
 
-    showMessage(
-        "assignmentMessage",
-        `Assignment updated to Night ${night}.`
-    );
-
-    renderStoreDetail();
-    renderOverview();
 }
 
 
-/* =========================================================
-   ADD DEPLOYMENT SCOPE
-   ========================================================= */
+function formatCheckInTime(
+    timestamp,
+    store = getSelectedStore()
+) {
 
-function addScope() {
-    const store = stores.find(
-        item => item.id === selectedStoreId
+    if (!timestamp) {
+        return "";
+    }
+
+
+    return getDisplayTimestamp(
+        timestamp,
+        store
     );
 
-    if (!store) {
-        return;
-    }
-
-    const night =
-        document.getElementById("scopeNight")?.value;
-
-    const description =
-        document
-            .getElementById("scopeDescription")
-            ?.value
-            .trim();
-
-    if (!night) {
-        alert("Please select a deployment night.");
-        return;
-    }
-
-    if (!description) {
-        alert("Please enter a deployment scope.");
-        return;
-    }
-
-    const scope = {
-        id: Date.now() + Math.random(),
-        night: Number(night),
-        description,
-        status: "Not Started",
-        reason: ""
-    };
-
-    store.scopes.push(scope);
-
-    addRecentUpdate(
-        store,
-        `Added scope "${description}" to Night ${night}.`,
-        "deployment"
-    );
-
-    document.getElementById("scopeDescription").value = "";
-
-    renderStoreDetail();
-    renderOverview();
 }
 
 
-/* =========================================================
-   MANAGE SCOPE DROPDOWN
-   ========================================================= */
+function formatReasonTimestamp(
+    timestamp,
+    store = getSelectedStore()
+) {
 
-function renderManageScopeDropdown() {
+    if (!timestamp) {
+        return "";
+    }
+
+
+    return getDisplayTimestamp(
+        timestamp,
+        store
+    );
+
+}
+
+
+// ============================================================
+// FORMAT STORE TIME ONLY
+// ============================================================
+
+function formatStoreTime(
+    timestamp,
+    store
+) {
+
+    if (!timestamp) {
+        return "";
+    }
+
+
+    const date =
+        timestamp instanceof Date
+            ? timestamp
+            : new Date(timestamp);
+
+
+    if (Number.isNaN(date.getTime())) {
+        return "";
+    }
+
+
+    const formatter =
+        new Intl.DateTimeFormat(
+            "en-US",
+            {
+                timeZone:
+                    getStoreIanaTimezone(store),
+
+                hour: "numeric",
+                minute: "2-digit",
+
+                hour12: true,
+
+                timeZoneName: "short"
+            }
+        );
+
+
+    return formatter.format(date);
+
+}
+
+
+// ============================================================
+// STATUS HELPERS
+// ============================================================
+
+function getStatusClass(status) {
+
+    return status
+        .toLowerCase()
+        .replaceAll(" ", "-");
+
+}
+
+
+function getScopeStatusClass(status) {
+
+    if (status === "Moved to Another Night") {
+        return "moved";
+    }
+
+    return getStatusClass(status);
+
+}
+
+
+// ============================================================
+// SELECT PLACEHOLDER
+// ============================================================
+
+function setupDeploymentNightSelect(selectId) {
+
     const select =
-        document.getElementById("manageScope");
+        document.getElementById(selectId);
+
 
     if (!select) {
         return;
     }
 
-    select.innerHTML = `
-        <option value="">Select scope</option>
-    `;
 
-    const store = stores.find(
-        item => item.id === selectedStoreId
-    );
+    const existingPlaceholder =
+        select.querySelector(
+            'option[data-placeholder="true"]'
+        );
 
-    if (!store) {
-        return;
+
+    if (existingPlaceholder) {
+        existingPlaceholder.remove();
     }
 
-    store.scopes.forEach(scope => {
-        const option = document.createElement("option");
 
-        option.value = String(scope.id);
+    const placeholder =
+        document.createElement("option");
 
-        option.textContent =
-            `Night ${scope.night} — ${scope.description}`;
 
-        select.appendChild(option);
-    });
+    placeholder.value =
+        "";
+
+    placeholder.textContent =
+        "Select deployment night";
+
+    placeholder.disabled =
+        true;
+
+    placeholder.selected =
+        true;
+
+    placeholder.setAttribute(
+        "data-placeholder",
+        "true"
+    );
+
+
+    select.insertBefore(
+        placeholder,
+        select.firstChild
+    );
+
+
+    select.value =
+        "";
+
 }
 
 
-/* =========================================================
-   SCOPE ACTION UI
-   ========================================================= */
+// ============================================================
+// STORE STATUS
+// ============================================================
 
-function handleScopeActionChange() {
-    const action =
-        document.getElementById("scopeAction")?.value;
+function getStoreStatus(store) {
 
-    const reasonGroup =
-        document.getElementById("scopeReasonGroup");
-
-    const moveGroup =
-        document.getElementById("moveNightGroup");
-
-    if (!reasonGroup || !moveGroup) {
-        return;
+    if (!store.tasks || store.tasks.length === 0) {
+        return "Not Started";
     }
 
-    const needsReason =
-        action === "pending" ||
-        action === "cancel" ||
-        action === "move";
 
-    reasonGroup.classList.toggle(
-        "hidden",
-        !needsReason
-    );
+    const activeTasks =
+        store.tasks.filter(
+            task =>
+                task.status !== "Cancelled"
+        );
 
-    moveGroup.classList.toggle(
-        "hidden",
-        action !== "move"
-    );
+
+    if (activeTasks.length === 0) {
+        return "Cancelled";
+    }
+
+
+    const allCompleted =
+        activeTasks.every(
+            task =>
+                task.status === "Completed"
+        );
+
+
+    if (allCompleted) {
+        return "Completed";
+    }
+
+
+    const hasProgress =
+        activeTasks.some(
+            task =>
+                task.status === "In Progress" ||
+                task.status === "Completed"
+        );
+
+
+    if (hasProgress) {
+        return "In Progress";
+    }
+
+
+    return "Not Started";
+
 }
 
 
-/* =========================================================
-   APPLY SCOPE MANAGEMENT
-   ========================================================= */
+// ============================================================
+// PROGRESS
+// ============================================================
 
-function applyScopeManagement() {
-    const store = stores.find(
-        item => item.id === selectedStoreId
-    );
+function calculateProgress(store) {
 
-    if (!store) {
-        return;
+    if (!store.tasks || store.tasks.length === 0) {
+        return 0;
     }
 
-    const scopeId =
-        document.getElementById("manageScope")?.value;
 
-    const action =
-        document.getElementById("scopeAction")?.value;
+    const activeTasks =
+        store.tasks.filter(
+            task =>
+                task.status !== "Cancelled"
+        );
 
-    const reason =
-        document
-            .getElementById("scopeReason")
-            ?.value
-            .trim();
 
-    if (!scopeId) {
-        alert("Please select a scope.");
-        return;
+    if (activeTasks.length === 0) {
+        return 0;
     }
 
-    if (!action) {
-        alert("Please select an action.");
-        return;
-    }
 
-    const scope = store.scopes.find(
-        item => String(item.id) === String(scopeId)
-    );
+    const completedTasks =
+        activeTasks.filter(
+            task =>
+                task.status === "Completed"
+        );
 
-    if (!scope) {
-        return;
-    }
 
-    if (
+    return Math.round(
         (
-            action === "pending" ||
-            action === "cancel" ||
-            action === "move"
-        ) &&
-        !reason
-    ) {
-        alert("Please enter a reason or notes.");
+            completedTasks.length /
+            activeTasks.length
+        ) * 100
+    );
+
+}
+
+
+// ============================================================
+// OVERVIEW
+// ============================================================
+
+function renderOverview() {
+
+    const overviewPage =
+        document.getElementById(
+            "overviewPage"
+        );
+
+    const storeDetailPage =
+        document.getElementById(
+            "storeDetailPage"
+        );
+
+
+    if (overviewPage) {
+        overviewPage.classList.remove("hidden");
+    }
+
+
+    if (storeDetailPage) {
+        storeDetailPage.classList.add("hidden");
+    }
+
+
+    const storeGrid =
+        document.getElementById(
+            "storeGrid"
+        );
+
+
+    if (!storeGrid) {
         return;
     }
 
-    if (action === "pending") {
-        scope.status = "Pending";
-        scope.reason = reason;
 
-        addRecentUpdate(
-            store,
-            `Scope "${scope.description}" marked as Pending. Reason: ${reason}`,
-            "deployment"
+    storeGrid.innerHTML =
+        "";
+
+
+    stores.forEach(store => {
+
+        const status =
+            getStoreStatus(store);
+
+        const progress =
+            calculateProgress(store);
+
+
+        const card =
+            document.createElement("div");
+
+
+        card.className =
+            "store-card";
+
+
+        card.onclick =
+            function () {
+
+                openStoreDetail(
+                    store.storeNumber
+                );
+
+            };
+
+
+        let checkInHTML;
+
+
+        if (store.checkedIn) {
+
+            checkInHTML = `
+
+                <div class="store-checkin">
+
+                    <button
+                        class="store-checkin-button checked"
+                        disabled
+                    >
+                        ✓ Checked In
+                    </button>
+
+                    <div class="check-in-time">
+                        Checked in at
+                        ${formatCheckInTime(
+                            store.checkedIn,
+                            store
+                        )}
+                    </div>
+
+                </div>
+
+            `;
+
+        } else {
+
+            checkInHTML = `
+
+                <div class="store-checkin">
+
+                    <button
+                        class="store-checkin-button"
+                        onclick="event.stopPropagation(); checkIn('${store.storeNumber}')"
+                    >
+                        Technician Check-In
+                    </button>
+
+                </div>
+
+            `;
+
+        }
+
+
+        card.innerHTML = `
+
+            <div class="store-status-row">
+
+                <h3>
+                    Store ${store.storeNumber}
+                </h3>
+
+                <span class="store-status ${getStatusClass(status)}">
+                    ${status}
+                </span>
+
+            </div>
+
+
+            <div class="store-info-line">
+
+                <strong>Technician:</strong>
+                ${store.technician || "Unassigned"}
+
+            </div>
+
+
+            <div class="store-info-line">
+
+                <strong>Timezone:</strong>
+                ${getStoreTimezone(store)}
+
+            </div>
+
+
+            <div class="store-info-line">
+
+                <strong>Current Night:</strong>
+                Night ${store.currentNight || 1}
+
+            </div>
+
+
+            <div class="store-progress">
+
+                <div class="progress-bar">
+
+                    <div
+                        class="progress-fill"
+                        style="width: ${progress}%"
+                    ></div>
+
+                </div>
+
+                <div class="progress-text">
+                    ${progress}% Complete
+                </div>
+
+            </div>
+
+
+            ${checkInHTML}
+
+        `;
+
+
+        storeGrid.appendChild(card);
+
+    });
+
+
+    renderSummary();
+
+    renderRecentUpdates();
+
+}
+
+
+// ============================================================
+// SUMMARY
+// ============================================================
+
+function renderSummary() {
+
+    const totalStores =
+        stores.length;
+
+
+    const inProgressStores =
+        stores.filter(
+            store =>
+                getStoreStatus(store) === "In Progress"
+        ).length;
+
+
+    const completedStores =
+        stores.filter(
+            store =>
+                getStoreStatus(store) === "Completed"
+        ).length;
+
+
+    const checkedInStores =
+        stores.filter(
+            store =>
+                !!store.checkedIn
+        ).length;
+
+
+    const totalElement =
+        document.getElementById(
+            "totalStores"
         );
 
-        showMessage(
-            "scopeManagementMessage",
-            "Scope marked as Pending."
+    const inProgressElement =
+        document.getElementById(
+            "inProgressStores"
         );
+
+    const completedElement =
+        document.getElementById(
+            "completedStores"
+        );
+
+    const checkedInElement =
+        document.getElementById(
+            "checkedInStores"
+        );
+
+
+    if (totalElement) {
+        totalElement.textContent =
+            totalStores;
     }
 
-    else if (action === "cancel") {
-        scope.status = "Cancelled";
-        scope.reason = reason;
-
-        addRecentUpdate(
-            store,
-            `Scope "${scope.description}" was cancelled. Reason: ${reason}`,
-            "deployment"
-        );
-
-        showMessage(
-            "scopeManagementMessage",
-            "Scope cancelled."
-        );
+    if (inProgressElement) {
+        inProgressElement.textContent =
+            inProgressStores;
     }
 
-    else if (action === "move") {
-        const moveTo =
-            document.getElementById("moveToNight")?.value;
+    if (completedElement) {
+        completedElement.textContent =
+            completedStores;
+    }
 
-        if (!moveTo) {
-            alert("Please select the night to move the scope to.");
+    if (checkedInElement) {
+        checkedInElement.textContent =
+            checkedInStores;
+    }
+
+}
+
+
+// ============================================================
+// EXISTING CHECK-IN HISTORY
+// ============================================================
+
+function seedExistingCheckIns() {
+
+    stores.forEach(store => {
+
+        if (!store.checkedIn) {
             return;
         }
 
-        const oldNight = scope.night;
 
-        scope.night = Number(moveTo);
-        scope.status = "Moved to Another Night";
-        scope.reason = reason;
+        recentUpdates.push({
 
-        addRecentUpdate(
-            store,
-            `Scope "${scope.description}" moved from Night ${oldNight} to Night ${moveTo}. Reason: ${reason}`,
-            "deployment"
-        );
+            storeNumber:
+                store.storeNumber,
 
-        showMessage(
-            "scopeManagementMessage",
-            `Scope moved to Night ${moveTo}.`
-        );
-    }
+            technician:
+                store.technician,
 
-    document.getElementById("scopeReason").value = "";
-    document.getElementById("scopeAction").value = "";
-    document.getElementById("manageScope").value = "";
+            message:
+                "Technician checked in",
 
-    handleScopeActionChange();
+            timestamp:
+                store.checkedIn,
 
-    renderStoreDetail();
-    renderOverview();
+            source:
+                "check-in"
+
+        });
+
+    });
+
 }
 
 
-/* =========================================================
-   NIGHT SECTIONS
-   ========================================================= */
+// ============================================================
+// CHECK-IN
+// ============================================================
 
-function renderNightSections() {
+function checkIn(storeNumber) {
+
+    const store =
+        stores.find(
+            item =>
+                item.storeNumber === storeNumber
+        );
+
+
+    if (!store) {
+        return;
+    }
+
+
+    if (store.checkedIn) {
+        return;
+    }
+
+
+    const timestamp =
+        getCurrentTimestamp();
+
+
+    store.checkedIn =
+        timestamp;
+
+
+    recentUpdates.unshift({
+
+        storeNumber:
+            store.storeNumber,
+
+        technician:
+            store.technician,
+
+        message:
+            "Technician checked in",
+
+        timestamp:
+            timestamp,
+
+        source:
+            "check-in"
+
+    });
+
+
+    renderOverview();
+
+}
+
+
+// ============================================================
+// RECENT UPDATES
+// ============================================================
+
+function renderRecentUpdates() {
+
     const container =
-        document.getElementById("nightSections");
+        document.getElementById(
+            "recentUpdates"
+        );
+
 
     if (!container) {
         return;
     }
 
-    const store = stores.find(
-        item => item.id === selectedStoreId
-    );
+
+    container.innerHTML =
+        "";
+
+
+    const updates =
+        recentUpdates.filter(
+            update =>
+                update.source === "technician" ||
+                update.source === "check-in"
+        );
+
+
+    if (updates.length === 0) {
+
+        container.innerHTML = `
+
+            <div class="empty-updates">
+                No recent updates.
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    updates.forEach(update => {
+
+        const item =
+            document.createElement("div");
+
+
+        item.className =
+            "update-item";
+
+
+        const store =
+            stores.find(
+                item =>
+                    item.storeNumber ===
+                    update.storeNumber
+            );
+
+
+        const timezone =
+            getStoreTimezone(store);
+
+
+        item.innerHTML = `
+
+            <div class="update-header">
+
+                <span class="update-store">
+                    Store ${update.storeNumber}
+                </span>
+
+                <span>—</span>
+
+                <span class="update-tech">
+                    ${update.technician || "Unassigned"}
+                </span>
+
+            </div>
+
+
+            <div class="update-message">
+                ${update.message}
+            </div>
+
+
+            <div class="update-time">
+                ${getDisplayTimestamp(
+                    update.timestamp,
+                    store
+                )}
+            </div>
+
+        `;
+
+
+        container.appendChild(item);
+
+    });
+
+}
+
+
+// ============================================================
+// OPEN STORE DETAIL
+// ============================================================
+
+function openStoreDetail(storeNumber) {
+
+    selectedStoreNumber =
+        storeNumber;
+
+
+    const overviewPage =
+        document.getElementById(
+            "overviewPage"
+        );
+
+    const storeDetailPage =
+        document.getElementById(
+            "storeDetailPage"
+        );
+
+
+    if (overviewPage) {
+        overviewPage.classList.add("hidden");
+    }
+
+
+    if (storeDetailPage) {
+        storeDetailPage.classList.remove("hidden");
+    }
+
+
+    resetScopeManagementForm();
+
+    renderStoreDetail();
+
+}
+
+
+// ============================================================
+// STORE DETAIL
+// ============================================================
+
+function renderStoreDetail() {
+
+    const store =
+        getSelectedStore();
+
 
     if (!store) {
         return;
     }
 
-    container.innerHTML = "";
 
-    for (let night = 1; night <= 5; night++) {
-        const scopes =
-            store.scopes.filter(
-                scope => Number(scope.night) === night
-            );
+    if (!store.fixtureHandover) {
+        store.fixtureHandover = {};
+    }
+
+
+    const detailStoreNumber =
+        document.getElementById(
+            "detailStoreNumber"
+        );
+
+    const detailStoreNumberInfo =
+        document.getElementById(
+            "detailStoreNumberInfo"
+        );
+
+    const detailTechnician =
+        document.getElementById(
+            "detailTechnician"
+        );
+
+    const detailCurrentNight =
+        document.getElementById(
+            "detailCurrentNight"
+        );
+
+    const detailTimezone =
+        document.getElementById(
+            "detailTimezone"
+        );
+
+    const detailCheckIn =
+        document.getElementById(
+            "detailCheckIn"
+        );
+
+    const detailStoreStatus =
+        document.getElementById(
+            "detailStoreStatus"
+        );
+
+
+    if (detailStoreNumber) {
+
+        detailStoreNumber.textContent =
+            store.storeNumber;
+
+    }
+
+
+    if (detailStoreNumberInfo) {
+
+        detailStoreNumberInfo.textContent =
+            store.storeNumber;
+
+    }
+
+
+    if (detailTechnician) {
+
+        detailTechnician.textContent =
+            store.technician ||
+            "Unassigned";
+
+    }
+
+
+    if (detailCurrentNight) {
+
+        detailCurrentNight.textContent =
+            `Night ${store.currentNight || 1}`;
+
+    }
+
+
+    if (detailTimezone) {
+
+        detailTimezone.textContent =
+            getStoreTimezone(store);
+
+    }
+
+
+    if (detailCheckIn) {
+
+        detailCheckIn.textContent =
+            store.checkedIn
+                ? formatCheckInTime(
+                    store.checkedIn,
+                    store
+                )
+                : "Not checked in";
+
+    }
+
+
+    if (detailStoreStatus) {
+
+        detailStoreStatus.textContent =
+            getStoreStatus(store);
+
+    }
+
+
+    setupDeploymentNightSelect(
+        "assignedNight"
+    );
+
+    setupDeploymentNightSelect(
+        "scopeNight"
+    );
+
+    renderNightSections();
+
+    renderScopeManagementOptions();
+
+}
+
+
+// ============================================================
+// NIGHT SECTIONS
+// ============================================================
+
+function renderNightSections() {
+
+    const container =
+        document.getElementById(
+            "nightSections"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    const store =
+        getSelectedStore();
+
+
+    if (!store) {
+        return;
+    }
+
+
+    if (!store.fixtureHandover) {
+        store.fixtureHandover = {};
+    }
+
+
+    container.innerHTML =
+        "";
+
+
+    for (
+        let night = 1;
+        night <= 5;
+        night++
+    ) {
 
         const section =
             document.createElement("div");
 
-        section.className = "night-section";
 
-        section.innerHTML = `
-            <div class="night-section-header">
-                <div>
-                    <h4>Night ${night}</h4>
-                    <p>
-                        ${
-                            scopes.length
-                                ? `${scopes.length} scope${scopes.length === 1 ? "" : "s"}`
-                                : "No deployment scope assigned"
-                        }
-                    </p>
-                </div>
-            </div>
+        section.className =
+            "night-section";
 
-            <div class="scope-list">
-                ${
-                    scopes.length
-                        ? scopes.map(scope =>
-                            renderScopeItem(scope)
-                        ).join("")
-                        : `
-                            <div class="empty-scope">
-                                No scope assigned for this night.
-                            </div>
-                        `
-                }
-            </div>
 
-            <!-- Fixture Handover is separate from scope -->
-            ${renderFixtureHandover(store, night)}
+        const nightTasks =
+            (store.tasks || []).filter(
+                task =>
+                    task.night === night
+            );
+
+
+        const header =
+            document.createElement("div");
+
+
+        header.className =
+            "night-header";
+
+
+        header.innerHTML = `
+
+            <h4>
+                Night ${night}
+            </h4>
+
+            <span>
+                ${nightTasks.length}
+                scope${nightTasks.length === 1 ? "" : "s"}
+            </span>
+
         `;
+
+
+        // ====================================================
+        // SCOPE LIST
+        // ====================================================
+
+        const scopeList =
+            document.createElement("div");
+
+
+        scopeList.className =
+            "scope-list";
+
+
+        if (nightTasks.length === 0) {
+
+            scopeList.innerHTML = `
+
+                <div class="empty-scope">
+                    No deployment scope added.
+                </div>
+
+            `;
+
+        } else {
+
+            nightTasks.forEach(task => {
+
+                scopeList.appendChild(
+                    createScopeElement(task)
+                );
+
+            });
+
+        }
+
+
+        // ====================================================
+        // FIXTURE HANDOVER
+        // ====================================================
+
+        const fixtureBox =
+            createFixtureHandoverElement(
+                store,
+                night
+            );
+
+
+        section.appendChild(header);
+
+        section.appendChild(scopeList);
+
+        section.appendChild(fixtureBox);
 
         container.appendChild(section);
 
-        attachLongPressHandlers(section);
     }
+
 }
 
 
-/* =========================================================
-   SCOPE ITEM
-   ========================================================= */
+// ============================================================
+// FIXTURE HANDOVER ELEMENT
+// ============================================================
 
-function renderScopeItem(scope) {
-    return `
-        <div
-            class="scope-item"
-            data-scope-id="${scope.id}"
-        >
-            <div class="scope-item-main">
-                <strong>${escapeHtml(scope.description)}</strong>
+function createFixtureHandoverElement(
+    store,
+    night
+) {
 
-                <span class="scope-status ${getStatusClass(scope.status)}">
-                    ${escapeHtml(scope.status)}
-                </span>
-
-                ${
-                    scope.reason
-                        ? `
-                            <p class="scope-reason">
-                                ${escapeHtml(scope.reason)}
-                            </p>
-                        `
-                        : ""
-                }
-            </div>
-
-            <div class="scope-actions hidden">
-                <button
-                    type="button"
-                    onclick="editScopeReason(${scope.id})"
-                >
-                    Edit Reason
-                </button>
-
-                <button
-                    type="button"
-                    onclick="deleteScope(${scope.id})"
-                >
-                    Delete
-                </button>
-            </div>
-        </div>
-    `;
-}
+    const box =
+        document.createElement("div");
 
 
-/* =========================================================
-   LONG PRESS
-   ========================================================= */
+    box.className =
+        "fixture-handover";
 
-function attachLongPressHandlers(container) {
-    const scopeItems =
-        container.querySelectorAll(".scope-item");
 
-    scopeItems.forEach(item => {
-        const actions =
-            item.querySelector(".scope-actions");
+    const saved =
+        store.fixtureHandover &&
+        store.fixtureHandover[night]
+            ? store.fixtureHandover[night]
+            : null;
 
-        if (!actions) {
-            return;
+
+    const title =
+        document.createElement("div");
+
+
+    title.className =
+        "fixture-handover-title";
+
+
+    title.textContent =
+        "Fixture Handover Time";
+
+
+    box.appendChild(title);
+
+
+    // ========================================================
+    // SAVED STATE
+    // ========================================================
+
+    if (saved && saved.timestamp) {
+
+        const display =
+            document.createElement("div");
+
+
+        display.className =
+            "fixture-handover-display";
+
+
+        const timeText =
+            document.createElement("span");
+
+
+        timeText.textContent =
+            `✓ Fixture handed over at ${formatStoreTime(
+                saved.timestamp,
+                store
+            )}`;
+
+
+        display.appendChild(
+            timeText
+        );
+
+
+        const editButton =
+            document.createElement("button");
+
+
+        editButton.type =
+            "button";
+
+        editButton.className =
+            "fixture-handover-edit";
+
+        editButton.textContent =
+            "Edit";
+
+
+        editButton.onclick =
+            function (event) {
+
+                event.stopPropagation();
+
+                editFixtureHandover(
+                    night
+                );
+
+            };
+
+
+        display.appendChild(
+            editButton
+        );
+
+
+        box.appendChild(
+            display
+        );
+
+
+        if (saved.updatedAt) {
+
+            const updated =
+                document.createElement("div");
+
+
+            updated.className =
+                "fixture-handover-updated";
+
+
+            updated.textContent =
+                `Recorded/updated at ${formatReasonTimestamp(
+                    saved.updatedAt,
+                    store
+                )}`;
+
+
+            box.appendChild(
+                updated
+            );
+
         }
 
-        item.addEventListener("mousedown", () => {
-            longPressTimer = setTimeout(() => {
-                actions.classList.remove("hidden");
-            }, 600);
-        });
 
-        item.addEventListener("mouseup", () => {
-            clearTimeout(longPressTimer);
-        });
+        return box;
 
-        item.addEventListener("mouseleave", () => {
-            clearTimeout(longPressTimer);
-        });
+    }
 
-        item.addEventListener("touchstart", () => {
-            longPressTimer = setTimeout(() => {
-                actions.classList.remove("hidden");
-            }, 600);
-        }, { passive: true });
 
-        item.addEventListener("touchend", () => {
-            clearTimeout(longPressTimer);
-        });
+    // ========================================================
+    // LEGACY SAVED STATE
+    // ========================================================
 
-        item.addEventListener("touchmove", () => {
-            clearTimeout(longPressTimer);
-        });
-    });
+    if (saved && saved.time) {
+
+        const display =
+            document.createElement("div");
+
+
+        display.className =
+            "fixture-handover-display";
+
+
+        const timeText =
+            document.createElement("span");
+
+
+        timeText.textContent =
+            `✓ Fixture handed over at ${formatTimeForDisplay(
+                saved.time
+            )} ${getStoreTimezone(store)}`;
+
+
+        display.appendChild(
+            timeText
+        );
+
+
+        const editButton =
+            document.createElement("button");
+
+
+        editButton.type =
+            "button";
+
+        editButton.className =
+            "fixture-handover-edit";
+
+        editButton.textContent =
+            "Edit";
+
+
+        editButton.onclick =
+            function (event) {
+
+                event.stopPropagation();
+
+                editFixtureHandover(
+                    night
+                );
+
+            };
+
+
+        display.appendChild(
+            editButton
+        );
+
+
+        box.appendChild(
+            display
+        );
+
+
+        if (saved.updatedAt) {
+
+            const updated =
+                document.createElement("div");
+
+
+            updated.className =
+                "fixture-handover-updated";
+
+
+            updated.textContent =
+                `Recorded/updated at ${formatReasonTimestamp(
+                    saved.updatedAt,
+                    store
+                )}`;
+
+
+            box.appendChild(
+                updated
+            );
+
+        }
+
+
+        return box;
+
+    }
+
+
+    // ========================================================
+    // UNSAVED STATE
+    // ========================================================
+
+    const row =
+        document.createElement("div");
+
+
+    row.className =
+        "fixture-handover-row";
+
+
+    const inputGroup =
+        document.createElement("div");
+
+
+    inputGroup.className =
+        "fixture-handover-input-group";
+
+
+    const label =
+        document.createElement("label");
+
+
+    label.textContent =
+        "Time fixture was handed over";
+
+
+    const input =
+        document.createElement("input");
+
+
+    input.type =
+        "time";
+
+    input.id =
+        `fixtureHandover-${night}`;
+
+
+    inputGroup.appendChild(
+        label
+    );
+
+    inputGroup.appendChild(
+        input
+    );
+
+
+    const saveButton =
+        document.createElement("button");
+
+
+    saveButton.type =
+        "button";
+
+    saveButton.className =
+        "fixture-handover-save";
+
+    saveButton.textContent =
+        "Save Time";
+
+
+    saveButton.onclick =
+        function (event) {
+
+            event.stopPropagation();
+
+            saveFixtureHandover(
+                night
+            );
+
+        };
+
+
+    row.appendChild(
+        inputGroup
+    );
+
+    row.appendChild(
+        saveButton
+    );
+
+
+    box.appendChild(
+        row
+    );
+
+
+    const noRecord =
+        document.createElement("div");
+
+
+    noRecord.className =
+        "fixture-handover-display";
+
+
+    noRecord.style.color =
+        "#94a3b8";
+
+
+    noRecord.textContent =
+        "No fixture handover time recorded.";
+
+
+    box.appendChild(
+        noRecord
+    );
+
+
+    return box;
+
 }
 
 
-/* =========================================================
-   EDIT SCOPE REASON
-   ========================================================= */
+// ============================================================
+// FORMAT FIXTURE TIME
+// ============================================================
 
-function editScopeReason(scopeId) {
-    const store = stores.find(
-        item => item.id === selectedStoreId
-    );
+function formatTimeForDisplay(timeValue) {
 
-    if (!store) {
-        return;
+    if (!timeValue) {
+        return "";
     }
 
-    const scope = store.scopes.find(
-        item => String(item.id) === String(scopeId)
-    );
 
-    if (!scope) {
-        return;
+    const parts =
+        timeValue.split(":");
+
+
+    if (parts.length < 2) {
+        return timeValue;
     }
 
-    const newReason = prompt(
-        "Edit reason / notes:",
-        scope.reason || ""
-    );
 
-    if (newReason === null) {
-        return;
+    let hour =
+        Number(parts[0]);
+
+    const minute =
+        parts[1];
+
+
+    if (isNaN(hour)) {
+        return timeValue;
     }
 
-    scope.reason = newReason.trim();
 
-    addRecentUpdate(
-        store,
-        `Reason updated for scope "${scope.description}".`,
-        "deployment"
-    );
+    const suffix =
+        hour >= 12
+            ? "PM"
+            : "AM";
 
-    renderStoreDetail();
-    renderOverview();
+
+    hour =
+        hour % 12 || 12;
+
+
+    return `${hour}:${minute} ${suffix}`;
+
 }
 
 
-/* =========================================================
-   DELETE SCOPE
-   ========================================================= */
+// ============================================================
+// SAVE FIXTURE HANDOVER
+// ============================================================
 
-function deleteScope(scopeId) {
-    const store = stores.find(
-        item => item.id === selectedStoreId
-    );
-
-    if (!store) {
-        return;
-    }
-
-    const scopeIndex = store.scopes.findIndex(
-        item => String(item.id) === String(scopeId)
-    );
-
-    if (scopeIndex === -1) {
-        return;
-    }
-
-    const scope = store.scopes[scopeIndex];
-
-    const confirmed = confirm(
-        `Delete scope "${scope.description}"?`
-    );
-
-    if (!confirmed) {
-        return;
-    }
-
-    store.scopes.splice(scopeIndex, 1);
-
-    addRecentUpdate(
-        store,
-        `Deleted scope "${scope.description}".`,
-        "deployment"
-    );
-
-    renderStoreDetail();
-    renderOverview();
-}
-
-
-/* =========================================================
-   FIXTURE HANDOVER
-   ========================================================= */
-
-/*
-   IMPORTANT SPECIAL RULE:
-
-   Fixture Handover input is ALREADY in STORE TIME.
-
-   Example:
-   Store timezone = EST
-   Technician enters = 11:28 PM
-
-   We DO NOT convert 11:28 PM from the phone timezone.
-
-   We simply save/display:
-   11:28 PM EST
-
-   The phone/browser timezone is NOT used for the
-   Fixture Handover TIME ITSELF.
-
-   Only the "saved/updated at" Recent Update timestamp
-   uses automatic phone timezone -> store timezone conversion.
-*/
-
-function renderFixtureHandover(store, night) {
-    const handover =
-        store.fixtureHandovers?.[night];
-
-    if (!handover) {
-        return `
-            <div class="fixture-handover">
-                <div class="fixture-handover-header">
-                    <div>
-                        <strong>Fixture Handover</strong>
-                        <span>
-                            Enter the handover time in store local time.
-                        </span>
-                    </div>
-
-                    <div class="fixture-handover-input">
-                        <input
-                            type="time"
-                            id="fixtureTime-${store.id}-${night}"
-                        />
-
-                        <button
-                            type="button"
-                            onclick="saveFixtureHandover(${night})"
-                        >
-                            Save
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-
-    return `
-        <div class="fixture-handover">
-            <div class="fixture-handover-header">
-                <div>
-                    <strong>Fixture Handover</strong>
-
-                    <span>
-                        Handover time:
-                        ${escapeHtml(handover.time)}
-                        ${escapeHtml(getStoreTimezone(store))}
-                    </span>
-                </div>
-
-                <button
-                    type="button"
-                    class="secondary-button"
-                    onclick="editFixtureHandover(${night})"
-                >
-                    Edit
-                </button>
-            </div>
-        </div>
-    `;
-}
-
-
-/*
-   Save Fixture Handover.
-
-   The entered value is treated as STORE LOCAL TIME.
-   No phone timezone conversion happens here.
-*/
 function saveFixtureHandover(night) {
-    const store = stores.find(
-        item => item.id === selectedStoreId
-    );
+
+    const store =
+        getSelectedStore();
+
 
     if (!store) {
         return;
     }
+
 
     const input =
         document.getElementById(
-            `fixtureTime-${store.id}-${night}`
+            `fixtureHandover-${night}`
         );
 
-    if (!input || !input.value) {
-        alert("Please enter the fixture handover time.");
+
+    if (!input) {
         return;
     }
 
-    const enteredTime = input.value;
 
-    if (!store.fixtureHandovers) {
-        store.fixtureHandovers = {};
+    const selectedTime =
+        input.value;
+
+
+    if (!selectedTime) {
+
+        alert(
+            "Please enter the fixture handover time."
+        );
+
+        return;
+
     }
 
-    store.fixtureHandovers[night] = {
-        time: formatTimeForDisplay(enteredTime),
-        updatedAt: getCurrentTimestamp()
+
+    const handoverDate =
+        convertDeviceTimeInputToDate(
+            selectedTime
+        );
+
+
+    if (!handoverDate) {
+
+        alert(
+            "Unable to process the selected time."
+        );
+
+        return;
+
+    }
+
+
+    if (!store.fixtureHandover) {
+        store.fixtureHandover = {};
+    }
+
+
+    const existing =
+        store.fixtureHandover[night];
+
+
+    const timestamp =
+        handoverDate.toISOString();
+
+
+    const updatedAt =
+        getCurrentTimestamp();
+
+
+    store.fixtureHandover[night] = {
+
+        time:
+            selectedTime,
+
+        timestamp:
+            timestamp,
+
+        updatedAt:
+            updatedAt
+
     };
 
-    /*
-       IMPORTANT:
-       The handover time in the message is exactly what
-       the technician entered. It is NOT converted.
-    */
-    addRecentUpdate(
-        store,
-        `Fixture Handover recorded for Night ${night} at ${formatTimeForDisplay(enteredTime)} ${getStoreTimezone(store)}.`,
-        "technician"
-    );
+
+    const handoverDisplay =
+        formatStoreTime(
+            timestamp,
+            store
+        );
+
+
+    const message =
+        existing
+            ? `Fixture handover updated to ${handoverDisplay} — Night ${night}`
+            : `Fixture handover recorded at ${handoverDisplay} — Night ${night}`;
+
+
+    recentUpdates.unshift({
+
+        storeNumber:
+            store.storeNumber,
+
+        technician:
+            store.technician,
+
+        message:
+            message,
+
+        timestamp:
+            updatedAt,
+
+        source:
+            "technician"
+
+    });
+
 
     renderStoreDetail();
+
     renderOverview();
+
+
+    const overviewPage =
+        document.getElementById(
+            "overviewPage"
+        );
+
+    const storeDetailPage =
+        document.getElementById(
+            "storeDetailPage"
+        );
+
+
+    if (overviewPage) {
+        overviewPage.classList.add("hidden");
+    }
+
+    if (storeDetailPage) {
+        storeDetailPage.classList.remove("hidden");
+    }
+
 }
 
 
-/*
-   Edit Fixture Handover.
+// ============================================================
+// EDIT FIXTURE HANDOVER
+// ============================================================
 
-   Again, no timezone conversion.
-*/
 function editFixtureHandover(night) {
-    const store = stores.find(
-        item => item.id === selectedStoreId
-    );
+
+    const store =
+        getSelectedStore();
+
 
     if (!store) {
         return;
     }
 
-    const handover =
-        store.fixtureHandovers?.[night];
 
-    if (!handover) {
+    if (
+        !store.fixtureHandover ||
+        !store.fixtureHandover[night]
+    ) {
+
         return;
+
     }
 
-    const currentTime =
-        convertDisplayTimeToInput(handover.time);
 
-    const newTime = prompt(
-        `Enter Fixture Handover time in ${getStoreTimezone(store)}:`,
-        currentTime
-    );
+    const saved =
+        store.fixtureHandover[night];
+
+
+    let currentTime =
+        saved.time || "";
+
+
+    const newTime =
+        prompt(
+            "Enter the correct fixture handover time (HH:MM):",
+            currentTime
+        );
+
 
     if (newTime === null) {
         return;
     }
 
-    const cleanedTime = normalizeTimeInput(newTime);
 
-    if (!cleanedTime) {
-        alert("Please enter a valid time such as 11:28 PM.");
-        return;
-    }
+    const cleanedTime =
+        newTime.trim();
 
-    handover.time =
-        formatTimeForDisplay(cleanedTime);
-
-    /*
-       Updated timestamp = actual moment the technician
-       edited it. This timestamp DOES use automatic
-       phone timezone -> store timezone conversion.
-    */
-    handover.updatedAt = getCurrentTimestamp();
-
-    addRecentUpdate(
-        store,
-        `Fixture Handover updated for Night ${night} to ${handover.time} ${getStoreTimezone(store)}.`,
-        "technician"
-    );
-
-    renderStoreDetail();
-    renderOverview();
-}
-
-
-/* =========================================================
-   FIXTURE HANDOVER TIME HELPERS
-   ========================================================= */
-
-function normalizeTimeInput(value) {
-    if (!value) {
-        return null;
-    }
-
-    const trimmed = String(value).trim();
-
-    /*
-       Native input format:
-       HH:MM
-    */
-    if (/^\d{1,2}:\d{2}$/.test(trimmed)) {
-        const [hour, minute] =
-            trimmed.split(":").map(Number);
-
-        if (
-            hour >= 0 &&
-            hour <= 23 &&
-            minute >= 0 &&
-            minute <= 59
-        ) {
-            return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
-        }
-    }
-
-    /*
-       Also accept:
-       11:28 PM
-       11:28AM
-       7:05 pm
-    */
-    const match =
-        trimmed.match(
-            /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i
-        );
-
-    if (!match) {
-        return null;
-    }
-
-    let hour = Number(match[1]);
-    const minute = Number(match[2]);
-    const period = match[3].toUpperCase();
 
     if (
-        hour < 1 ||
-        hour > 12 ||
+        !/^\d{1,2}:\d{2}$/.test(cleanedTime)
+    ) {
+
+        alert(
+            "Please enter the time in HH:MM format."
+        );
+
+        return;
+
+    }
+
+
+    const parts =
+        cleanedTime.split(":");
+
+
+    let hour =
+        Number(parts[0]);
+
+    const minute =
+        Number(parts[1]);
+
+
+    if (
+        hour < 0 ||
+        hour > 23 ||
         minute < 0 ||
         minute > 59
     ) {
-        return null;
+
+        alert(
+            "Invalid time."
+        );
+
+        return;
+
     }
 
-    if (period === "AM") {
-        if (hour === 12) {
-            hour = 0;
-        }
-    } else {
-        if (hour !== 12) {
-            hour += 12;
-        }
+
+    const formattedTime =
+        `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+
+
+    const handoverDate =
+        convertDeviceTimeInputToDate(
+            formattedTime
+        );
+
+
+    if (!handoverDate) {
+
+        alert(
+            "Unable to process the selected time."
+        );
+
+        return;
+
     }
 
-    return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+
+    const timestamp =
+        handoverDate.toISOString();
+
+
+    const updatedAt =
+        getCurrentTimestamp();
+
+
+    store.fixtureHandover[night] = {
+
+        time:
+            formattedTime,
+
+        timestamp:
+            timestamp,
+
+        updatedAt:
+            updatedAt
+
+    };
+
+
+    recentUpdates.unshift({
+
+        storeNumber:
+            store.storeNumber,
+
+        technician:
+            store.technician,
+
+        message:
+            `Fixture handover updated to ${formatStoreTime(
+                timestamp,
+                store
+            )} — Night ${night}`,
+
+        timestamp:
+            updatedAt,
+
+        source:
+            "technician"
+
+    });
+
+
+    renderStoreDetail();
+
+    renderOverview();
+
+
+    const overviewPage =
+        document.getElementById(
+            "overviewPage"
+        );
+
+    const storeDetailPage =
+        document.getElementById(
+            "storeDetailPage"
+        );
+
+
+    if (overviewPage) {
+        overviewPage.classList.add("hidden");
+    }
+
+    if (storeDetailPage) {
+        storeDetailPage.classList.remove("hidden");
+    }
+
 }
 
 
-function formatTimeForDisplay(value) {
-    if (!value) {
-        return "";
-    }
+// ============================================================
+// CREATE SCOPE ELEMENT
+// ============================================================
 
-    const normalized = normalizeTimeInput(value);
+function createScopeElement(task) {
 
-    if (!normalized) {
-        return String(value);
-    }
-
-    const [hour, minute] =
-        normalized.split(":").map(Number);
-
-    const date = new Date();
-
-    date.setHours(hour, minute, 0, 0);
-
-    return new Intl.DateTimeFormat("en-US", {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true
-    }).format(date);
-}
+    const element =
+        document.createElement("div");
 
 
-/*
-   Converts displayed 12-hour time back to native
-   input format for editing.
-
-   Example:
-   11:28 PM -> 23:28
-*/
-function convertDisplayTimeToInput(value) {
-    return normalizeTimeInput(value) || "";
-}
+    const statusClass =
+        getScopeStatusClass(
+            task.status
+        );
 
 
-/* =========================================================
-   EDIT STORE / TECHNICIAN / TIMEZONE
-   ========================================================= */
+    element.className =
+        "scope-item";
 
-function editStoreInfo() {
-    const store = stores.find(
-        item => item.id === selectedStoreId
+
+    element.setAttribute(
+        "data-task-id",
+        task.id
     );
+
+
+    const main =
+        document.createElement("div");
+
+
+    main.className =
+        "scope-main";
+
+
+    const description =
+        document.createElement("div");
+
+
+    description.className =
+        "scope-description";
+
+
+    description.textContent =
+        task.description;
+
+
+    const status =
+        document.createElement("span");
+
+
+    status.className =
+        `scope-status ${statusClass}`;
+
+
+    status.textContent =
+        task.status;
+
+
+    main.appendChild(
+        description
+    );
+
+    main.appendChild(
+        status
+    );
+
+    element.appendChild(
+        main
+    );
+
+
+    // ========================================================
+    // REASON / NOTES
+    // ========================================================
+
+    if (task.reason) {
+
+        const reason =
+            document.createElement("div");
+
+
+        reason.className =
+            "scope-reason";
+
+
+        const reasonText =
+            document.createElement("div");
+
+
+        const reasonLabel =
+            document.createElement("strong");
+
+
+        reasonLabel.textContent =
+            "Reason: ";
+
+
+        reasonText.appendChild(
+            reasonLabel
+        );
+
+
+        reasonText.appendChild(
+            document.createTextNode(
+                task.reason
+            )
+        );
+
+
+        reason.appendChild(
+            reasonText
+        );
+
+
+        const timestampText =
+            formatReasonTimestamp(
+                task.reasonTimestamp,
+                getSelectedStore()
+            );
+
+
+        if (timestampText) {
+
+            const reasonTime =
+                document.createElement("div");
+
+
+            reasonTime.className =
+                "scope-reason-time";
+
+
+            reasonTime.textContent =
+                timestampText;
+
+
+            reason.appendChild(
+                reasonTime
+            );
+
+        }
+
+
+        element.appendChild(
+            reason
+        );
+
+    }
+
+
+    // ========================================================
+    // ACTION BUTTONS
+    // ========================================================
+
+    const actions =
+        document.createElement("div");
+
+
+    actions.className =
+        "scope-actions";
+
+
+    // EDIT
+    const editButton =
+        document.createElement("button");
+
+
+    editButton.className =
+        "scope-action-button scope-edit";
+
+    editButton.type =
+        "button";
+
+    editButton.textContent =
+        "Edit";
+
+
+    editButton.onclick =
+        function (event) {
+
+            event.stopPropagation();
+
+            editScope(task.id);
+
+        };
+
+
+    actions.appendChild(
+        editButton
+    );
+
+
+    // EDIT REASON
+    if (task.reason) {
+
+        const editReasonButton =
+            document.createElement("button");
+
+
+        editReasonButton.className =
+            "scope-action-button scope-edit-reason";
+
+        editReasonButton.type =
+            "button";
+
+        editReasonButton.textContent =
+            "Edit Reason";
+
+
+        editReasonButton.onclick =
+            function (event) {
+
+                event.stopPropagation();
+
+                editReason(task.id);
+
+            };
+
+
+        actions.appendChild(
+            editReasonButton
+        );
+
+    }
+
+
+    // DELETE
+    const deleteButton =
+        document.createElement("button");
+
+
+    deleteButton.className =
+        "scope-action-button scope-delete";
+
+    deleteButton.type =
+        "button";
+
+    deleteButton.textContent =
+        "Delete";
+
+
+    deleteButton.onclick =
+        function (event) {
+
+            event.stopPropagation();
+
+            deleteScope(task.id);
+
+        };
+
+
+    actions.appendChild(
+        deleteButton
+    );
+
+
+    element.appendChild(
+        actions
+    );
+
+
+    // ========================================================
+    // LONG PRESS
+    // ========================================================
+
+    let pressTimer =
+        null;
+
+
+    function startLongPress() {
+
+        clearTimeout(
+            pressTimer
+        );
+
+
+        pressTimer =
+            setTimeout(
+                function () {
+
+                    document
+                        .querySelectorAll(
+                            ".scope-item.long-press-active"
+                        )
+                        .forEach(item => {
+
+                            if (item !== element) {
+
+                                item.classList.remove(
+                                    "long-press-active"
+                                );
+
+                            }
+
+                        });
+
+
+                    element.classList.add(
+                        "long-press-active"
+                    );
+
+                },
+                700
+            );
+
+    }
+
+
+    function cancelLongPress() {
+
+        clearTimeout(
+            pressTimer
+        );
+
+    }
+
+
+    element.addEventListener(
+        "touchstart",
+        startLongPress,
+        { passive: true }
+    );
+
+
+    element.addEventListener(
+        "touchend",
+        cancelLongPress
+    );
+
+
+    element.addEventListener(
+        "touchmove",
+        cancelLongPress
+    );
+
+
+    element.addEventListener(
+        "mousedown",
+        startLongPress
+    );
+
+
+    element.addEventListener(
+        "mouseup",
+        cancelLongPress
+    );
+
+
+    element.addEventListener(
+        "mouseleave",
+        cancelLongPress
+    );
+
+
+    element.addEventListener(
+        "contextmenu",
+        function (event) {
+
+            event.preventDefault();
+
+            element.classList.add(
+                "long-press-active"
+            );
+
+        }
+    );
+
+
+    return element;
+
+}
+
+
+// ============================================================
+// ADD SCOPE
+// ============================================================
+
+function addScope() {
+
+    const store =
+        getSelectedStore();
+
 
     if (!store) {
         return;
     }
 
-    const newTechnician = prompt(
-        "Technician:",
-        store.technician || ""
+
+    const nightInput =
+        document.getElementById(
+            "scopeNight"
+        );
+
+    const scopeInput =
+        document.getElementById(
+            "scopeDescription"
+        );
+
+
+    if (!nightInput || !scopeInput) {
+        return;
+    }
+
+
+    const night =
+        Number(
+            nightInput.value
+        );
+
+
+    const description =
+        scopeInput.value.trim();
+
+
+    if (!night) {
+
+        alert(
+            "Please select a deployment night."
+        );
+
+        return;
+
+    }
+
+
+    if (!description) {
+
+        alert(
+            "Please enter a deployment scope."
+        );
+
+        return;
+
+    }
+
+
+    if (!store.tasks) {
+        store.tasks = [];
+    }
+
+
+    store.tasks.push({
+
+        id:
+            nextTaskId++,
+
+        night:
+            night,
+
+        description:
+            description,
+
+        status:
+            "Not Started",
+
+        reason:
+            "",
+
+        reasonTimestamp:
+            "",
+
+        history:
+            []
+
+    });
+
+
+    scopeInput.value =
+        "";
+
+
+    renderStoreDetail();
+
+}
+
+
+// ============================================================
+// SCOPE MANAGEMENT OPTIONS
+// ============================================================
+
+function renderScopeManagementOptions() {
+
+    const select =
+        document.getElementById(
+            "manageScope"
+        );
+
+
+    if (!select) {
+        return;
+    }
+
+
+    const store =
+        getSelectedStore();
+
+
+    if (!store) {
+        return;
+    }
+
+
+    select.innerHTML = `
+
+        <option value="">
+            Select a scope
+        </option>
+
+    `;
+
+
+    (store.tasks || []).forEach(task => {
+
+        const option =
+            document.createElement("option");
+
+
+        option.value =
+            task.id;
+
+
+        option.textContent =
+            `Night ${task.night} — ${task.description} (${task.status})`;
+
+
+        select.appendChild(
+            option
+        );
+
+    });
+
+
+    handleScopeActionChange();
+
+}
+
+
+// ============================================================
+// RESET MANAGEMENT FORM
+// ============================================================
+
+function resetScopeManagementForm() {
+
+    const scopeSelect =
+        document.getElementById(
+            "manageScope"
+        );
+
+    const actionSelect =
+        document.getElementById(
+            "scopeAction"
+        );
+
+    const reasonInput =
+        document.getElementById(
+            "scopeReason"
+        );
+
+    const reasonGroup =
+        document.getElementById(
+            "scopeReasonGroup"
+        );
+
+    const moveGroup =
+        document.getElementById(
+            "moveNightGroup"
+        );
+
+    const message =
+        document.getElementById(
+            "scopeManagementMessage"
+        );
+
+
+    if (scopeSelect) {
+        scopeSelect.value = "";
+    }
+
+
+    if (actionSelect) {
+        actionSelect.value = "";
+    }
+
+
+    if (reasonInput) {
+
+        reasonInput.value =
+            "";
+
+        reasonInput.placeholder =
+            "Enter reason or notes";
+
+    }
+
+
+    if (reasonGroup) {
+        reasonGroup.classList.add(
+            "hidden"
+        );
+    }
+
+
+    if (moveGroup) {
+        moveGroup.classList.add(
+            "hidden"
+        );
+    }
+
+
+    if (message) {
+        message.textContent = "";
+    }
+
+
+    if (scopeManagementMessageTimer) {
+
+        clearTimeout(
+            scopeManagementMessageTimer
+        );
+
+        scopeManagementMessageTimer =
+            null;
+
+    }
+
+}
+
+
+// ============================================================
+// ACTION CHANGE
+// ============================================================
+
+function handleScopeActionChange() {
+
+    const actionSelect =
+        document.getElementById(
+            "scopeAction"
+        );
+
+    const reasonGroup =
+        document.getElementById(
+            "scopeReasonGroup"
+        );
+
+    const moveGroup =
+        document.getElementById(
+            "moveNightGroup"
+        );
+
+    const reasonInput =
+        document.getElementById(
+            "scopeReason"
+        );
+
+
+    if (!actionSelect) {
+        return;
+    }
+
+
+    const action =
+        actionSelect.value;
+
+
+    if (reasonGroup) {
+
+        if (
+            action === "pending" ||
+            action === "cancel" ||
+            action === "move"
+        ) {
+
+            reasonGroup.classList.remove(
+                "hidden"
+            );
+
+        } else {
+
+            reasonGroup.classList.add(
+                "hidden"
+            );
+
+        }
+
+    }
+
+
+    if (reasonInput) {
+
+        reasonInput.value =
+            "";
+
+        reasonInput.placeholder =
+            "Enter reason or notes";
+
+    }
+
+
+    if (moveGroup) {
+
+        if (action === "move") {
+
+            moveGroup.classList.remove(
+                "hidden"
+            );
+
+        } else {
+
+            moveGroup.classList.add(
+                "hidden"
+            );
+
+        }
+
+    }
+
+}
+
+
+// ============================================================
+// APPLY SCOPE MANAGEMENT
+// ============================================================
+
+function applyScopeManagement() {
+
+    const store =
+        getSelectedStore();
+
+
+    if (!store) {
+        return;
+    }
+
+
+    const scopeSelect =
+        document.getElementById(
+            "manageScope"
+        );
+
+    const actionSelect =
+        document.getElementById(
+            "scopeAction"
+        );
+
+    const reasonInput =
+        document.getElementById(
+            "scopeReason"
+        );
+
+    const targetNightSelect =
+        document.getElementById(
+            "moveToNight"
+        );
+
+
+    if (!scopeSelect || !actionSelect) {
+        return;
+    }
+
+
+    const taskId =
+        Number(
+            scopeSelect.value
+        );
+
+
+    const action =
+        actionSelect.value;
+
+
+    const reason =
+        reasonInput
+            ? reasonInput.value.trim()
+            : "";
+
+
+    if (!taskId) {
+
+        showScopeManagementMessage(
+            "Please select a scope.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    if (!action) {
+
+        showScopeManagementMessage(
+            "Please select an action.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    const task =
+        store.tasks.find(
+            item =>
+                item.id === taskId
+        );
+
+
+    if (!task) {
+
+        showScopeManagementMessage(
+            "Scope not found.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    const timestamp =
+        getCurrentTimestamp();
+
+
+    // ========================================================
+    // PENDING
+    // ========================================================
+
+    if (action === "pending") {
+
+        if (
+            task.status === "Completed" ||
+            task.status === "Cancelled"
+        ) {
+
+            showScopeManagementMessage(
+                "This scope cannot be marked as Pending.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        task.status =
+            "Pending";
+
+
+        task.reason =
+            reason;
+
+
+        task.reasonTimestamp =
+            reason
+                ? timestamp
+                : "";
+
+
+        if (!task.history) {
+            task.history = [];
+        }
+
+
+        task.history.push({
+
+            action:
+                "Marked as Pending",
+
+            reason:
+                reason,
+
+            timestamp:
+                timestamp
+
+        });
+
+
+        showScopeManagementMessage(
+            "Scope marked as Pending.",
+            false
+        );
+
+
+        resetScopeManagementFieldsAfterSave();
+
+        renderStoreDetail();
+
+        return;
+
+    }
+
+
+    // ========================================================
+    // CANCEL
+    // ========================================================
+
+    if (action === "cancel") {
+
+        if (
+            task.status === "Completed"
+        ) {
+
+            showScopeManagementMessage(
+                "Completed scopes cannot be cancelled.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        if (
+            task.status === "Cancelled"
+        ) {
+
+            showScopeManagementMessage(
+                "This scope is already cancelled.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        task.status =
+            "Cancelled";
+
+
+        task.reason =
+            reason;
+
+
+        task.reasonTimestamp =
+            reason
+                ? timestamp
+                : "";
+
+
+        if (!task.history) {
+            task.history = [];
+        }
+
+
+        task.history.push({
+
+            action:
+                "Cancelled",
+
+            reason:
+                reason,
+
+            timestamp:
+                timestamp
+
+        });
+
+
+        showScopeManagementMessage(
+            "Scope cancelled.",
+            false
+        );
+
+
+        resetScopeManagementFieldsAfterSave();
+
+        renderStoreDetail();
+
+        return;
+
+    }
+
+
+    // ========================================================
+    // MOVE TO ANOTHER NIGHT
+    // ========================================================
+
+    if (action === "move") {
+
+        if (
+            task.status !== "Pending"
+        ) {
+
+            showScopeManagementMessage(
+                "Only Pending scopes can be moved to another night.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        if (!targetNightSelect) {
+            return;
+        }
+
+
+        const targetNight =
+            Number(
+                targetNightSelect.value
+            );
+
+
+        if (!targetNight) {
+
+            showScopeManagementMessage(
+                "Please select a deployment night.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        if (
+            targetNight === task.night
+        ) {
+
+            showScopeManagementMessage(
+                "Please select a different night.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        store.tasks.push({
+
+            id:
+                nextTaskId++,
+
+            night:
+                targetNight,
+
+            description:
+                task.description,
+
+            status:
+                "Not Started",
+
+            reason:
+                reason,
+
+            reasonTimestamp:
+                reason
+                    ? timestamp
+                    : "",
+
+            history:
+                [],
+
+            originalScopeId:
+                task.id
+
+        });
+
+
+        if (!task.history) {
+            task.history = [];
+        }
+
+
+        task.history.push({
+
+            action:
+                "Moved to Another Night",
+
+            reason:
+                reason,
+
+            timestamp:
+                timestamp,
+
+            fromNight:
+                task.night,
+
+            toNight:
+                targetNight
+
+        });
+
+
+        showScopeManagementMessage(
+            `Scope copied to Night ${targetNight}.`,
+            false
+        );
+
+
+        resetScopeManagementFieldsAfterSave();
+
+        renderStoreDetail();
+
+        return;
+
+    }
+
+
+    showScopeManagementMessage(
+        "This action is not supported.",
+        true
     );
+
+}
+
+
+// ============================================================
+// RESET AFTER SAVE
+// ============================================================
+
+function resetScopeManagementFieldsAfterSave() {
+
+    const scopeSelect =
+        document.getElementById(
+            "manageScope"
+        );
+
+    const actionSelect =
+        document.getElementById(
+            "scopeAction"
+        );
+
+    const reasonInput =
+        document.getElementById(
+            "scopeReason"
+        );
+
+    const reasonGroup =
+        document.getElementById(
+            "scopeReasonGroup"
+        );
+
+    const moveGroup =
+        document.getElementById(
+            "moveNightGroup"
+        );
+
+
+    if (scopeSelect) {
+        scopeSelect.value = "";
+    }
+
+
+    if (actionSelect) {
+        actionSelect.value = "";
+    }
+
+
+    if (reasonInput) {
+
+        reasonInput.value =
+            "";
+
+        reasonInput.placeholder =
+            "Enter reason or notes";
+
+    }
+
+
+    if (reasonGroup) {
+        reasonGroup.classList.add(
+            "hidden"
+        );
+    }
+
+
+    if (moveGroup) {
+        moveGroup.classList.add(
+            "hidden"
+        );
+    }
+
+}
+
+
+// ============================================================
+// MANAGEMENT MESSAGE
+// ============================================================
+
+function showScopeManagementMessage(
+    message,
+    isError
+) {
+
+    const element =
+        document.getElementById(
+            "scopeManagementMessage"
+        );
+
+
+    if (!element) {
+
+        alert(message);
+
+        return;
+
+    }
+
+
+    if (scopeManagementMessageTimer) {
+
+        clearTimeout(
+            scopeManagementMessageTimer
+        );
+
+    }
+
+
+    element.textContent =
+        message;
+
+
+    element.style.color =
+        isError
+            ? "#b91c1c"
+            : "#047857";
+
+
+    scopeManagementMessageTimer =
+        setTimeout(
+            function () {
+
+                element.textContent =
+                    "";
+
+                scopeManagementMessageTimer =
+                    null;
+
+            },
+            5000
+        );
+
+}
+
+
+// ============================================================
+// EDIT SCOPE
+// ============================================================
+
+function editScope(taskId) {
+
+    const store =
+        getSelectedStore();
+
+
+    if (!store) {
+        return;
+    }
+
+
+    const task =
+        store.tasks.find(
+            item =>
+                item.id === taskId
+        );
+
+
+    if (!task) {
+        return;
+    }
+
+
+    const newDescription =
+        prompt(
+            "Edit deployment scope:",
+            task.description
+        );
+
+
+    if (newDescription === null) {
+        return;
+    }
+
+
+    const cleanedDescription =
+        newDescription.trim();
+
+
+    if (!cleanedDescription) {
+
+        alert(
+            "Scope cannot be empty."
+        );
+
+        return;
+
+    }
+
+
+    task.description =
+        cleanedDescription;
+
+
+    renderStoreDetail();
+
+}
+
+
+// ============================================================
+// EDIT REASON
+// ============================================================
+
+function editReason(taskId) {
+
+    const store =
+        getSelectedStore();
+
+
+    if (!store) {
+        return;
+    }
+
+
+    const task =
+        store.tasks.find(
+            item =>
+                item.id === taskId
+        );
+
+
+    if (!task) {
+        return;
+    }
+
+
+    if (!task.reason) {
+        return;
+    }
+
+
+    const newReason =
+        prompt(
+            "Edit reason / notes:",
+            task.reason
+        );
+
+
+    if (newReason === null) {
+        return;
+    }
+
+
+    const cleanedReason =
+        newReason.trim();
+
+
+    const timestamp =
+        getCurrentTimestamp();
+
+
+    if (!cleanedReason) {
+
+        task.reason =
+            "";
+
+        task.reasonTimestamp =
+            "";
+
+
+        if (!task.history) {
+            task.history = [];
+        }
+
+
+        task.history.push({
+
+            action:
+                "Reason cleared",
+
+            reason:
+                "",
+
+            timestamp:
+                timestamp
+
+        });
+
+
+        renderStoreDetail();
+
+        return;
+
+    }
+
+
+    task.reason =
+        cleanedReason;
+
+
+    task.reasonTimestamp =
+        timestamp;
+
+
+    if (!task.history) {
+        task.history = [];
+    }
+
+
+    task.history.push({
+
+        action:
+            "Reason updated",
+
+        reason:
+            cleanedReason,
+
+        timestamp:
+            timestamp
+
+    });
+
+
+    renderStoreDetail();
+
+}
+
+
+// ============================================================
+// DELETE SCOPE
+// ============================================================
+
+function deleteScope(taskId) {
+
+    const store =
+        getSelectedStore();
+
+
+    if (!store) {
+        return;
+    }
+
+
+    const task =
+        store.tasks.find(
+            item =>
+                item.id === taskId
+        );
+
+
+    if (!task) {
+        return;
+    }
+
+
+    const confirmed =
+        confirm(
+            `Delete this scope?\n\n${task.description}`
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    store.tasks =
+        store.tasks.filter(
+            item =>
+                item.id !== taskId
+        );
+
+
+    renderStoreDetail();
+
+}
+
+
+// ============================================================
+// EDIT STORE / TECHNICIAN
+// ============================================================
+
+function editStoreInfo() {
+
+    const store =
+        getSelectedStore();
+
+
+    if (!store) {
+        return;
+    }
+
+
+    const newStoreNumber =
+        prompt(
+            "Enter Store Number:",
+            store.storeNumber
+        );
+
+
+    if (newStoreNumber === null) {
+        return;
+    }
+
+
+    const cleanedStoreNumber =
+        newStoreNumber
+            .trim()
+            .replace(
+                /^Store\s*/i,
+                ""
+            );
+
+
+    if (!cleanedStoreNumber) {
+
+        alert(
+            "Store Number cannot be empty."
+        );
+
+        return;
+
+    }
+
+
+    const duplicate =
+        stores.some(
+            item =>
+                item !== store &&
+                item.storeNumber ===
+                    cleanedStoreNumber
+        );
+
+
+    if (duplicate) {
+
+        alert(
+            "That Store Number already exists."
+        );
+
+        return;
+
+    }
+
+
+    const newTechnician =
+        prompt(
+            "Enter Technician Name:",
+            store.technician || ""
+        );
+
 
     if (newTechnician === null) {
         return;
     }
 
-    const timezoneList =
-        Object.keys(STORE_TIMEZONES).join(", ");
 
-    const timezoneInput = prompt(
-        `Store Timezone:\n\nAvailable: ${timezoneList}`,
-        getStoreTimezone(store)
-    );
+    const timezoneOptions =
+        Object.keys(
+            STORE_TIMEZONES
+        ).join(", ");
 
-    if (timezoneInput === null) {
+
+    const newTimezone =
+        prompt(
+            `Enter Store Timezone (${timezoneOptions}):`,
+            getStoreTimezone(store)
+        );
+
+
+    if (newTimezone === null) {
         return;
     }
 
-    const newTimezone =
-        normalizeStoreTimezone(timezoneInput);
 
-    if (!newTimezone) {
+    const cleanedTimezone =
+        newTimezone.trim();
+
+
+    const matchingTimezone =
+        Object.keys(
+            STORE_TIMEZONES
+        ).find(
+            timezone =>
+                timezone.toLowerCase() ===
+                cleanedTimezone.toLowerCase()
+        );
+
+
+    if (!matchingTimezone) {
+
         alert(
-            `Invalid timezone.\n\nPlease use one of:\n${timezoneList}`
+            `Invalid timezone. Please use one of: ${timezoneOptions}.`
         );
 
         return;
+
     }
 
+
+    store.storeNumber =
+        cleanedStoreNumber;
+
+
     store.technician =
-        newTechnician.trim() || "Unassigned";
+        newTechnician.trim() ||
+        "Unassigned";
 
-    store.timezone = newTimezone;
 
-    addRecentUpdate(
-        store,
-        `Store information updated. Technician: ${store.technician}. Timezone: ${newTimezone}.`,
-        "deployment"
-    );
+    store.timezone =
+        matchingTimezone;
+
+
+    selectedStoreNumber =
+        store.storeNumber;
+
 
     renderStoreDetail();
-    renderOverview();
+
+
+    alert(
+        "Store information updated."
+    );
+
 }
 
 
-/* =========================================================
-   UI MESSAGE
-   ========================================================= */
+// ============================================================
+// SAVE NIGHT ASSIGNMENT
+// ============================================================
 
-function showMessage(elementId, message) {
-    const element =
-        document.getElementById(elementId);
+function saveNightAssignment() {
 
-    if (!element) {
+    const store =
+        getSelectedStore();
+
+
+    if (!store) {
         return;
     }
 
-    element.textContent = message;
-    element.classList.remove("hidden");
 
-    clearTimeout(element._messageTimer);
-
-    element._messageTimer =
-        setTimeout(() => {
-            element.textContent = "";
-            element.classList.add("hidden");
-        }, 5000);
-}
+    const assignedNight =
+        document.getElementById(
+            "assignedNight"
+        );
 
 
-/* =========================================================
-   ESCAPE HTML
-   ========================================================= */
-
-function escapeHtml(value) {
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
+    const assignmentMessage =
+        document.getElementById(
+            "assignmentMessage"
+        );
 
 
-/* =========================================================
-   OPTIONAL: SEED EXISTING CHECK-INS INTO RECENT UPDATES
-   ========================================================= */
+    const detailCurrentNight =
+        document.getElementById(
+            "detailCurrentNight"
+        );
 
-function seedExistingCheckIns() {
-    stores.forEach(store => {
-        if (!store.checkIn) {
-            return;
+
+    if (!assignedNight) {
+        return;
+    }
+
+
+    const selectedNight =
+        Number(
+            assignedNight.value
+        );
+
+
+    if (!selectedNight) {
+
+        if (assignmentMessage) {
+
+            assignmentMessage.textContent =
+                "Please select a deployment night.";
+
+            assignmentMessage.style.color =
+                "#b91c1c";
+
+
+            if (assignmentMessageTimer) {
+
+                clearTimeout(
+                    assignmentMessageTimer
+                );
+
+            }
+
+
+            assignmentMessageTimer =
+                setTimeout(
+                    function () {
+
+                        assignmentMessage.textContent =
+                            "";
+
+                        assignmentMessageTimer =
+                            null;
+
+                    },
+                    5000
+                );
+
         }
 
-        /*
-           Don't add duplicate seed updates.
-        */
-        const alreadyExists =
-            recentUpdates.some(
-                update =>
-                    update.storeId === store.id &&
-                    update.message === "Technician checked in."
-            );
+        return;
 
-        if (alreadyExists) {
-            return;
-        }
+    }
 
-        recentUpdates.push({
-            id: Date.now() + Math.random(),
-            storeId: store.id,
-            storeNumber: store.number,
-            technician: store.technician,
-            message: "Technician checked in.",
-            source: "technician",
-            timestamp: store.checkIn
-        });
-    });
 
-    recentUpdates.sort(
-        (a, b) =>
-            new Date(b.timestamp) -
-            new Date(a.timestamp)
+    store.currentNight =
+        selectedNight;
+
+
+    if (detailCurrentNight) {
+
+        detailCurrentNight.textContent =
+            `Night ${selectedNight}`;
+
+    }
+
+
+    const successMessage =
+        `Current assigned night updated to Night ${selectedNight}.`;
+
+
+    if (assignmentMessage) {
+
+        assignmentMessage.textContent =
+            successMessage;
+
+        assignmentMessage.style.color =
+            "#047857";
+
+    }
+
+
+    setupDeploymentNightSelect(
+        "assignedNight"
     );
 
-    recentUpdates =
-        recentUpdates.slice(0, 50);
+
+    if (assignmentMessageTimer) {
+
+        clearTimeout(
+            assignmentMessageTimer
+        );
+
+    }
+
+
+    assignmentMessageTimer =
+        setTimeout(
+            function () {
+
+                if (
+                    assignmentMessage &&
+                    assignmentMessage.textContent ===
+                        successMessage
+                ) {
+
+                    assignmentMessage.textContent =
+                        "";
+
+                }
+
+
+                assignmentMessageTimer =
+                    null;
+
+            },
+            5000
+        );
+
 }
 
 
-/* =========================================================
-   INITIAL CHECK-IN DATA
-   ========================================================= */
+// ============================================================
+// BACK TO OVERVIEW
+// ============================================================
 
-seedExistingCheckIns();
+function backToOverview() {
+
+    selectedStoreNumber =
+        null;
+
+
+    const overviewPage =
+        document.getElementById(
+            "overviewPage"
+        );
+
+    const storeDetailPage =
+        document.getElementById(
+            "storeDetailPage"
+        );
+
+
+    if (storeDetailPage) {
+
+        storeDetailPage.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    if (overviewPage) {
+
+        overviewPage.classList.remove(
+            "hidden"
+        );
+
+    }
+
+
+    renderOverview();
+
+}
+
+
+// ============================================================
+// TECHNICIAN UPDATE
+// ============================================================
+
+function addTechnicianUpdate(
+    storeNumber,
+    message
+) {
+
+    const store =
+        stores.find(
+            item =>
+                item.storeNumber === storeNumber
+        );
+
+
+    if (!store) {
+        return;
+    }
+
+
+    const cleanMessage =
+        message.trim();
+
+
+    if (!cleanMessage) {
+        return;
+    }
+
+
+    recentUpdates.unshift({
+
+        storeNumber:
+            store.storeNumber,
+
+        technician:
+            store.technician,
+
+        message:
+            cleanMessage,
+
+        timestamp:
+            getCurrentTimestamp(),
+
+        source:
+            "technician"
+
+    });
+
+
+    renderOverview();
+
+}
