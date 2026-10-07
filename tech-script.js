@@ -5,77 +5,258 @@
 
 
 /* ============================================================
-   SAMPLE DATA
+   SAMPLE TECHNICIAN DATA
    ============================================================ */
 
 const technicianStores = [
 
     {
         storeNumber: "0123",
+
         technician: "Technician A",
+
         timezone: "EST",
-        currentNight: 3,
+
+        currentNight: 1,
+
+
+        /* ====================================================
+           CURRENT NIGHT SCOPES
+           ==================================================== */
 
         tasks: [
+
             {
                 id: 1,
-                night: 3,
-                description: "Test Network Connectivity",
-                status: "In Progress"
+                night: 1,
+                description:
+                    "Install Register 1 to new HCS",
+                status:
+                    "Not Started",
+                note:
+                    ""
             },
+
             {
                 id: 2,
-                night: 3,
-                description: "Validate Registers",
-                status: "Not Started"
+                night: 1,
+                description:
+                    "Install Register 2 to new HCS",
+                status:
+                    "Not Started",
+                note:
+                    ""
+            },
+
+            {
+                id: 3,
+                night: 1,
+                description:
+                    "Test Register 1",
+                status:
+                    "Not Started",
+                note:
+                    ""
             }
+
         ],
 
+
+        /* ====================================================
+           EQUIPMENT CHECKLIST
+           ==================================================== */
+
+        equipment: [
+
+            {
+                id: 1,
+                name: "Register 1",
+                status: "Complete",
+                note: ""
+            },
+
+            {
+                id: 2,
+                name: "Register 2",
+                status: "Complete",
+                note: ""
+            },
+
+            {
+                id: 3,
+                name: "HCS",
+                status: "Complete",
+                note: ""
+            },
+
+            {
+                id: 4,
+                name: "Pinpad",
+                status: "Missing",
+                note:
+                    "Missing pinpad cable"
+            },
+
+            {
+                id: 5,
+                name: "Scanner",
+                status: "Complete",
+                note: ""
+            },
+
+            {
+                id: 6,
+                name: "Receipt Printer",
+                status: "Incomplete",
+                note:
+                    "Power cable missing"
+            },
+
+            {
+                id: 7,
+                name: "Network Switch",
+                status: "Complete",
+                note: ""
+            }
+
+        ],
+
+
         fixtureHandover: null
+
     },
 
 
     {
         storeNumber: "0456",
+
         technician: "Technician B",
+
         timezone: "PST",
+
         currentNight: 1,
 
         tasks: [
+
             {
-                id: 3,
+                id: 10,
                 night: 1,
-                description: "Install Network Equipment",
-                status: "Completed"
+                description:
+                    "Install Network Equipment",
+                status:
+                    "Completed",
+                note:
+                    ""
             },
+
             {
-                id: 4,
+                id: 11,
                 night: 1,
-                description: "Configure POS Terminals",
-                status: "In Progress"
+                description:
+                    "Configure POS Terminals",
+                status:
+                    "In Progress",
+                note:
+                    ""
             }
+
+        ],
+
+        equipment: [
+
+            {
+                id: 10,
+                name: "Register 1",
+                status: "Complete",
+                note: ""
+            },
+
+            {
+                id: 11,
+                name: "Register 2",
+                status: "Complete",
+                note: ""
+            },
+
+            {
+                id: 12,
+                name: "HCS",
+                status: "Complete",
+                note: ""
+            },
+
+            {
+                id: 13,
+                name: "Pinpad",
+                status: "Complete",
+                note: ""
+            }
+
         ],
 
         fixtureHandover: null
+
     },
 
 
     {
         storeNumber: "0789",
+
         technician: "Technician C",
+
         timezone: "CST",
+
         currentNight: 2,
 
         tasks: [
+
             {
-                id: 5,
+                id: 20,
                 night: 2,
-                description: "Install Network Equipment",
-                status: "Not Started"
+                description:
+                    "Install Network Equipment",
+                status:
+                    "Not Started",
+                note:
+                    ""
             }
+
+        ],
+
+        equipment: [
+
+            {
+                id: 20,
+                name: "Register 1",
+                status: "Complete",
+                note: ""
+            },
+
+            {
+                id: 21,
+                name: "Register 2",
+                status: "Complete",
+                note: ""
+            },
+
+            {
+                id: 22,
+                name: "HCS",
+                status: "Complete",
+                note: ""
+            },
+
+            {
+                id: 23,
+                name: "Pinpad",
+                status: "Complete",
+                note: ""
+            }
+
         ],
 
         fixtureHandover: null
+
     }
 
 ];
@@ -103,7 +284,7 @@ document.addEventListener(
 
 
 /* ============================================================
-   HELPERS
+   GET STORE
    ============================================================ */
 
 function getTechnicianStore() {
@@ -137,10 +318,12 @@ function technicianLogin() {
         return;
     }
 
+
     const enteredNumber =
         input.value
             .trim()
             .padStart(4, "0");
+
 
     const store =
         technicianStores.find(
@@ -148,6 +331,7 @@ function technicianLogin() {
                 item.storeNumber ===
                 enteredNumber
         );
+
 
     if (!store) {
 
@@ -161,14 +345,22 @@ function technicianLogin() {
         return;
     }
 
+
     loggedInStoreNumber =
         store.storeNumber;
 
+
     if (message) {
-        message.textContent = "";
+
+        message.textContent =
+            "";
+
     }
 
-    input.value = "";
+
+    input.value =
+        "";
+
 
     showTechnicianPage();
 
@@ -191,16 +383,22 @@ function showLoginPage() {
             "technicianPage"
         );
 
+
     if (loginPage) {
+
         loginPage.classList.remove(
             "hidden"
         );
+
     }
 
+
     if (technicianPage) {
+
         technicianPage.classList.add(
             "hidden"
         );
+
     }
 
 }
@@ -222,17 +420,24 @@ function showTechnicianPage() {
             "technicianPage"
         );
 
+
     if (loginPage) {
+
         loginPage.classList.add(
             "hidden"
         );
+
     }
 
+
     if (technicianPage) {
+
         technicianPage.classList.remove(
             "hidden"
         );
+
     }
+
 
     renderTechnicianDashboard();
 
@@ -254,7 +459,7 @@ function technicianLogout() {
 
 
 /* ============================================================
-   RENDER DASHBOARD
+   DASHBOARD
    ============================================================ */
 
 function renderTechnicianDashboard() {
@@ -265,6 +470,7 @@ function renderTechnicianDashboard() {
     if (!store) {
         return;
     }
+
 
     const storeNumber =
         document.getElementById(
@@ -309,12 +515,14 @@ function renderTechnicianDashboard() {
 
     }
 
+
     if (technician) {
 
         technician.textContent =
             store.technician;
 
     }
+
 
     if (infoNumber) {
 
@@ -323,12 +531,14 @@ function renderTechnicianDashboard() {
 
     }
 
+
     if (infoTechnician) {
 
         infoTechnician.textContent =
             store.technician;
 
     }
+
 
     if (infoNight) {
 
@@ -337,12 +547,14 @@ function renderTechnicianDashboard() {
 
     }
 
+
     if (infoTimezone) {
 
         infoTimezone.textContent =
             store.timezone;
 
     }
+
 
     if (nightTitle) {
 
@@ -352,9 +564,407 @@ function renderTechnicianDashboard() {
     }
 
 
+    renderEquipmentChecklist();
+
     renderCurrentNightScopes();
 
     renderFixtureHandover();
+
+}
+
+
+/* ============================================================
+   EQUIPMENT CHECKLIST
+   ============================================================ */
+
+function renderEquipmentChecklist() {
+
+    const store =
+        getTechnicianStore();
+
+    const container =
+        document.getElementById(
+            "equipmentList"
+        );
+
+    const summary =
+        document.getElementById(
+            "equipmentSummary"
+        );
+
+
+    if (!store || !container) {
+        return;
+    }
+
+
+    container.innerHTML =
+        "";
+
+
+    const equipment =
+        store.equipment || [];
+
+
+    if (equipment.length === 0) {
+
+        container.innerHTML = `
+            <div class="empty-equipment">
+                No equipment checklist assigned.
+            </div>
+        `;
+
+        if (summary) {
+
+            summary.textContent =
+                "0 of 0 complete";
+
+        }
+
+        return;
+    }
+
+
+    equipment.forEach(
+        item => {
+
+            container.appendChild(
+                createEquipmentElement(
+                    item
+                )
+            );
+
+        }
+    );
+
+
+    updateEquipmentSummary();
+
+}
+
+
+/* ============================================================
+   CREATE EQUIPMENT ITEM
+   ============================================================ */
+
+function createEquipmentElement(
+    item
+) {
+
+    const element =
+        document.createElement(
+            "div"
+        );
+
+    element.className =
+        "equipment-item";
+
+
+    const main =
+        document.createElement(
+            "div"
+        );
+
+    main.className =
+        "equipment-main";
+
+
+    const name =
+        document.createElement(
+            "div"
+        );
+
+    name.className =
+        "equipment-name";
+
+    name.textContent =
+        item.name;
+
+
+    const status =
+        document.createElement(
+            "select"
+        );
+
+    status.className =
+        `equipment-status ${getEquipmentStatusClass(
+            item.status
+        )}`;
+
+
+    [
+        "Complete",
+        "Missing",
+        "Incomplete"
+    ].forEach(
+        statusValue => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                statusValue;
+
+            option.textContent =
+                statusValue;
+
+            if (
+                item.status ===
+                statusValue
+            ) {
+
+                option.selected =
+                    true;
+
+            }
+
+            status.appendChild(
+                option
+            );
+
+        }
+    );
+
+
+    status.onchange =
+        function () {
+
+            updateEquipmentStatus(
+                item.id,
+                status.value
+            );
+
+        };
+
+
+    main.appendChild(
+        name
+    );
+
+    main.appendChild(
+        status
+    );
+
+
+    element.appendChild(
+        main
+    );
+
+
+    const noteButton =
+        document.createElement(
+            "button"
+        );
+
+    noteButton.type =
+        "button";
+
+    noteButton.className =
+        "equipment-note-button";
+
+    noteButton.textContent =
+        item.note
+            ? "Edit Note"
+            : "＋ Add Note";
+
+
+    noteButton.onclick =
+        function () {
+
+            editEquipmentNote(
+                item.id
+            );
+
+        };
+
+
+    element.appendChild(
+        noteButton
+    );
+
+
+    if (item.note) {
+
+        const note =
+            document.createElement(
+                "div"
+            );
+
+        note.className =
+            "equipment-note";
+
+        note.textContent =
+            item.note;
+
+        element.appendChild(
+            note
+        );
+
+    }
+
+
+    return element;
+
+}
+
+
+/* ============================================================
+   EQUIPMENT STATUS CLASS
+   ============================================================ */
+
+function getEquipmentStatusClass(
+    status
+) {
+
+    return status
+        .toLowerCase()
+        .replaceAll(
+            " ",
+            "-"
+        );
+
+}
+
+
+/* ============================================================
+   UPDATE EQUIPMENT STATUS
+   ============================================================ */
+
+function updateEquipmentStatus(
+    equipmentId,
+    newStatus
+) {
+
+    const store =
+        getTechnicianStore();
+
+    if (!store) {
+        return;
+    }
+
+
+    const item =
+        store.equipment.find(
+            equipment =>
+                equipment.id ===
+                equipmentId
+        );
+
+
+    if (!item) {
+        return;
+    }
+
+
+    item.status =
+        newStatus;
+
+
+    renderEquipmentChecklist();
+
+
+    showTechnicianMessage(
+        `${item.name} marked as ${newStatus}.`,
+        false
+    );
+
+}
+
+
+/* ============================================================
+   EQUIPMENT NOTE
+   ============================================================ */
+
+function editEquipmentNote(
+    equipmentId
+) {
+
+    const store =
+        getTechnicianStore();
+
+    if (!store) {
+        return;
+    }
+
+
+    const item =
+        store.equipment.find(
+            equipment =>
+                equipment.id ===
+                equipmentId
+        );
+
+
+    if (!item) {
+        return;
+    }
+
+
+    const note =
+        prompt(
+            `Add note for ${item.name}:`,
+            item.note || ""
+        );
+
+
+    if (note === null) {
+        return;
+    }
+
+
+    item.note =
+        note.trim();
+
+
+    renderEquipmentChecklist();
+
+
+    showTechnicianMessage(
+        item.note
+            ? "Equipment note saved."
+            : "Equipment note cleared.",
+        false
+    );
+
+}
+
+
+/* ============================================================
+   EQUIPMENT SUMMARY
+   ============================================================ */
+
+function updateEquipmentSummary() {
+
+    const store =
+        getTechnicianStore();
+
+    const summary =
+        document.getElementById(
+            "equipmentSummary"
+        );
+
+
+    if (!store || !summary) {
+        return;
+    }
+
+
+    const equipment =
+        store.equipment || [];
+
+
+    const complete =
+        equipment.filter(
+            item =>
+                item.status ===
+                "Complete"
+        ).length;
+
+
+    summary.textContent =
+        `${complete} of ${equipment.length} complete`;
 
 }
 
@@ -378,9 +988,11 @@ function renderCurrentNightScopes() {
             "nightProgress"
         );
 
+
     if (!store || !container) {
         return;
     }
+
 
     container.innerHTML =
         "";
@@ -406,6 +1018,7 @@ function renderCurrentNightScopes() {
             </div>
         `;
 
+
         if (progressSummary) {
 
             progressSummary.textContent =
@@ -413,7 +1026,9 @@ function renderCurrentNightScopes() {
 
         }
 
+
         return;
+
     }
 
 
@@ -438,10 +1053,12 @@ function renderCurrentNightScopes() {
 
 
 /* ============================================================
-   CREATE TECHNICIAN SCOPE
+   CREATE SCOPE
    ============================================================ */
 
-function createTechnicianScope(task) {
+function createTechnicianScope(
+    task
+) {
 
     const item =
         document.createElement(
@@ -496,6 +1113,11 @@ function createTechnicianScope(task) {
     );
 
 
+    item.appendChild(
+        top
+    );
+
+
     const controls =
         document.createElement(
             "div"
@@ -505,14 +1127,11 @@ function createTechnicianScope(task) {
         "scope-controls";
 
 
-    const statuses = [
+    [
         "Not Started",
         "In Progress",
         "Completed"
-    ];
-
-
-    statuses.forEach(
+    ].forEach(
         statusValue => {
 
             const button =
@@ -529,6 +1148,7 @@ function createTechnicianScope(task) {
             button.textContent =
                 statusValue;
 
+
             if (
                 task.status ===
                 statusValue
@@ -540,6 +1160,7 @@ function createTechnicianScope(task) {
 
             }
 
+
             button.onclick =
                 function () {
 
@@ -550,6 +1171,7 @@ function createTechnicianScope(task) {
 
                 };
 
+
             controls.appendChild(
                 button
             );
@@ -559,12 +1181,64 @@ function createTechnicianScope(task) {
 
 
     item.appendChild(
-        top
-    );
-
-    item.appendChild(
         controls
     );
+
+
+    /* ========================================================
+       TECHNICIAN NOTE
+       ======================================================== */
+
+    const noteButton =
+        document.createElement(
+            "button"
+        );
+
+    noteButton.type =
+        "button";
+
+    noteButton.className =
+        "scope-note-button";
+
+    noteButton.textContent =
+        task.note
+            ? "Edit Note"
+            : "＋ Add Note";
+
+
+    noteButton.onclick =
+        function () {
+
+            editScopeNote(
+                task.id
+            );
+
+        };
+
+
+    item.appendChild(
+        noteButton
+    );
+
+
+    if (task.note) {
+
+        const note =
+            document.createElement(
+                "div"
+            );
+
+        note.className =
+            "equipment-note";
+
+        note.textContent =
+            task.note;
+
+        item.appendChild(
+            note
+        );
+
+    }
 
 
     return item;
@@ -576,7 +1250,9 @@ function createTechnicianScope(task) {
    STATUS CLASS
    ============================================================ */
 
-function getStatusClass(status) {
+function getStatusClass(
+    status
+) {
 
     return status
         .toLowerCase()
@@ -622,13 +1298,71 @@ function updateScopeProgress(
         newStatus;
 
 
+    renderCurrentNightScopes();
+
+
     showTechnicianMessage(
         `Scope updated to ${newStatus}.`,
         false
     );
 
+}
+
+
+/* ============================================================
+   SCOPE NOTE
+   ============================================================ */
+
+function editScopeNote(
+    taskId
+) {
+
+    const store =
+        getTechnicianStore();
+
+    if (!store) {
+        return;
+    }
+
+
+    const task =
+        store.tasks.find(
+            item =>
+                item.id ===
+                taskId
+        );
+
+
+    if (!task) {
+        return;
+    }
+
+
+    const note =
+        prompt(
+            "Add note for this scope:",
+            task.note || ""
+        );
+
+
+    if (note === null) {
+        return;
+    }
+
+
+    task.note =
+        note.trim();
+
 
     renderCurrentNightScopes();
+
+
+    showTechnicianMessage(
+        task.note
+            ? "Scope note saved."
+            : "Scope note cleared.",
+        false
+    );
 
 }
 
@@ -645,6 +1379,7 @@ function updateNightProgress(
         document.getElementById(
             "nightProgress"
         );
+
 
     if (!progressSummary) {
         return;
@@ -698,6 +1433,7 @@ function renderFixtureHandover() {
             "handoverContent"
         );
 
+
     if (!store || !container) {
         return;
     }
@@ -724,11 +1460,14 @@ function renderFixtureHandover() {
                 store.fixtureHandover
             )} ${store.timezone}`;
 
+
         container.appendChild(
             confirmed
         );
 
+
         return;
+
     }
 
 
@@ -820,7 +1559,7 @@ function renderFixtureHandover() {
 
 
 /* ============================================================
-   SAVE FIXTURE HANDOVER
+   SAVE HANDOVER
    ============================================================ */
 
 function saveFixtureHandover() {
@@ -832,6 +1571,7 @@ function saveFixtureHandover() {
         document.getElementById(
             "technicianHandoverTime"
         );
+
 
     if (!store || !input) {
         return;
@@ -854,13 +1594,13 @@ function saveFixtureHandover() {
         input.value;
 
 
+    renderFixtureHandover();
+
+
     showTechnicianMessage(
         "Fixture handover confirmed.",
         false
     );
-
-
-    renderFixtureHandover();
 
 }
 
@@ -918,6 +1658,7 @@ function showTechnicianMessage(
             "technicianMessage"
         );
 
+
     if (!element) {
         return;
     }
@@ -925,6 +1666,7 @@ function showTechnicianMessage(
 
     element.textContent =
         message;
+
 
     element.style.color =
         isError
