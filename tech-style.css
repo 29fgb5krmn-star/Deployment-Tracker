@@ -1,6 +1,6 @@
-/* ============================================================
-   TECHNICIAN DEPLOYMENT TRACKER
-   ============================================================ */
+/* =========================================================
+   TECHNICIAN PORTAL
+   ========================================================= */
 
 * {
     box-sizing: border-box;
@@ -8,722 +8,720 @@
 
 body {
     margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, Helvetica, Arial, sans-serif;
 
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-    background: #f8fafc;
-    color: #0f172a;
+    background: #f5f7fa;
+    color: #1f2937;
 }
 
 
-/* ============================================================
+/* =========================================================
    GENERAL
-   ============================================================ */
+   ========================================================= */
 
 .hidden {
     display: none !important;
 }
 
-.page {
-    min-height: 100vh;
+button,
+input,
+select {
+    font: inherit;
 }
 
 
-/* ============================================================
+/* =========================================================
    LOGIN
-   ============================================================ */
+   ========================================================= */
 
-#loginPage {
+.login-page {
+    min-height: 100vh;
+
     display: flex;
-
     align-items: center;
     justify-content: center;
 
-    padding: 24px;
+    padding: 20px;
 }
 
 .login-card {
     width: 100%;
-    max-width: 420px;
+    max-width: 400px;
 
     background: white;
 
-    border: 1px solid #e2e8f0;
     border-radius: 18px;
 
     padding: 32px;
 
-    box-shadow:
-        0 10px 30px rgba(15, 23, 42, 0.08);
-}
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
 
-.login-header {
     text-align: center;
-
-    margin-bottom: 30px;
 }
 
 .login-icon {
-    width: 58px;
-    height: 58px;
-
-    margin: 0 auto 16px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 16px;
-
-    background: #0f172a;
-    color: white;
-
-    font-weight: 700;
-    font-size: 18px;
+    font-size: 42px;
+    margin-bottom: 10px;
 }
 
-.login-header h1 {
+.login-card h1 {
+    margin: 0 0 8px;
+}
+
+.login-card p {
+    color: #6b7280;
+    margin-bottom: 22px;
+}
+
+.login-card input {
+    width: 100%;
+
+    padding: 13px 14px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+
+    outline: none;
+
+    margin-bottom: 12px;
+}
+
+.login-card input:focus {
+    border-color: #2563eb;
+}
+
+.login-card button {
+    width: 100%;
+
+    padding: 13px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #2563eb;
+    color: white;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.login-error {
+    color: #dc2626 !important;
+    font-size: 13px;
+    min-height: 18px;
+    margin-top: 12px !important;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.tech-header {
+    background: white;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    padding: 18px 28px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.portal-label {
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+    color: #6b7280;
+
+    margin-bottom: 3px;
+}
+
+.tech-header h1 {
     margin: 0;
 
     font-size: 24px;
 }
 
-.login-header p {
-    margin: 8px 0 0;
+.tech-header p {
+    margin: 3px 0 0;
 
-    color: #64748b;
-}
+    color: #6b7280;
 
-
-.login-form {
-    display: flex;
-    flex-direction: column;
-
-    gap: 10px;
-}
-
-.login-form label {
     font-size: 14px;
-    font-weight: 600;
 }
 
-.login-form input {
-    width: 100%;
+.logout-btn {
+    border: 1px solid #d1d5db;
 
-    padding: 14px 15px;
-
-    border: 1px solid #cbd5e1;
-    border-radius: 10px;
-
-    font-size: 16px;
-
-    outline: none;
-}
-
-.login-form input:focus {
-    border-color: #64748b;
-}
-
-
-.primary-button {
-    margin-top: 8px;
-
-    width: 100%;
-
-    padding: 14px;
-
-    border: none;
-    border-radius: 10px;
-
-    background: #0f172a;
-    color: white;
-
-    font-size: 15px;
-    font-weight: 600;
-
-    cursor: pointer;
-}
-
-.primary-button:active {
-    transform: translateY(1px);
-}
-
-.login-message {
-    min-height: 20px;
-
-    text-align: center;
-
-    font-size: 13px;
-
-    color: #b91c1c;
-}
-
-
-/* ============================================================
-   HEADER
-   ============================================================ */
-
-.tech-header {
     background: white;
 
-    border-bottom: 1px solid #e2e8f0;
+    padding: 8px 14px;
 
-    padding:
-        20px
-        max(20px, calc((100vw - 1000px) / 2));
-
-    display: flex;
-
-    justify-content: space-between;
-    align-items: center;
-
-    gap: 20px;
-}
-
-.header-label {
-    color: #64748b;
-
-    font-size: 12px;
-    font-weight: 700;
-
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-}
-
-.tech-header h1 {
-    margin: 4px 0 2px;
-
-    font-size: 26px;
-}
-
-.tech-header p {
-    margin: 0;
-
-    color: #64748b;
-
-    font-size: 14px;
-}
-
-.logout-button {
-    padding: 9px 14px;
-
-    border: 1px solid #cbd5e1;
     border-radius: 8px;
 
-    background: white;
-    color: #334155;
-
     cursor: pointer;
+
+    font-size: 13px;
 }
 
 
-/* ============================================================
-   CONTENT
-   ============================================================ */
+/* =========================================================
+   CONTAINER
+   ========================================================= */
 
-.tech-content {
-    width: 100%;
-    max-width: 1000px;
+.tech-container {
+    width: min(1100px, calc(100% - 30px));
 
-    margin: 0 auto;
-
-    padding: 24px 20px 50px;
-
-    display: flex;
-    flex-direction: column;
-
-    gap: 18px;
+    margin: 22px auto 40px;
 }
 
 
-/* ============================================================
-   CARDS
-   ============================================================ */
+/* =========================================================
+   STORE STATUS
+   ========================================================= */
 
-.info-card,
-.equipment-card,
-.scope-card,
-.handover-card {
+.store-status-card {
     background: white;
 
-    border: 1px solid #e2e8f0;
-    border-radius: 14px;
+    border: 1px solid #e5e7eb;
 
-    padding: 20px;
-}
+    border-radius: 12px;
 
+    padding: 14px 18px;
 
-/* ============================================================
-   STORE INFORMATION
-   ============================================================ */
-
-.info-row {
     display: grid;
 
     grid-template-columns:
-        repeat(2, minmax(0, 1fr));
-
-    gap: 20px;
-
-    padding: 8px 0;
-}
-
-.info-label {
-    display: block;
-
-    margin-bottom: 4px;
-
-    color: #64748b;
-
-    font-size: 12px;
-}
-
-.info-row strong {
-    font-size: 15px;
-}
-
-
-/* ============================================================
-   SECTION HEADER
-   ============================================================ */
-
-.section-header {
-    display: flex;
-
-    justify-content: space-between;
-    align-items: center;
+        repeat(3, 1fr);
 
     gap: 15px;
 
     margin-bottom: 18px;
 }
 
-.section-label {
-    display: block;
-
-    color: #64748b;
-
-    font-size: 11px;
-    font-weight: 700;
-
-    letter-spacing: 0.08em;
-}
-
-.section-header h2 {
-    margin: 4px 0 0;
-
-    font-size: 20px;
-}
-
-.progress-summary {
-    font-size: 13px;
-    font-weight: 600;
-
-    color: #475569;
-}
-
-
-/* ============================================================
-   EQUIPMENT CHECKLIST
-   ============================================================ */
-
-.equipment-list {
+.status-item {
     display: flex;
+
     flex-direction: column;
 
-    gap: 10px;
+    gap: 4px;
 }
 
-.equipment-item {
-    border: 1px solid #e2e8f0;
+.status-item span {
+    font-size: 11px;
 
-    border-radius: 11px;
+    color: #6b7280;
 
-    padding: 14px;
+    text-transform: uppercase;
+
+    letter-spacing: 0.4px;
 }
 
-.equipment-main {
-    display: flex;
-
-    justify-content: space-between;
-    align-items: center;
-
-    gap: 12px;
-}
-
-.equipment-name {
-    font-size: 15px;
-    font-weight: 600;
-}
-
-.equipment-status {
-    flex-shrink: 0;
-
-    padding: 6px 9px;
-
-    border-radius: 999px;
-
-    border: 1px solid #cbd5e1;
-
-    background: white;
-
-    font-size: 12px;
-    font-weight: 600;
-
-    cursor: pointer;
-}
-
-.equipment-status.complete {
-    border-color: #bbf7d0;
-
-    background: #f0fdf4;
-
-    color: #166534;
-}
-
-.equipment-status.missing {
-    border-color: #fecaca;
-
-    background: #fef2f2;
-
-    color: #b91c1c;
-}
-
-.equipment-status.incomplete {
-    border-color: #fde68a;
-
-    background: #fffbeb;
-
-    color: #92400e;
-}
-
-
-/* ============================================================
-   EQUIPMENT STATUS SELECT
-   ============================================================ */
-
-.equipment-select {
-    width: 100%;
-
-    margin-top: 10px;
-
-    padding: 10px;
-
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-
-    background: white;
-
+.status-item strong {
     font-size: 14px;
 }
 
+.checkin-btn {
+    width: fit-content;
 
-/* ============================================================
-   ADD NOTE
-   ============================================================ */
+    padding: 6px 12px;
 
-.equipment-note-button,
-.scope-note-button {
-    margin-top: 10px;
+    border: none;
 
-    padding: 7px 10px;
-
-    border: 1px solid #cbd5e1;
     border-radius: 7px;
 
-    background: white;
-    color: #475569;
+    background: #2563eb;
+
+    color: white;
 
     font-size: 12px;
+
     font-weight: 600;
 
     cursor: pointer;
 }
 
-.equipment-note {
-    margin-top: 9px;
+.checkin-btn.checked-in {
+    background: #16a34a;
 
-    padding: 10px;
-
-    border-radius: 8px;
-
-    background: #f8fafc;
-
-    color: #475569;
-
-    font-size: 13px;
-
-    line-height: 1.4;
+    cursor: default;
 }
 
 
-/* ============================================================
-   SCOPE LIST
-   ============================================================ */
+/* =========================================================
+   SECTIONS
+   ========================================================= */
 
-.technician-scope-list {
-    display: flex;
-    flex-direction: column;
+.equipment-section,
+.scope-section,
+.fixture-section {
+    background: white;
 
-    gap: 10px;
+    border: 1px solid #e5e7eb;
+
+    border-radius: 12px;
+
+    margin-bottom: 18px;
+
+    overflow: hidden;
 }
 
-.scope-item {
-    border: 1px solid #e2e8f0;
+.section-header {
+    padding: 18px 20px;
 
-    border-radius: 11px;
+    border-bottom: 1px solid #e5e7eb;
 
-    padding: 15px;
-}
-
-.scope-top {
     display: flex;
 
     justify-content: space-between;
+
     align-items: center;
 
-    gap: 12px;
+    gap: 15px;
 }
 
-.scope-description {
+.section-header h2 {
+    margin: 0;
+
+    font-size: 17px;
+}
+
+.section-header p {
+    margin: 4px 0 0;
+
+    color: #6b7280;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   COMPACT EQUIPMENT HEADER
+   ========================================================= */
+
+.compact-header {
+    padding: 13px 16px;
+}
+
+.compact-header h2 {
     font-size: 15px;
+}
+
+.compact-header p {
+    font-size: 11px;
+}
+
+.equipment-progress {
+    white-space: nowrap;
+
+    font-size: 12px;
+
     font-weight: 600;
 
-    line-height: 1.4;
+    color: #2563eb;
 }
 
-.scope-status {
-    flex-shrink: 0;
 
-    padding: 5px 9px;
+/* =========================================================
+   EQUIPMENT TABLE
+   ========================================================= */
 
-    border-radius: 999px;
+.equipment-table-wrapper {
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+.equipment-table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    table-layout: fixed;
+}
+
+.equipment-table th {
+    background: #f9fafb;
+
+    color: #6b7280;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.4px;
+
+    text-align: left;
+
+    padding: 8px 12px;
+
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.equipment-table td {
+    padding: 8px 12px;
+
+    border-bottom: 1px solid #f0f1f3;
+
+    vertical-align: middle;
+
+    font-size: 12px;
+}
+
+.equipment-table tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* Column widths */
+
+.equipment-table th:nth-child(1) {
+    width: 43%;
+}
+
+.equipment-table th:nth-child(2) {
+    width: 8%;
+}
+
+.equipment-table th:nth-child(3) {
+    width: 24%;
+}
+
+.equipment-table th:nth-child(4) {
+    width: 25%;
+}
+
+
+/* Equipment name */
+
+.equipment-name {
+    font-weight: 500;
+
+    line-height: 1.3;
+}
+
+
+/* Quantity */
+
+.equipment-qty {
+    font-weight: 600;
+}
+
+
+/* Tracking */
+
+.tracking-cell {
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+}
+
+.tracking-id {
+    font-size: 11px;
+
+    color: #4b5563;
+
+    white-space: nowrap;
+}
+
+.copy-tracking-btn {
+    border: 1px solid #d1d5db;
+
+    background: white;
+
+    border-radius: 5px;
+
+    padding: 2px 5px;
+
+    font-size: 10px;
+
+    cursor: pointer;
+
+    color: #4b5563;
+}
+
+
+/* Status */
+
+.equipment-status-select {
+    width: 100%;
+
+    min-width: 105px;
+
+    padding: 5px 7px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 6px;
+
+    background: white;
 
     font-size: 11px;
-    font-weight: 700;
-}
 
-.scope-status.not-started {
-    background: #f1f5f9;
-    color: #475569;
-}
-
-.scope-status.in-progress {
-    background: #fef3c7;
-    color: #92400e;
-}
-
-.scope-status.completed {
-    background: #dcfce7;
-    color: #166534;
+    cursor: pointer;
 }
 
 
-/* ============================================================
-   SCOPE CONTROLS
-   ============================================================ */
+/* Equipment note */
+
+.equipment-note-row td {
+    padding-top: 0;
+
+    padding-bottom: 8px;
+
+    background: #fafafa;
+}
+
+.equipment-note {
+    font-size: 11px;
+
+    color: #6b7280;
+
+    margin-top: 2px;
+
+    padding-left: 2px;
+}
+
+.equipment-note strong {
+    color: #374151;
+}
+
+.add-equipment-note {
+    border: none;
+
+    background: transparent;
+
+    padding: 0;
+
+    margin-top: 4px;
+
+    color: #2563eb;
+
+    font-size: 11px;
+
+    cursor: pointer;
+}
+
+.edit-equipment-note {
+    border: none;
+
+    background: transparent;
+
+    padding: 0;
+
+    margin-left: 5px;
+
+    color: #2563eb;
+
+    font-size: 11px;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   NIGHT SCOPE
+   ========================================================= */
+
+.scope-list {
+    padding: 14px 16px;
+}
+
+.scope-card {
+    border: 1px solid #e5e7eb;
+
+    border-radius: 9px;
+
+    padding: 13px;
+
+    margin-bottom: 10px;
+
+    background: #fff;
+}
+
+.scope-card:last-child {
+    margin-bottom: 0;
+}
+
+.scope-title {
+    font-size: 14px;
+
+    font-weight: 600;
+
+    margin-bottom: 9px;
+}
 
 .scope-controls {
     display: flex;
 
+    align-items: center;
+
     gap: 8px;
 
-    margin-top: 14px;
+    flex-wrap: wrap;
 }
 
-.scope-progress-button {
-    flex: 1;
+.scope-status-select {
+    padding: 7px 9px;
 
-    padding: 9px 10px;
+    border: 1px solid #d1d5db;
 
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
+    border-radius: 7px;
+
+    font-size: 12px;
 
     background: white;
-    color: #334155;
+}
 
-    font-size: 13px;
-    font-weight: 600;
+.scope-note-btn {
+    padding: 7px 10px;
+
+    border: 1px solid #d1d5db;
+
+    background: white;
+
+    border-radius: 7px;
+
+    font-size: 12px;
 
     cursor: pointer;
 }
 
-.scope-progress-button.active {
-    background: #0f172a;
-    color: white;
+.scope-note {
+    margin-top: 8px;
 
-    border-color: #0f172a;
-}
+    padding: 8px 10px;
 
+    background: #f9fafb;
 
-/* ============================================================
-   HANDOVER
-   ============================================================ */
+    border-radius: 7px;
 
-.handover-content {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 12px;
-}
-
-.handover-confirmed {
-    padding: 14px;
-
-    border-radius: 10px;
-
-    background: #f0fdf4;
-
-    color: #166534;
-
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.handover-row {
-    display: flex;
-
-    align-items: end;
-
-    gap: 10px;
-}
-
-.handover-input-group {
-    flex: 1;
-
-    display: flex;
-    flex-direction: column;
-
-    gap: 6px;
-}
-
-.handover-input-group label {
-    color: #64748b;
+    color: #4b5563;
 
     font-size: 12px;
 }
 
-.handover-input-group input {
-    width: 100%;
 
-    padding: 11px;
+/* =========================================================
+   FIXTURE HANDOVER
+   ========================================================= */
 
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-
-    font-size: 15px;
+.fixture-card {
+    padding: 16px 20px;
 }
 
-.handover-save {
-    padding: 11px 16px;
+.fixture-status {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 8px;
+}
+
+.fixture-status span {
+    color: #6b7280;
+
+    font-size: 12px;
+}
+
+.fixture-status strong {
+    font-size: 13px;
+}
+
+.fixture-time {
+    color: #6b7280;
+
+    font-size: 11px;
+
+    margin-bottom: 12px;
+}
+
+.fixture-btn {
+    padding: 9px 13px;
 
     border: none;
-    border-radius: 8px;
 
-    background: #0f172a;
+    border-radius: 7px;
+
+    background: #2563eb;
+
     color: white;
+
+    font-size: 12px;
 
     font-weight: 600;
 
     cursor: pointer;
 }
 
+.fixture-btn.confirmed {
+    background: #16a34a;
 
-/* ============================================================
-   MESSAGE
-   ============================================================ */
-
-.technician-message {
-    min-height: 20px;
-
-    text-align: center;
-
-    font-size: 13px;
-    font-weight: 600;
+    cursor: default;
 }
 
 
-/* ============================================================
-   EMPTY STATE
-   ============================================================ */
-
-.empty-scope,
-.empty-equipment {
-    padding: 20px;
-
-    text-align: center;
-
-    color: #94a3b8;
-
-    font-size: 14px;
-}
-
-
-/* ============================================================
+/* =========================================================
    MOBILE
-   ============================================================ */
+   ========================================================= */
 
-@media (max-width: 600px) {
-
-    .login-card {
-        padding: 24px;
-    }
+@media (max-width: 700px) {
 
     .tech-header {
-        padding: 18px;
+        padding: 15px 16px;
     }
 
     .tech-header h1 {
-        font-size: 22px;
+        font-size: 20px;
     }
 
-    .tech-content {
-        padding:
-            18px
-            14px
-            40px;
+    .tech-container {
+        width: calc(100% - 20px);
+
+        margin-top: 12px;
     }
 
-    .info-row {
-        grid-template-columns: 1fr;
+    .store-status-card {
+        grid-template-columns: 1fr 1fr;
 
-        gap: 12px;
+        padding: 12px;
+    }
+
+    .store-status-card .status-item:last-child {
+        grid-column: 1 / -1;
     }
 
     .section-header {
-        align-items: flex-start;
-
-        flex-direction: column;
+        padding: 13px 14px;
     }
 
-    .equipment-main,
-    .scope-top {
-        align-items: flex-start;
-
-        flex-direction: column;
+    .equipment-table {
+        min-width: 650px;
     }
 
-    .equipment-status {
-        width: 100%;
+    .equipment-table td,
+    .equipment-table th {
+        padding: 7px 9px;
     }
 
-    .scope-controls {
-        flex-direction: column;
+    .scope-list {
+        padding: 10px;
     }
 
-    .handover-row {
-        flex-direction: column;
-
-        align-items: stretch;
+    .fixture-card {
+        padding: 14px;
     }
-
-    .handover-save {
-        width: 100%;
-    }
-
 }
