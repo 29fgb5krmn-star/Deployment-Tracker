@@ -1,10 +1,28 @@
 /* =========================================================
    TECHNICIAN PORTAL
+   UI + SESSION ACTIVITY TIMESTAMPS
    ========================================================= */
 
 
 /* =========================================================
+   TIMEZONE MAPPING
+   ========================================================= */
+
+const STORE_TIMEZONES = {
+    EST: "America/New_York",
+    CST: "America/Chicago",
+    MST: "America/Denver",
+    ARZ: "America/Phoenix",
+    PST: "America/Los_Angeles",
+    "Puerto Rico": "America/Puerto_Rico",
+    Guam: "Pacific/Guam",
+    Hawaii: "Pacific/Honolulu"
+};
+
+
+/* =========================================================
    SAMPLE TECHNICIAN DATA
+   All equipment starts as Not Checked.
    ========================================================= */
 
 const technicianStores = {
@@ -14,107 +32,40 @@ const technicianStores = {
         timezone: "EST",
         currentNight: 1,
 
-        equipment: [
-            {
-                id: "EQ-001",
-                name: "New CPU",
-                quantity: 1,
-                trackingId: "TRK-001234",
-                status: "Complete",
-                note: ""
-            },
-
-            {
-                id: "EQ-002",
-                name: "New handheld scanners (SCO lanes)",
-                quantity: 5,
-                trackingId: "TRK-001235",
-                status: "Incomplete",
-                note: "1 of 5 handheld scanners missing."
-            },
-
-            {
-                id: "EQ-003",
-                name: "New printers (SCO lanes)",
-                quantity: 4,
-                trackingId: "TRK-001236",
-                status: "Missing",
-                note: ""
-            },
-
-            {
-                id: "EQ-004",
-                name: "New table top scanners (Regular lanes)",
-                quantity: 5,
-                trackingId: "TRK-001237",
-                status: "Complete",
-                note: ""
-            },
-
-            {
-                id: "EQ-005",
-                name: "New Toshiba Cash Drawers (Regular lanes)",
-                quantity: 5,
-                trackingId: "TRK-001238",
-                status: "Complete",
-                note: ""
-            },
-
-            {
-                id: "EQ-006",
-                name: "Monitor poles (Regular lanes)",
-                quantity: 5,
-                trackingId: "TRK-001239",
-                status: "Complete",
-                note: ""
-            },
-
-            {
-                id: "EQ-007",
-                name: "VE Monitor poles (SCO lanes)",
-                quantity: 4,
-                trackingId: "TRK-001240",
-                status: "Missing",
-                note: ""
-            },
-
-            {
-                id: "EQ-008",
-                name: "Monitor pole (Host stand)",
-                quantity: 1,
-                trackingId: "TRK-001241",
-                status: "Complete",
-                note: ""
-            }
-        ],
+        equipment: createDefaultEquipment(),
 
         scopes: [
             {
                 id: "SCOPE-001",
                 title: "Install Register 1 to new HCS",
                 status: "Not Started",
-                note: ""
+                note: "",
+                noteUpdatedAt: null,
+                statusUpdatedAt: null
             },
-
             {
                 id: "SCOPE-002",
                 title: "Install Register 2 to new HCS",
                 status: "Not Started",
-                note: ""
+                note: "",
+                noteUpdatedAt: null,
+                statusUpdatedAt: null
             },
-
             {
                 id: "SCOPE-003",
                 title: "Test Register 1",
                 status: "Not Started",
-                note: ""
+                note: "",
+                noteUpdatedAt: null,
+                statusUpdatedAt: null
             }
         ],
 
         fixtureHandedOver: false,
-        fixtureTime: null
+        fixtureTime: null,
+        fixtureConfirmedAt: null,
+        activityLog: []
     },
-
 
     "0456": {
         technician: "Technician B",
@@ -128,21 +79,25 @@ const technicianStores = {
                 id: "SCOPE-001",
                 title: "Install Register 1 to new HCS",
                 status: "Not Started",
-                note: ""
+                note: "",
+                noteUpdatedAt: null,
+                statusUpdatedAt: null
             },
-
             {
                 id: "SCOPE-002",
                 title: "Test Register 1",
                 status: "Not Started",
-                note: ""
+                note: "",
+                noteUpdatedAt: null,
+                statusUpdatedAt: null
             }
         ],
 
         fixtureHandedOver: false,
-        fixtureTime: null
+        fixtureTime: null,
+        fixtureConfirmedAt: null,
+        activityLog: []
     },
-
 
     "0789": {
         technician: "Technician C",
@@ -156,14 +111,17 @@ const technicianStores = {
                 id: "SCOPE-001",
                 title: "Install Register 1 to new HCS",
                 status: "Not Started",
-                note: ""
+                note: "",
+                noteUpdatedAt: null,
+                statusUpdatedAt: null
             }
         ],
 
         fixtureHandedOver: false,
-        fixtureTime: null
+        fixtureTime: null,
+        fixtureConfirmedAt: null,
+        activityLog: []
     }
-
 };
 
 
@@ -173,79 +131,64 @@ const technicianStores = {
 
 function createDefaultEquipment() {
 
-    return [
+    const equipmentItems = [
         {
             id: "EQ-001",
             name: "New CPU",
             quantity: 1,
-            trackingId: "TRK-001234",
-            status: "Complete",
-            note: ""
+            trackingId: "TRK-001234"
         },
-
         {
             id: "EQ-002",
             name: "New handheld scanners (SCO lanes)",
             quantity: 5,
-            trackingId: "TRK-001235",
-            status: "Complete",
-            note: ""
+            trackingId: "TRK-001235"
         },
-
         {
             id: "EQ-003",
             name: "New printers (SCO lanes)",
             quantity: 4,
-            trackingId: "TRK-001236",
-            status: "Complete",
-            note: ""
+            trackingId: "TRK-001236"
         },
-
         {
             id: "EQ-004",
             name: "New table top scanners (Regular lanes)",
             quantity: 5,
-            trackingId: "TRK-001237",
-            status: "Complete",
-            note: ""
+            trackingId: "TRK-001237"
         },
-
         {
             id: "EQ-005",
             name: "New Toshiba Cash Drawers (Regular lanes)",
             quantity: 5,
-            trackingId: "TRK-001238",
-            status: "Complete",
-            note: ""
+            trackingId: "TRK-001238"
         },
-
         {
             id: "EQ-006",
             name: "Monitor poles (Regular lanes)",
             quantity: 5,
-            trackingId: "TRK-001239",
-            status: "Complete",
-            note: ""
+            trackingId: "TRK-001239"
         },
-
         {
             id: "EQ-007",
             name: "VE Monitor poles (SCO lanes)",
             quantity: 4,
-            trackingId: "TRK-001240",
-            status: "Complete",
-            note: ""
+            trackingId: "TRK-001240"
         },
-
         {
             id: "EQ-008",
             name: "Monitor pole (Host stand)",
             quantity: 1,
-            trackingId: "TRK-001241",
-            status: "Complete",
-            note: ""
+            trackingId: "TRK-001241"
         }
     ];
+
+    return equipmentItems.map(item => ({
+        ...item,
+        status: "Not Checked",
+        note: "",
+        noteUpdatedAt: null,
+        statusUpdatedAt: null
+    }));
 }
 
 
@@ -254,6 +197,62 @@ function createDefaultEquipment() {
    ========================================================= */
 
 let currentStore = null;
+
+
+/* =========================================================
+   ACTIVITY LOG
+   Session-only until database integration is added.
+   ========================================================= */
+
+function logActivity(action, details) {
+
+    const store = technicianStores[currentStore];
+
+    if (!store) return;
+
+    if (!store.activityLog) {
+        store.activityLog = [];
+    }
+
+    store.activityLog.unshift({
+        storeNumber: currentStore,
+        technician: store.technician,
+        action,
+        details,
+        timestamp: new Date().toISOString()
+    });
+}
+
+
+/* =========================================================
+   TIMESTAMP DISPLAY
+   ========================================================= */
+
+function formatTimestamp(timestamp) {
+
+    if (!timestamp) return "";
+
+    const store = technicianStores[currentStore];
+
+    const timezone =
+        STORE_TIMEZONES[store?.timezone] ||
+        "America/New_York";
+
+    try {
+        return new Intl.DateTimeFormat("en-US", {
+            timeZone: timezone,
+            month: "short",
+            day: "2-digit",
+            year: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
+            timeZoneName: "short"
+        }).format(new Date(timestamp));
+
+    } catch (error) {
+        return new Date(timestamp).toLocaleString("en-US");
+    }
+}
 
 
 /* =========================================================
@@ -272,15 +271,12 @@ function loginTechnician() {
         document.getElementById("loginError");
 
     if (!technicianStores[storeNumber]) {
-
         error.textContent =
             "Store not found. Please check your store number.";
-
         return;
     }
 
     currentStore = storeNumber;
-
     error.textContent = "";
 
     document
@@ -314,6 +310,10 @@ function logoutTechnician() {
     document
         .getElementById("storeLoginInput")
         .value = "";
+
+    document
+        .getElementById("loginError")
+        .textContent = "";
 }
 
 
@@ -323,33 +323,25 @@ function logoutTechnician() {
 
 function renderDashboard() {
 
-    const store =
-        technicianStores[currentStore];
+    const store = technicianStores[currentStore];
 
-    document
-        .getElementById("storeNumber")
-        .textContent = currentStore;
+    document.getElementById("storeNumber").textContent =
+        currentStore;
 
-    document
-        .getElementById("technicianName")
-        .textContent = store.technician;
+    document.getElementById("technicianName").textContent =
+        store.technician;
 
-    document
-        .getElementById("currentNight")
-        .textContent = `Night ${store.currentNight}`;
+    document.getElementById("currentNight").textContent =
+        `Night ${store.currentNight}`;
 
-    document
-        .getElementById("storeTimezone")
-        .textContent = store.timezone;
+    document.getElementById("storeTimezone").textContent =
+        store.timezone;
 
-    document
-        .getElementById("scopeNight")
-        .textContent = `Night ${store.currentNight}`;
+    document.getElementById("scopeNight").textContent =
+        `Night ${store.currentNight}`;
 
     renderEquipment();
-
     renderScopes();
-
     renderFixture();
 }
 
@@ -360,18 +352,16 @@ function renderDashboard() {
 
 function renderEquipment() {
 
-    const store =
-        technicianStores[currentStore];
+    const store = technicianStores[currentStore];
 
     const container =
         document.getElementById("equipmentList");
 
     container.innerHTML = "";
 
-    store.equipment.forEach((equipment) => {
+    store.equipment.forEach(equipment => {
 
-        const row =
-            document.createElement("tr");
+        const row = document.createElement("tr");
 
         row.innerHTML = `
             <td>
@@ -388,39 +378,38 @@ function renderEquipment() {
 
             <td>
                 <div class="tracking-cell">
-
                     <span class="tracking-id">
                         ${escapeHtml(equipment.trackingId)}
                     </span>
 
                     <button
+                        type="button"
                         class="copy-tracking-btn"
                         onclick="copyTrackingId('${equipment.id}')"
                     >
                         Copy
                     </button>
-
                 </div>
             </td>
 
             <td>
-
                 <select
+                    id="equipment-status-${equipment.id}"
                     class="equipment-status-select"
+                    aria-label="Status for ${escapeHtml(equipment.name)}"
                     onchange="updateEquipmentStatus(
                         '${equipment.id}',
                         this.value
                     )"
                 >
+                    <option value="Not Checked"
+                        ${equipment.status === "Not Checked" ? "selected" : ""}>
+                        Not Checked
+                    </option>
 
                     <option value="Complete"
                         ${equipment.status === "Complete" ? "selected" : ""}>
                         Complete
-                    </option>
-
-                    <option value="Incomplete"
-                        ${equipment.status === "Incomplete" ? "selected" : ""}>
-                        Incomplete
                     </option>
 
                     <option value="Missing"
@@ -428,17 +417,22 @@ function renderEquipment() {
                         Missing
                     </option>
 
+                    <option value="Incomplete"
+                        ${equipment.status === "Incomplete" ? "selected" : ""}>
+                        Incomplete
+                    </option>
                 </select>
-
             </td>
         `;
 
         container.appendChild(row);
 
+        updateEquipmentDropdownColor(equipment.id);
+
 
         /*
-         * Show note area only for
-         * Missing / Incomplete.
+         * Only show the note row when equipment
+         * is Missing or Incomplete.
          */
 
         if (
@@ -446,11 +440,8 @@ function renderEquipment() {
             equipment.status === "Incomplete"
         ) {
 
-            const noteRow =
-                document.createElement("tr");
-
-            noteRow.className =
-                "equipment-note-row";
+            const noteRow = document.createElement("tr");
+            noteRow.className = "equipment-note-row";
 
             let noteHtml = "";
 
@@ -458,17 +449,24 @@ function renderEquipment() {
 
                 noteHtml = `
                     <div class="equipment-note">
-
                         <strong>Note:</strong>
                         ${escapeHtml(equipment.note)}
 
+                        ${
+                            equipment.noteUpdatedAt
+                                ? `<span class="equipment-note-time">
+                                    · ${escapeHtml(formatTimestamp(equipment.noteUpdatedAt))}
+                                   </span>`
+                                : ""
+                        }
+
                         <button
+                            type="button"
                             class="edit-equipment-note"
                             onclick="addEquipmentNote('${equipment.id}')"
                         >
                             Edit
                         </button>
-
                     </div>
                 `;
 
@@ -476,6 +474,7 @@ function renderEquipment() {
 
                 noteHtml = `
                     <button
+                        type="button"
                         class="add-equipment-note"
                         onclick="addEquipmentNote('${equipment.id}')"
                     >
@@ -485,14 +484,11 @@ function renderEquipment() {
             }
 
             noteRow.innerHTML = `
-                <td colspan="4">
-                    ${noteHtml}
-                </td>
+                <td colspan="4">${noteHtml}</td>
             `;
 
             container.appendChild(noteRow);
         }
-
     });
 
     updateEquipmentProgress();
@@ -500,29 +496,87 @@ function renderEquipment() {
 
 
 /* =========================================================
-   EQUIPMENT STATUS
+   EQUIPMENT STATUS COLOR
    ========================================================= */
 
-function updateEquipmentStatus(
-    equipmentId,
-    status
-) {
+function updateEquipmentDropdownColor(equipmentId) {
 
-    const store =
-        technicianStores[currentStore];
+    const store = technicianStores[currentStore];
 
-    const equipment =
-        store.equipment.find(
-            item => item.id === equipmentId
-        );
+    const equipment = store.equipment.find(
+        item => item.id === equipmentId
+    );
 
     if (!equipment) return;
 
-    equipment.status = status;
+    const dropdown = document.getElementById(
+        `equipment-status-${equipmentId}`
+    );
 
-    if (status === "Complete") {
-        equipment.note = "";
+    if (!dropdown) return;
+
+    dropdown.classList.remove(
+        "status-not-checked",
+        "status-complete",
+        "status-missing",
+        "status-incomplete"
+    );
+
+    const classByStatus = {
+        "Not Checked": "status-not-checked",
+        "Complete": "status-complete",
+        "Missing": "status-missing",
+        "Incomplete": "status-incomplete"
+    };
+
+    dropdown.classList.add(
+        classByStatus[equipment.status] || "status-not-checked"
+    );
+}
+
+
+/* =========================================================
+   EQUIPMENT STATUS UPDATE
+   ========================================================= */
+
+function updateEquipmentStatus(equipmentId, status) {
+
+    const store = technicianStores[currentStore];
+
+    const equipment = store.equipment.find(
+        item => item.id === equipmentId
+    );
+
+    const allowedStatuses = [
+        "Not Checked",
+        "Complete",
+        "Missing",
+        "Incomplete"
+    ];
+
+    if (!equipment || !allowedStatuses.includes(status)) return;
+
+    if (equipment.status === status) return;
+
+    const previousStatus = equipment.status;
+    const timestamp = new Date().toISOString();
+
+    equipment.status = status;
+    equipment.statusUpdatedAt = timestamp;
+    equipment.updatedAt = timestamp;
+
+    if (status === "Complete" || status === "Not Checked") {
+
+        if (equipment.note) {
+            equipment.note = "";
+            equipment.noteUpdatedAt = null;
+        }
     }
+
+    logActivity(
+        "Equipment status updated",
+        `${equipment.name}: ${previousStatus} → ${status}`
+    );
 
     renderEquipment();
 }
@@ -534,26 +588,42 @@ function updateEquipmentStatus(
 
 function addEquipmentNote(equipmentId) {
 
-    const store =
-        technicianStores[currentStore];
+    const store = technicianStores[currentStore];
 
-    const equipment =
-        store.equipment.find(
-            item => item.id === equipmentId
-        );
+    const equipment = store.equipment.find(
+        item => item.id === equipmentId
+    );
 
     if (!equipment) return;
 
-    const note =
-        prompt(
-            "Enter equipment note:",
-            equipment.note || ""
-        );
+    if (
+        equipment.status !== "Missing" &&
+        equipment.status !== "Incomplete"
+    ) {
+        return;
+    }
+
+    const note = prompt(
+        "Enter equipment note:",
+        equipment.note || ""
+    );
 
     if (note === null) return;
 
-    equipment.note =
-        note.trim();
+    const cleanedNote = note.trim();
+
+    if (cleanedNote === equipment.note) return;
+
+    const timestamp = new Date().toISOString();
+
+    equipment.note = cleanedNote;
+    equipment.noteUpdatedAt = cleanedNote ? timestamp : null;
+    equipment.updatedAt = timestamp;
+
+    logActivity(
+        "Equipment note updated",
+        `${equipment.name}: ${cleanedNote || "Note cleared"}`
+    );
 
     renderEquipment();
 }
@@ -565,31 +635,26 @@ function addEquipmentNote(equipmentId) {
 
 function copyTrackingId(equipmentId) {
 
-    const store =
-        technicianStores[currentStore];
+    const store = technicianStores[currentStore];
 
-    const equipment =
-        store.equipment.find(
-            item => item.id === equipmentId
-        );
+    const equipment = store.equipment.find(
+        item => item.id === equipmentId
+    );
 
     if (!equipment) return;
+
+    if (!navigator.clipboard || !navigator.clipboard.writeText) {
+        alert(`Tracking ID: ${equipment.trackingId}`);
+        return;
+    }
 
     navigator.clipboard
         .writeText(equipment.trackingId)
         .then(() => {
-
-            alert(
-                `Tracking ID copied: ${equipment.trackingId}`
-            );
-
+            alert(`Tracking ID copied: ${equipment.trackingId}`);
         })
         .catch(() => {
-
-            alert(
-                `Tracking ID: ${equipment.trackingId}`
-            );
-
+            alert(`Tracking ID: ${equipment.trackingId}`);
         });
 }
 
@@ -600,20 +665,15 @@ function copyTrackingId(equipmentId) {
 
 function updateEquipmentProgress() {
 
-    const store =
-        technicianStores[currentStore];
+    const store = technicianStores[currentStore];
 
-    const completed =
-        store.equipment.filter(
-            item => item.status === "Complete"
-        ).length;
+    const completed = store.equipment.filter(
+        item => item.status === "Complete"
+    ).length;
 
-    const total =
-        store.equipment.length;
+    const total = store.equipment.length;
 
-    document
-        .getElementById("equipmentProgress")
-        .textContent =
+    document.getElementById("equipmentProgress").textContent =
         `${completed} of ${total} complete`;
 }
 
@@ -624,11 +684,9 @@ function updateEquipmentProgress() {
 
 function renderScopes() {
 
-    const store =
-        technicianStores[currentStore];
+    const store = technicianStores[currentStore];
 
-    const container =
-        document.getElementById("scopeList");
+    const container = document.getElementById("scopeList");
 
     container.innerHTML = "";
 
@@ -645,14 +703,10 @@ function renderScopes() {
         return;
     }
 
+    store.scopes.forEach(scope => {
 
-    store.scopes.forEach((scope) => {
-
-        const card =
-            document.createElement("div");
-
-        card.className =
-            "scope-card";
+        const card = document.createElement("div");
+        card.className = "scope-card";
 
         let noteHtml = "";
 
@@ -662,12 +716,19 @@ function renderScopes() {
                 <div class="scope-note">
                     <strong>Note:</strong>
                     ${escapeHtml(scope.note)}
+
+                    ${
+                        scope.noteUpdatedAt
+                            ? `<span class="scope-note-time">
+                                Updated ${escapeHtml(formatTimestamp(scope.noteUpdatedAt))}
+                               </span>`
+                            : ""
+                    }
                 </div>
             `;
         }
 
         card.innerHTML = `
-
             <div class="scope-title">
                 ${escapeHtml(scope.title)}
             </div>
@@ -682,7 +743,6 @@ function renderScopes() {
                         this.value
                     )"
                 >
-
                     <option value="Not Started"
                         ${scope.status === "Not Started" ? "selected" : ""}>
                         Not Started
@@ -697,11 +757,10 @@ function renderScopes() {
                         ${scope.status === "Completed" ? "selected" : ""}>
                         Completed
                     </option>
-
                 </select>
 
-
                 <button
+                    type="button"
                     class="scope-note-btn"
                     onclick="addScopeNote('${scope.id}')"
                 >
@@ -711,37 +770,48 @@ function renderScopes() {
             </div>
 
             ${noteHtml}
-
         `;
 
         container.appendChild(card);
 
         updateScopeDropdownColor(scope.id);
-
     });
 }
 
 
 /* =========================================================
-   SCOPE STATUS
+   SCOPE STATUS UPDATE
    ========================================================= */
 
-function updateScopeStatus(
-    scopeId,
-    status
-) {
+function updateScopeStatus(scopeId, status) {
 
-    const store =
-        technicianStores[currentStore];
+    const store = technicianStores[currentStore];
 
-    const scope =
-        store.scopes.find(
-            item => item.id === scopeId
-        );
+    const scope = store.scopes.find(
+        item => item.id === scopeId
+    );
 
-    if (!scope) return;
+    const allowedStatuses = [
+        "Not Started",
+        "In Progress",
+        "Completed"
+    ];
+
+    if (!scope || !allowedStatuses.includes(status)) return;
+
+    if (scope.status === status) return;
+
+    const previousStatus = scope.status;
+    const timestamp = new Date().toISOString();
 
     scope.status = status;
+    scope.statusUpdatedAt = timestamp;
+    scope.updatedAt = timestamp;
+
+    logActivity(
+        "Scope status updated",
+        `${scope.title}: ${previousStatus} → ${status}`
+    );
 
     updateScopeDropdownColor(scopeId);
 }
@@ -753,20 +823,17 @@ function updateScopeStatus(
 
 function updateScopeDropdownColor(scopeId) {
 
-    const store =
-        technicianStores[currentStore];
+    const store = technicianStores[currentStore];
 
-    const scope =
-        store.scopes.find(
-            item => item.id === scopeId
-        );
+    const scope = store.scopes.find(
+        item => item.id === scopeId
+    );
 
     if (!scope) return;
 
-    const dropdown =
-        document.getElementById(
-            `scope-status-${scopeId}`
-        );
+    const dropdown = document.getElementById(
+        `scope-status-${scopeId}`
+    );
 
     if (!dropdown) return;
 
@@ -776,24 +843,15 @@ function updateScopeDropdownColor(scopeId) {
         "status-completed"
     );
 
-    if (scope.status === "Not Started") {
+    const classByStatus = {
+        "Not Started": "status-not-started",
+        "In Progress": "status-in-progress",
+        "Completed": "status-completed"
+    };
 
-        dropdown.classList.add(
-            "status-not-started"
-        );
-
-    } else if (scope.status === "In Progress") {
-
-        dropdown.classList.add(
-            "status-in-progress"
-        );
-
-    } else if (scope.status === "Completed") {
-
-        dropdown.classList.add(
-            "status-completed"
-        );
-    }
+    dropdown.classList.add(
+        classByStatus[scope.status] || "status-not-started"
+    );
 }
 
 
@@ -803,26 +861,35 @@ function updateScopeDropdownColor(scopeId) {
 
 function addScopeNote(scopeId) {
 
-    const store =
-        technicianStores[currentStore];
+    const store = technicianStores[currentStore];
 
-    const scope =
-        store.scopes.find(
-            item => item.id === scopeId
-        );
+    const scope = store.scopes.find(
+        item => item.id === scopeId
+    );
 
     if (!scope) return;
 
-    const note =
-        prompt(
-            "Enter note:",
-            scope.note || ""
-        );
+    const note = prompt(
+        "Enter note:",
+        scope.note || ""
+    );
 
     if (note === null) return;
 
-    scope.note =
-        note.trim();
+    const cleanedNote = note.trim();
+
+    if (cleanedNote === scope.note) return;
+
+    const timestamp = new Date().toISOString();
+
+    scope.note = cleanedNote;
+    scope.noteUpdatedAt = cleanedNote ? timestamp : null;
+    scope.updatedAt = timestamp;
+
+    logActivity(
+        "Scope note updated",
+        `${scope.title}: ${cleanedNote || "Note cleared"}`
+    );
 
     renderScopes();
 }
@@ -832,59 +899,82 @@ function addScopeNote(scopeId) {
    FIXTURE HANDOVER
    ========================================================= */
 
-function confirmFixtureHandover() {
+function renderFixture() {
 
-    const store =
-        technicianStores[currentStore];
+    const store = technicianStores[currentStore];
 
     const timeInput =
-        document.getElementById(
-            "fixtureHandoverTime"
-        );
+        document.getElementById("fixtureHandoverTime");
 
     const confirmation =
-        document.getElementById(
-            "fixtureConfirmation"
-        );
+        document.getElementById("fixtureConfirmation");
 
     const button =
-        document.getElementById(
-            "fixtureButton"
-        );
+        document.getElementById("fixtureButton");
 
-    const handoverTime =
-        timeInput.value;
+    timeInput.disabled = store.fixtureHandedOver;
+    timeInput.value = store.fixtureTime || "";
+
+    button.disabled = store.fixtureHandedOver;
+    button.classList.toggle(
+        "confirmed",
+        store.fixtureHandedOver
+    );
+
+    button.textContent = store.fixtureHandedOver
+        ? "Fixture Handover Confirmed"
+        : "Confirm Fixture Handover";
+
+    if (store.fixtureHandedOver) {
+
+        confirmation.style.color = "#15803d";
+
+        confirmation.textContent =
+            `Handover time: ${formatTimeForDisplay(store.fixtureTime)}. ` +
+            `Confirmed at ${formatTimestamp(store.fixtureConfirmedAt)}.`;
+
+    } else {
+
+        confirmation.textContent = "";
+    }
+}
+
+
+function confirmFixtureHandover() {
+
+    const store = technicianStores[currentStore];
+
+    const timeInput =
+        document.getElementById("fixtureHandoverTime");
+
+    const confirmation =
+        document.getElementById("fixtureConfirmation");
+
+    const handoverTime = timeInput.value;
 
     if (!handoverTime) {
 
         confirmation.textContent =
             "Please enter the fixture handover time first.";
 
-        confirmation.style.color =
-            "#dc2626";
-
+        confirmation.style.color = "#dc2626";
         return;
     }
 
+    if (store.fixtureHandedOver) return;
+
+    const timestamp = new Date().toISOString();
+
     store.fixtureHandedOver = true;
+    store.fixtureTime = handoverTime;
+    store.fixtureConfirmedAt = timestamp;
 
-    store.fixtureTime =
-        handoverTime;
+    logActivity(
+        "Fixture handover confirmed",
+        `Handover time: ${formatTimeForDisplay(handoverTime)}`
+    );
 
-    button.textContent =
-        "Fixture Handover Confirmed";
-
-    button.classList.add("confirmed");
-
-    button.disabled = true;
-
-    timeInput.disabled = true;
-
-    confirmation.textContent =
-        `Handover confirmed at ${formatTimeForDisplay(handoverTime)}`;
-
-    confirmation.style.color =
-        "#15803d";
+    renderFixture();
 }
 
 
@@ -896,11 +986,9 @@ function formatTimeForDisplay(timeValue) {
 
     if (!timeValue) return "";
 
-    const [hours, minutes] =
-        timeValue.split(":");
+    const [hours, minutes] = timeValue.split(":");
 
-    const date =
-        new Date();
+    const date = new Date();
 
     date.setHours(
         Number(hours),
@@ -909,13 +997,10 @@ function formatTimeForDisplay(timeValue) {
         0
     );
 
-    return new Intl.DateTimeFormat(
-        "en-US",
-        {
-            hour: "numeric",
-            minute: "2-digit"
-        }
-    ).format(date);
+    return new Intl.DateTimeFormat("en-US", {
+        hour: "numeric",
+        minute: "2-digit"
+    }).format(date);
 }
 
 
@@ -925,10 +1010,7 @@ function formatTimeForDisplay(timeValue) {
 
 function escapeHtml(value) {
 
-    if (
-        value === null ||
-        value === undefined
-    ) {
+    if (value === null || value === undefined) {
         return "";
     }
 
@@ -947,13 +1029,9 @@ function escapeHtml(value) {
 
 document
     .getElementById("storeLoginInput")
-    .addEventListener(
-        "keydown",
-        function(event) {
+    .addEventListener("keydown", function(event) {
 
-            if (event.key === "Enter") {
-                loginTechnician();
-            }
-
+        if (event.key === "Enter") {
+            loginTechnician();
         }
-    );
+    });
