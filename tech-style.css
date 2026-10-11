@@ -585,4 +585,44 @@ padding: 14px 15px;
     width: 100%;
 }
 
+/* FORCE EQUIPMENT NOTES TO MATCH SCOPE NOTES */
+
+.equipment-table .equipment-note-row td {
+padding: 0 11px 6px !important;
+background: #fff !important;
+}
+
+.equipment-table .equipment-note {
+margin: 7px 0 0 !important;
+padding: 7px 9px !important;
+background: #f9fafb !important;
+border-radius: 7px !important;
+color: #4b5563 !important;
+font-size: 11px !important;
+font-weight: 400 !important;
+line-height: 1.4 !important;
+}
+
+.equipment-table .equipment-note strong {
+font-size: 11px !important;
+font-weight: 600 !important;
+}
+
+.equipment-table .equipment-note-time {
+display: block !important;
+margin-top: 4px !important;
+font-size: 9px !important;
+line-height: 1.4 !important;
+color: #9ca3af !important;
+}
+
+.equipment-table .edit-equipment-note,
+.equipment-table .add-equipment-note {
+display: inline-block !important;
+margin: 4px 0 0 5px !important;
+padding: 0 !important;
+font-size: 11px !important;
+line-height: 1.4 !important;
+}
+
 }
