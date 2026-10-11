@@ -312,7 +312,7 @@ cursor: pointer;
 color: #4b5563;
 }
 
-/* COMPACT EQUIPMENT STATUS */
+/* EQUIPMENT STATUS */
 
 .equipment-status-select {
 width: 105px;
@@ -350,49 +350,52 @@ color: #b45309;
 border-color: #fcd34d;
 }
 
-/* EQUIPMENT NOTES — MATCH SCOPE NOTE STYLE */
+/* EQUIPMENT NOTES — COMPACT LIKE SCOPE NOTES */
 
-.equipment-note-row td {
-padding: 0 11px 6px;
+.equipment-table tr.equipment-note-row td {
+padding: 0 11px 6px !important;
+border-bottom: 1px solid #f0f1f3;
 background: #fff;
 }
 
-.equipment-note {
-margin-top: 7px;
-padding: 7px 9px;
-background: #f9fafb;
+.equipment-table .equipment-note {
+display: block;
+margin: 0 !important;
+padding: 7px 9px !important;
+background: #f9fafb !important;
 border-radius: 7px;
 color: #4b5563;
-font-size: 11px;
-line-height: 1.4;
+font-size: 11px !important;
+font-weight: 400;
+line-height: 1.4 !important;
 overflow-wrap: anywhere;
 }
 
-.equipment-note strong {
+.equipment-table .equipment-note strong {
 color: #4b5563;
+font-size: 11px !important;
 font-weight: 600;
 }
 
-.equipment-note-time {
+.equipment-table .equipment-note .equipment-note-time {
 display: block;
 margin-top: 4px;
 color: #9ca3af;
-font-size: 9px;
+font-size: 9px !important;
 line-height: 1.4;
 }
 
-.add-equipment-note,
-.edit-equipment-note {
+.equipment-table .edit-equipment-note,
+.equipment-table .add-equipment-note {
+display: inline-block;
+margin: 4px 0 0 5px !important;
+padding: 0 !important;
 border: none;
 background: transparent;
-padding: 0;
 color: #2563eb;
-font-size: 11px;
+font-size: 11px !important;
+line-height: 1.4;
 cursor: pointer;
-}
-
-.edit-equipment-note {
-margin: 4px 0 0 5px;
 }
 
 /* NIGHT SCOPE */
@@ -583,46 +586,6 @@ padding: 14px 15px;
 }
 .fixture-btn {
     width: 100%;
-}
-
-/* FORCE EQUIPMENT NOTES TO MATCH SCOPE NOTES */
-
-.equipment-table .equipment-note-row td {
-padding: 0 11px 6px !important;
-background: #fff !important;
-}
-
-.equipment-table .equipment-note {
-margin: 7px 0 0 !important;
-padding: 7px 9px !important;
-background: #f9fafb !important;
-border-radius: 7px !important;
-color: #4b5563 !important;
-font-size: 11px !important;
-font-weight: 400 !important;
-line-height: 1.4 !important;
-}
-
-.equipment-table .equipment-note strong {
-font-size: 11px !important;
-font-weight: 600 !important;
-}
-
-.equipment-table .equipment-note-time {
-display: block !important;
-margin-top: 4px !important;
-font-size: 9px !important;
-line-height: 1.4 !important;
-color: #9ca3af !important;
-}
-
-.equipment-table .edit-equipment-note,
-.equipment-table .add-equipment-note {
-display: inline-block !important;
-margin: 4px 0 0 5px !important;
-padding: 0 !important;
-font-size: 11px !important;
-line-height: 1.4 !important;
 }
 
 }
