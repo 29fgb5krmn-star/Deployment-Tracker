@@ -350,15 +350,15 @@ color: #b45309;
 border-color: #fcd34d;
 }
 
-/* COMPACT EQUIPMENT NOTES */
+/* EQUIPMENT NOTES — MATCH SCOPE NOTE STYLE */
 
 .equipment-note-row td {
-padding: 4px 11px 6px;
-background: #fafafa;
+padding: 0 11px 6px;
+background: #fff;
 }
 
 .equipment-note {
-margin-top: 2px;
+margin-top: 7px;
 padding: 7px 9px;
 background: #f9fafb;
 border-radius: 7px;
@@ -369,7 +369,8 @@ overflow-wrap: anywhere;
 }
 
 .equipment-note strong {
-color: #374151;
+color: #4b5563;
+font-weight: 600;
 }
 
 .equipment-note-time {
@@ -377,6 +378,7 @@ display: block;
 margin-top: 4px;
 color: #9ca3af;
 font-size: 9px;
+line-height: 1.4;
 }
 
 .add-equipment-note,
@@ -390,7 +392,7 @@ cursor: pointer;
 }
 
 .edit-equipment-note {
-margin-left: 5px;
+margin: 4px 0 0 5px;
 }
 
 /* NIGHT SCOPE */
