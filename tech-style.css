@@ -353,14 +353,18 @@ border-color: #fcd34d;
 /* COMPACT EQUIPMENT NOTES */
 
 .equipment-note-row td {
-padding: 0 11px 5px;
+padding: 4px 11px 6px;
 background: #fafafa;
 }
 
 .equipment-note {
-font-size: 9px;
-color: #6b7280;
-line-height: 1.35;
+margin-top: 2px;
+padding: 7px 9px;
+background: #f9fafb;
+border-radius: 7px;
+color: #4b5563;
+font-size: 11px;
+line-height: 1.4;
 overflow-wrap: anywhere;
 }
 
@@ -369,9 +373,10 @@ color: #374151;
 }
 
 .equipment-note-time {
+display: block;
+margin-top: 4px;
 color: #9ca3af;
 font-size: 9px;
-margin-left: 4px;
 }
 
 .add-equipment-note,
@@ -380,7 +385,7 @@ border: none;
 background: transparent;
 padding: 0;
 color: #2563eb;
-font-size: 9px;
+font-size: 11px;
 cursor: pointer;
 }
 
