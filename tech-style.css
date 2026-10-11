@@ -350,15 +350,15 @@ color: #b45309;
 border-color: #fcd34d;
 }
 
-/* EQUIPMENT NOTES — COMPACT LIKE SCOPE NOTES */
+/* EQUIPMENT NOTES */
 
 .equipment-table tr.equipment-note-row td {
-padding: 0 11px 6px !important;
+padding: 0 8px 6px !important;
+background: #fff !important;
 border-bottom: 1px solid #f0f1f3;
-background: #fff;
 }
 
-.equipment-table .equipment-note {
+.equipment-note {
 display: block;
 margin: 0 !important;
 padding: 7px 9px !important;
@@ -371,13 +371,13 @@ line-height: 1.4 !important;
 overflow-wrap: anywhere;
 }
 
-.equipment-table .equipment-note strong {
+.equipment-note strong {
 color: #4b5563;
 font-size: 11px !important;
 font-weight: 600;
 }
 
-.equipment-table .equipment-note .equipment-note-time {
+.equipment-note-time {
 display: block;
 margin-top: 4px;
 color: #9ca3af;
@@ -385,10 +385,10 @@ font-size: 9px !important;
 line-height: 1.4;
 }
 
-.equipment-table .edit-equipment-note,
-.equipment-table .add-equipment-note {
+.add-equipment-note,
+.edit-equipment-note {
 display: inline-block;
-margin: 4px 0 0 5px !important;
+margin: 0 0 0 5px !important;
 padding: 0 !important;
 border: none;
 background: transparent;
