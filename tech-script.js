@@ -111,9 +111,6 @@ const technicianStores = {
             }
         ],
 
-        checkedIn: false,
-        checkInTime: null,
-
         fixtureHandedOver: false,
         fixtureTime: null
     },
@@ -142,9 +139,6 @@ const technicianStores = {
             }
         ],
 
-        checkedIn: false,
-        checkInTime: null,
-
         fixtureHandedOver: false,
         fixtureTime: null
     },
@@ -165,9 +159,6 @@ const technicianStores = {
                 note: ""
             }
         ],
-
-        checkedIn: false,
-        checkInTime: null,
 
         fixtureHandedOver: false,
         fixtureTime: null
@@ -259,7 +250,7 @@ function createDefaultEquipment() {
 
 
 /* =========================================================
-   CURRENT TECHNICIAN
+   CURRENT STORE
    ========================================================= */
 
 let currentStore = null;
@@ -335,23 +326,29 @@ function renderDashboard() {
     const store =
         technicianStores[currentStore];
 
-    document.getElementById("storeNumber")
+    document
+        .getElementById("storeNumber")
         .textContent = currentStore;
 
-    document.getElementById("technicianName")
+    document
+        .getElementById("technicianName")
         .textContent = store.technician;
 
-    document.getElementById("currentNight")
+    document
+        .getElementById("currentNight")
         .textContent = `Night ${store.currentNight}`;
 
-    document.getElementById("storeTimezone")
+    document
+        .getElementById("storeTimezone")
         .textContent = store.timezone;
+
+    document
+        .getElementById("scopeNight")
+        .textContent = `Night ${store.currentNight}`;
 
     renderEquipment();
 
     renderScopes();
-
-    renderCheckIn();
 
     renderFixture();
 }
@@ -439,7 +436,10 @@ function renderEquipment() {
         container.appendChild(row);
 
 
-        /* Add note row only when needed */
+        /*
+         * Show note area only for
+         * Missing / Incomplete.
+         */
 
         if (
             equipment.status === "Missing" ||
@@ -458,6 +458,7 @@ function renderEquipment() {
 
                 noteHtml = `
                     <div class="equipment-note">
+
                         <strong>Note:</strong>
                         ${escapeHtml(equipment.note)}
 
@@ -467,6 +468,7 @@ function renderEquipment() {
                         >
                             Edit
                         </button>
+
                     </div>
                 `;
 
@@ -498,7 +500,7 @@ function renderEquipment() {
 
 
 /* =========================================================
-   EQUIPMENT STATUS UPDATE
+   EQUIPMENT STATUS
    ========================================================= */
 
 function updateEquipmentStatus(
@@ -518,9 +520,6 @@ function updateEquipmentStatus(
 
     equipment.status = status;
 
-    /*
-     * Clear note when equipment becomes Complete.
-     */
     if (status === "Complete") {
         equipment.note = "";
     }
@@ -580,9 +579,6 @@ function copyTrackingId(equipmentId) {
         .writeText(equipment.trackingId)
         .then(() => {
 
-            /*
-             * Simple confirmation.
-             */
             alert(
                 `Tracking ID copied: ${equipment.trackingId}`
             );
@@ -679,6 +675,7 @@ function renderScopes() {
             <div class="scope-controls">
 
                 <select
+                    id="scope-status-${scope.id}"
                     class="scope-status-select"
                     onchange="updateScopeStatus(
                         '${scope.id}',
@@ -719,6 +716,8 @@ function renderScopes() {
 
         container.appendChild(card);
 
+        updateScopeDropdownColor(scope.id);
+
     });
 }
 
@@ -744,7 +743,57 @@ function updateScopeStatus(
 
     scope.status = status;
 
-    renderScopes();
+    updateScopeDropdownColor(scopeId);
+}
+
+
+/* =========================================================
+   SCOPE DROPDOWN COLOR
+   ========================================================= */
+
+function updateScopeDropdownColor(scopeId) {
+
+    const store =
+        technicianStores[currentStore];
+
+    const scope =
+        store.scopes.find(
+            item => item.id === scopeId
+        );
+
+    if (!scope) return;
+
+    const dropdown =
+        document.getElementById(
+            `scope-status-${scopeId}`
+        );
+
+    if (!dropdown) return;
+
+    dropdown.classList.remove(
+        "status-not-started",
+        "status-in-progress",
+        "status-completed"
+    );
+
+    if (scope.status === "Not Started") {
+
+        dropdown.classList.add(
+            "status-not-started"
+        );
+
+    } else if (scope.status === "In Progress") {
+
+        dropdown.classList.add(
+            "status-in-progress"
+        );
+
+    } else if (scope.status === "Completed") {
+
+        dropdown.classList.add(
+            "status-completed"
+        );
+    }
 }
 
 
@@ -780,55 +829,6 @@ function addScopeNote(scopeId) {
 
 
 /* =========================================================
-   CHECK-IN
-   ========================================================= */
-
-function checkInTechnician() {
-
-    const store =
-        technicianStores[currentStore];
-
-    if (store.checkedIn) return;
-
-    store.checkedIn = true;
-
-    store.checkInTime =
-        new Date();
-
-    renderCheckIn();
-}
-
-
-function renderCheckIn() {
-
-    const store =
-        technicianStores[currentStore];
-
-    const button =
-        document.getElementById("checkInButton");
-
-    if (store.checkedIn) {
-
-        button.textContent =
-            `Checked In ${formatTime(store.checkInTime)}`;
-
-        button.classList.add("checked-in");
-
-        button.disabled = true;
-
-    } else {
-
-        button.textContent =
-            "Check In";
-
-        button.classList.remove("checked-in");
-
-        button.disabled = false;
-    }
-}
-
-
-/* =========================================================
    FIXTURE HANDOVER
    ========================================================= */
 
@@ -837,70 +837,77 @@ function confirmFixtureHandover() {
     const store =
         technicianStores[currentStore];
 
-    if (store.fixtureHandedOver) return;
+    const timeInput =
+        document.getElementById(
+            "fixtureHandoverTime"
+        );
+
+    const confirmation =
+        document.getElementById(
+            "fixtureConfirmation"
+        );
+
+    const button =
+        document.getElementById(
+            "fixtureButton"
+        );
+
+    const handoverTime =
+        timeInput.value;
+
+    if (!handoverTime) {
+
+        confirmation.textContent =
+            "Please enter the fixture handover time first.";
+
+        confirmation.style.color =
+            "#dc2626";
+
+        return;
+    }
 
     store.fixtureHandedOver = true;
 
     store.fixtureTime =
-        new Date();
+        handoverTime;
 
-    renderFixture();
-}
+    button.textContent =
+        "Fixture Handover Confirmed";
 
+    button.classList.add("confirmed");
 
-function renderFixture() {
+    button.disabled = true;
 
-    const store =
-        technicianStores[currentStore];
+    timeInput.disabled = true;
 
-    const status =
-        document.getElementById("fixtureStatus");
+    confirmation.textContent =
+        `Handover confirmed at ${formatTimeForDisplay(handoverTime)}`;
 
-    const time =
-        document.getElementById("fixtureTime");
-
-    const button =
-        document.getElementById("fixtureButton");
-
-    if (store.fixtureHandedOver) {
-
-        status.textContent =
-            "Confirmed";
-
-        time.textContent =
-            `Confirmed at ${formatDateTime(store.fixtureTime)}`;
-
-        button.textContent =
-            "Fixture Handover Confirmed";
-
-        button.classList.add("confirmed");
-
-        button.disabled = true;
-
-    } else {
-
-        status.textContent =
-            "Not Confirmed";
-
-        time.textContent = "";
-
-        button.textContent =
-            "Confirm Fixture Handover";
-
-        button.classList.remove("confirmed");
-
-        button.disabled = false;
-    }
+    confirmation.style.color =
+        "#15803d";
 }
 
 
 /* =========================================================
-   DATE / TIME
+   FIXTURE TIME DISPLAY
    ========================================================= */
 
-function formatTime(date) {
+function formatTimeForDisplay(timeValue) {
 
-    if (!date) return "";
+    if (!timeValue) return "";
+
+    const [hours, minutes] =
+        timeValue.split(":");
+
+    const date =
+        new Date();
+
+    date.setHours(
+        Number(hours),
+        Number(minutes),
+        0,
+        0
+    );
 
     return new Intl.DateTimeFormat(
         "en-US",
@@ -912,27 +919,16 @@ function formatTime(date) {
 }
 
 
-function formatDateTime(date) {
-
-    if (!date) return "";
-
-    return new Intl.DateTimeFormat(
-        "en-US",
-        {
-            dateStyle: "medium",
-            timeStyle: "short"
-        }
-    ).format(date);
-}
-
-
 /* =========================================================
    HTML SAFETY
    ========================================================= */
 
 function escapeHtml(value) {
 
-    if (value === null || value === undefined) {
+    if (
+        value === null ||
+        value === undefined
+    ) {
         return "";
     }
 
@@ -951,10 +947,13 @@ function escapeHtml(value) {
 
 document
     .getElementById("storeLoginInput")
-    .addEventListener("keydown", function(event) {
+    .addEventListener(
+        "keydown",
+        function(event) {
 
-        if (event.key === "Enter") {
-            loginTechnician();
+            if (event.key === "Enter") {
+                loginTechnician();
+            }
+
         }
-
-    });
+    );
